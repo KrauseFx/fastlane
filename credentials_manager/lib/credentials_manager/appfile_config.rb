@@ -101,6 +101,14 @@ module CredentialsManager
       setter(:itunes_connect_id, *args, &block)
     end
 
+    def api_issuer(*args, &block)
+      setter(:api_issuer, *args, &block)
+    end
+
+    def api_key(*args, &block)
+      setter(:api_key, *args, &block)
+    end
+
     # Developer Portal
     def team_id(*args, &block)
       setter(:team_id, *args, &block)

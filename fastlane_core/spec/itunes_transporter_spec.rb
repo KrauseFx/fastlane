@@ -4,6 +4,8 @@ require 'credentials_manager'
 describe FastlaneCore do
   let(:password) { "!> p@$s_-+=w'o%rd\"&#*<" }
   let(:email) { 'fabric.devtools@gmail.com' }
+  let(:api_issuer) { '1b4d1d3a-a636-48c3-f054-5a8ddeadbeef' }
+  let(:api_key) { 'A658X75T8A' }
 
   describe FastlaneCore::ItunesTransporter do
     def shell_upload_command(provider_short_name = nil)
@@ -119,6 +121,52 @@ describe FastlaneCore do
       ].compact.join(' ')
     end
 
+    def java_upload_command_api_key(provider_short_name = nil)
+      [
+        FastlaneCore::Helper.transporter_java_executable_path.shellescape,
+        "-Djava.ext.dirs=#{FastlaneCore::Helper.transporter_java_ext_dir.shellescape}",
+        '-XX:NewSize=2m',
+        '-Xms32m',
+        '-Xmx1024m',
+        '-Xms1024m',
+        '-Djava.awt.headless=true',
+        '-Dsun.net.http.retryPost=false',
+        "-classpath #{FastlaneCore::Helper.transporter_java_jar_path.shellescape}",
+        'com.apple.transporter.Application',
+        "-m upload",
+        "-apiIssuer #{api_issuer.shellescape}",
+        "-apiKey #{api_key.shellescape}",
+        "-f /tmp/my.app.id.itmsp",
+        "-t DAV",
+        "-t Signiant",
+        "-k 100000",
+        ("-itc_provider #{provider_short_name}" if provider_short_name),
+        '2>&1'
+      ].compact.join(' ')
+    end
+
+    def java_download_command_api_key(provider_short_name = nil)
+      [
+        FastlaneCore::Helper.transporter_java_executable_path.shellescape,
+        "-Djava.ext.dirs=#{FastlaneCore::Helper.transporter_java_ext_dir.shellescape}",
+        '-XX:NewSize=2m',
+        '-Xms32m',
+        '-Xmx1024m',
+        '-Xms1024m',
+        '-Djava.awt.headless=true',
+        '-Dsun.net.http.retryPost=false',
+        "-classpath #{FastlaneCore::Helper.transporter_java_jar_path.shellescape}",
+        'com.apple.transporter.Application',
+        '-m lookupMetadata',
+        "-apiIssuer #{api_issuer.shellescape}",
+        "-apiKey #{api_key.shellescape}",
+        '-apple_id my.app.id',
+        '-destination /tmp',
+        ("-itc_provider #{provider_short_name}" if provider_short_name),
+        '2>&1'
+      ].compact.join(' ')
+    end
+
     def java_upload_command_9(provider_short_name = nil)
       [
         FastlaneCore::Helper.transporter_java_executable_path.shellescape,
@@ -176,12 +224,26 @@ describe FastlaneCore do
             transporter = FastlaneCore::ItunesTransporter.new(email, password)
             expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command)
           end
+
+          describe "using API key" do
+            it 'generates a call to java directly' do
+              transporter = FastlaneCore::ItunesTransporter.new(api_issuer, api_key, false, nil, true)
+              expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command_api_key)
+            end
+          end
         end
 
         describe "download command generation" do
           it 'generates a call to java directly' do
             transporter = FastlaneCore::ItunesTransporter.new(email, password)
             expect(transporter.download('my.app.id', '/tmp')).to eq(java_download_command)
+          end
+
+          describe "using API key" do
+            it 'generates a call to java directly' do
+              transporter = FastlaneCore::ItunesTransporter.new(api_issuer, api_key, false, nil, true)
+              expect(transporter.download('my.app.id', '/tmp')).to eq(java_download_command_api_key)
+            end
           end
         end
 

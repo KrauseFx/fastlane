@@ -6,6 +6,7 @@ require_relative 'upload_assets'
 
 module Deliver
   # rubocop:disable Metrics/ClassLength
+  # rubocop:disable Metrics/PerceivedComplexity
   class Options
     def self.available_options
       user = CredentialsManager::AppfileConfig.try_fetch_value(:itunes_connect_id)
@@ -27,6 +28,26 @@ module Deliver
                                      code_gen_sensitive: true,
                                      default_value: CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier),
                                      default_value_dynamic: true),
+        FastlaneCore::ConfigItem.new(key: :api_issuer,
+                                     env_name: "DELIVER_API_ISSUER",
+                                     description: "Your App Store Connect Issuer ID if using API keys with the uploader. Available since Xcode 10",
+                                     is_string: true,
+                                     optional: true,
+                                     default_value: CredentialsManager::AppfileConfig.try_fetch_value(:api_issuer),
+                                     default_value_dynamic: true,
+                                     verify_block: proc do |value|
+                                       UI.user_error!("Xcode 10 is required to use this option") unless Helper.xcode_at_least?("10.0")
+                                     end),
+        FastlaneCore::ConfigItem.new(key: :api_key,
+                                     env_name: "DELIVER_API_KEY",
+                                     description: "Your App Store Connect API Key ID if using API keys with the uploader. Available since Xcode 10",
+                                     is_string: true,
+                                     optional: true,
+                                     default_value: CredentialsManager::AppfileConfig.try_fetch_value(:api_key),
+                                     default_value_dynamic: true,
+                                     verify_block: proc do |value|
+                                       UI.user_error!("Xcode 10 is required to use this option") unless Helper.xcode_at_least?("10.0")
+                                     end),
         # version
         FastlaneCore::ConfigItem.new(key: :app_version,
                                      short_option: '-z',
