@@ -54,7 +54,7 @@ module Fastlane
         Open3.popen2e(*command) do |stdin, io, thread|
           io.sync = true
           io.each do |line|
-            UI.command_output(line.strip) if print_command_output
+            UI.command_output(line) if print_command_output
             result << line
           end
           exit_status = thread.value

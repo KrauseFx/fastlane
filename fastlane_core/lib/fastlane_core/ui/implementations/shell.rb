@@ -69,8 +69,7 @@ module FastlaneCore
     end
 
     def command_output(message)
-      actual = (message.split("\r").last || "") # as clearing the line will remove the `>` and the time stamp
-      actual.split("\n").each do |msg|
+      message.lines.map(&:chomp).each do |msg|
         if FastlaneCore::Env.truthy?("FASTLANE_DISABLE_OUTPUT_FORMAT")
           log.info(msg)
         else
