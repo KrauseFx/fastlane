@@ -1,5 +1,5 @@
 describe Spaceship::ConnectAPI::BetaAppReviewSubmission do
-  before { Spaceship::Tunes.login }
+  before { Spaceship::ConnectAPI.login }
 
   describe '#Spaceship::ConnectAPI' do
     it '#get_beta_app_review_submissions' do

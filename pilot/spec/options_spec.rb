@@ -1,10 +1,8 @@
 describe Pilot::Options do
-  before(:each) do
-    ENV.delete('FASTLANE_TEAM_ID')
-  end
-
-  after(:each) do
-    ENV.delete('FASTLANE_TEAM_ID')
+  around do |example|
+    FastlaneSpec::Env.with_env_values(FASTLANE_TEAM_ID: nil) do
+      example.run
+    end
   end
 
   it "accepts a developer portal team ID" do

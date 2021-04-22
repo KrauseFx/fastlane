@@ -14,9 +14,11 @@ task(:rubygems_admins) do
 end
 
 task(:test_all) do
-  formatter = "--format progress"
+  formatter = '--format progress'
   formatter += " -r rspec_junit_formatter --format RspecJunitFormatter -o #{ENV['CIRCLE_TEST_REPORTS']}/rspec/fastlane-junit-results.xml" if ENV["CIRCLE_TEST_REPORTS"]
-  command = "rspec --pattern ./**/*_spec.rb #{formatter}"
+  order = '--order random'
+  order += ":#{ENV['RSPEC_RAND_SEED']}" if ENV['RSPEC_RAND_SEED']
+  command = "rspec --pattern ./**/*_spec.rb #{order} #{formatter}"
 
   # To move Ruby 3.0 or next major version migration going forward, we want to keep monitoring deprecation warnings
   if Gem.win_platform?

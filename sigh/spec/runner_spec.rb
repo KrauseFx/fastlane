@@ -1,8 +1,12 @@
 describe Sigh do
   describe Sigh::Runner do
-    before do
-      ENV["DELIVER_USER"] = "test@fastlane.tools"
-      ENV["DELIVER_PASSWORD"] = "123"
+    around do |example|
+      FastlaneSpec::Env.with_env_values(
+        DELIVER_USER: 'test@fastlane.tools',
+        DELIVER_PASSWORD: '123'
+      ) do
+        example.run
+      end
     end
 
     let(:fake_runner) { Sigh::Runner.new }

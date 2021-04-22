@@ -13,8 +13,11 @@ describe Fastlane do
 
       context 'options' do
         before do
-          ENV['FL_FLOCK_BASE_URL'] = 'https://example.com'
           stub_request(:any, /example.com/)
+        end
+
+        around do |example|
+          FastlaneSpec::Env.with_env_values(FL_FLOCK_BASE_URL: 'https://example.com') { example.run }
         end
 
         it 'requires message' do
@@ -34,9 +37,13 @@ describe Fastlane do
         end
 
         it 'allows environment variables' do
-          ENV['FL_FLOCK_MESSAGE'] = 'xxx'
-          ENV['FL_FLOCK_TOKEN'] = 'xxx'
-          expect { run_flock }.to_not(raise_error)
+          FastlaneSpec::Env.with_env_values(
+            FL_FLOCK_BASE_URL: 'https://example.com',
+            FL_FLOCK_MESSAGE: 'xxx',
+            FL_FLOCK_TOKEN: 'xxx'
+          ) do
+            expect { run_flock }.to_not(raise_error)
+          end
         end
       end
 

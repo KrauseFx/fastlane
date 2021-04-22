@@ -72,39 +72,48 @@ describe Spaceship::Client do
 
     context 'when running non-interactive' do
       it 'raises an error' do
-        ENV["FASTLANE_IS_INTERACTIVE"] = "false"
-        expect(subject).to receive(:handle_two_factor)
-        stub_request(:get, "https://idmsa.apple.com/appleauth/auth").to_return(status: 200, body: '{"trustedPhoneNumbers": [{"1": ""}]}', headers: { 'Content-Type' => 'application/json' })
-        subject.handle_two_step_or_factor("response")
+        FastlaneSpec::Env.with_env_values(FASTLANE_IS_INTERACTIVE: 'false') do
+          expect(subject).to receive(:handle_two_factor)
+          stub_request(:get, "https://idmsa.apple.com/appleauth/auth").to_return(status: 200, body: '{"trustedPhoneNumbers": [{"1": ""}]}', headers: { 'Content-Type' => 'application/json' })
+          subject.handle_two_step_or_factor("response")
+        end
       end
     end
 
     context 'when running non-interactive and force 2FA to be interactive only' do
       it 'raises an error' do
-        ENV["FASTLANE_IS_INTERACTIVE"] = "false"
-        ENV["SPACESHIP_ONLY_ALLOW_INTERACTIVE_2FA"] = "true"
-        expect { subject.handle_two_step_or_factor("response") }.to raise_error("2FA can only be performed in interactive mode")
-        ENV.delete('SPACESHIP_ONLY_ALLOW_INTERACTIVE_2FA')
+        FastlaneSpec::Env.with_env_values(
+          FASTLANE_IS_INTERACTIVE: 'false',
+          SPACESHIP_ONLY_ALLOW_INTERACTIVE_2FA: 'true'
+        ) do
+          expect { subject.handle_two_step_or_factor("response") }.to raise_error("2FA can only be performed in interactive mode")
+        end
       end
     end
 
     context 'when running interactive' do
       it 'does not raise an error' do
-        ENV["FASTLANE_IS_INTERACTIVE"] = "true"
-        ENV["SPACESHIP_ONLY_ALLOW_INTERACTIVE_2FA"] = "true"
-        expect(subject).to receive(:handle_two_factor)
-        stub_request(:get, "https://idmsa.apple.com/appleauth/auth").to_return(status: 200, body: '{"trustedPhoneNumbers": [{"1": ""}]}', headers: { 'Content-Type' => 'application/json' })
-        subject.handle_two_step_or_factor("response")
+        FastlaneSpec::Env.with_env_values(
+          FASTLANE_IS_INTERACTIVE: 'true',
+          SPACESHIP_ONLY_ALLOW_INTERACTIVE_2FA: 'true'
+        ) do
+          expect(subject).to receive(:handle_two_factor)
+          stub_request(:get, "https://idmsa.apple.com/appleauth/auth").to_return(status: 200, body: '{"trustedPhoneNumbers": [{"1": ""}]}', headers: { 'Content-Type' => 'application/json' })
+          subject.handle_two_step_or_factor("response")
+        end
       end
     end
 
     context 'when interactive mode is not set' do
       it 'does not raise an error' do
-        ENV["FASTLANE_IS_INTERACTIVE"] = nil
-        ENV["SPACESHIP_ONLY_ALLOW_INTERACTIVE_2FA"] = "false"
-        expect(subject).to receive(:handle_two_factor)
-        stub_request(:get, "https://idmsa.apple.com/appleauth/auth").to_return(status: 200, body: '{"trustedPhoneNumbers": [{"1": ""}]}', headers: { 'Content-Type' => 'application/json' })
-        subject.handle_two_step_or_factor("response")
+        FastlaneSpec::Env.with_env_values(
+          FASTLANE_IS_INTERACTIVE: nil,
+          SPACESHIP_ONLY_ALLOW_INTERACTIVE_2FA: 'false'
+        ) do
+          expect(subject).to receive(:handle_two_factor)
+          stub_request(:get, "https://idmsa.apple.com/appleauth/auth").to_return(status: 200, body: '{"trustedPhoneNumbers": [{"1": ""}]}', headers: { 'Content-Type' => 'application/json' })
+          subject.handle_two_step_or_factor("response")
+        end
       end
     end
 

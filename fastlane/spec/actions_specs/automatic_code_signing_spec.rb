@@ -3,19 +3,27 @@ require "xcodeproj"
 # 77C503031DD3175E00AC8FF0 = today
 describe Fastlane do
   describe "Automatic Code Signing" do
-    before :each do
+    before do
       allow(FastlaneCore::FastlaneFolder).to receive(:path).and_return(nil)
+    end
+
+    around do |example|
+      Dir.mktmpdir do |tmpdir|
+        FileUtils.copy_entry('./fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj', tmpdir)
+        @xcodeproj_path = tmpdir
+        example.run
+      end
     end
 
     it "enable_automatic_code_signing" do
       allow(UI).to receive(:success)
       expect(UI).to receive(:success).with("Successfully updated project settings to use Code Sign Style = 'Automatic'")
       result = Fastlane::FastFile.new.parse("lane :test do
-        enable_automatic_code_signing(path: './fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj', team_id: 'XXXX')
+        enable_automatic_code_signing(path: '#{@xcodeproj_path}', team_id: 'XXXX')
       end").runner.execute(:test)
       expect(result).to eq(true)
 
-      project = Xcodeproj::Project.open("./fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj")
+      project = Xcodeproj::Project.open(@xcodeproj_path)
       root_attrs = project.root_object.attributes["TargetAttributes"]
       expect(root_attrs["771D79501D9E69C900D840FA"]["ProvisioningStyle"]).to eq("Automatic")
       expect(root_attrs["77C503031DD3175E00AC8FF0"]["ProvisioningStyle"]).to eq("Automatic")
@@ -31,6 +39,11 @@ describe Fastlane do
     end
 
     it "disable_automatic_code_signing for specific target" do
+      # Given both targets enable Automatic code signing
+      Fastlane::FastFile.new.parse("lane :test do
+        enable_automatic_code_signing(path: '#{@xcodeproj_path}')
+      end").runner.execute(:test)
+
       allow(UI).to receive(:success)
       expect(UI).to receive(:success).with("Successfully updated project settings to use Code Sign Style = 'Manual'")
       expect(UI).to receive(:success).with("\t * today")
@@ -38,11 +51,11 @@ describe Fastlane do
       expect(UI).to receive(:deprecated).with("Please use `update_code_signing_settings` action instead.")
       expect(UI).to receive(:important).with("Skipping demo not selected (today)")
       result = Fastlane::FastFile.new.parse("lane :test do
-        disable_automatic_code_signing(path: './fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj', targets: ['today'])
+        disable_automatic_code_signing(path: '#{@xcodeproj_path}', targets: ['today'])
       end").runner.execute(:test)
       expect(result).to eq(false)
 
-      project = Xcodeproj::Project.open("./fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj")
+      project = Xcodeproj::Project.open(@xcodeproj_path)
       root_attrs = project.root_object.attributes["TargetAttributes"]
       expect(root_attrs["771D79501D9E69C900D840FA"]["ProvisioningStyle"]).to eq("Automatic")
       expect(root_attrs["77C503031DD3175E00AC8FF0"]["ProvisioningStyle"]).to eq("Manual")
@@ -58,11 +71,11 @@ describe Fastlane do
       allow(UI).to receive(:success)
       expect(UI).to receive(:success).with("Successfully updated project settings to use Code Sign Style = 'Manual'")
       result = Fastlane::FastFile.new.parse("lane :test do
-        disable_automatic_code_signing(path: './fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj')
+        disable_automatic_code_signing(path: '#{@xcodeproj_path}')
       end").runner.execute(:test)
       expect(result).to eq(false)
 
-      project = Xcodeproj::Project.open("./fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj")
+      project = Xcodeproj::Project.open(@xcodeproj_path)
       root_attrs = project.root_object.attributes["TargetAttributes"]
       expect(root_attrs["771D79501D9E69C900D840FA"]["ProvisioningStyle"]).to eq("Manual")
       expect(root_attrs["77C503031DD3175E00AC8FF0"]["ProvisioningStyle"]).to eq("Manual")
@@ -83,11 +96,11 @@ describe Fastlane do
       expect(UI).to receive(:important).with("Set Team id to: G3KGXDXQL9 for target: demo")
       expect(UI).to receive(:important).with("Set Team id to: G3KGXDXQL9 for target: today")
       result = Fastlane::FastFile.new.parse("lane :test do
-        disable_automatic_code_signing(path: './fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj', team_id: 'G3KGXDXQL9')
+        disable_automatic_code_signing(path: '#{@xcodeproj_path}', team_id: 'G3KGXDXQL9')
       end").runner.execute(:test)
       expect(result).to eq(false)
 
-      project = Xcodeproj::Project.open("./fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj")
+      project = Xcodeproj::Project.open(@xcodeproj_path)
       root_attrs = project.root_object.attributes["TargetAttributes"]
 
       expect(root_attrs["771D79501D9E69C900D840FA"]["ProvisioningStyle"]).to eq("Manual")
@@ -104,9 +117,6 @@ describe Fastlane do
     end
 
     it "sets code sign identity" do
-      temp_dir = Dir.tmpdir
-      FileUtils.copy_entry('./fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj', temp_dir)
-
       # G3KGXDXQL9
       allow(UI).to receive(:success)
       expect(UI).to receive(:success).with("Successfully updated project settings to use Code Sign Style = 'Manual'")
@@ -117,11 +127,11 @@ describe Fastlane do
       expect(UI).to receive(:important).with("Set Code Sign identity to: iPhone Distribution for target: demo")
       expect(UI).to receive(:important).with("Set Code Sign identity to: iPhone Distribution for target: today")
       result = Fastlane::FastFile.new.parse("lane :test do
-        disable_automatic_code_signing(path: '#{temp_dir}', team_id: 'G3KGXDXQL9', code_sign_identity: 'iPhone Distribution')
+        disable_automatic_code_signing(path: '#{@xcodeproj_path}', team_id: 'G3KGXDXQL9', code_sign_identity: 'iPhone Distribution')
       end").runner.execute(:test)
       expect(result).to eq(false)
 
-      project = Xcodeproj::Project.open(temp_dir.to_s)
+      project = Xcodeproj::Project.open(@xcodeproj_path)
       root_attrs = project.root_object.attributes["TargetAttributes"]
 
       expect(root_attrs["771D79501D9E69C900D840FA"]["ProvisioningStyle"]).to eq("Manual")
@@ -155,11 +165,11 @@ describe Fastlane do
       expect(UI).to receive(:important).with("Set Provisioning Profile name to: Mindera for target: demo")
       expect(UI).to receive(:important).with("Set Provisioning Profile name to: Mindera for target: today")
       result = Fastlane::FastFile.new.parse("lane :test do
-        disable_automatic_code_signing(path: './fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj', team_id: 'G3KGXDXQL9', profile_name: 'Mindera')
+        disable_automatic_code_signing(path: '#{@xcodeproj_path}', team_id: 'G3KGXDXQL9', profile_name: 'Mindera')
       end").runner.execute(:test)
       expect(result).to eq(false)
 
-      project = Xcodeproj::Project.open("./fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj")
+      project = Xcodeproj::Project.open(@xcodeproj_path)
       root_attrs = project.root_object.attributes["TargetAttributes"]
 
       expect(root_attrs["771D79501D9E69C900D840FA"]["ProvisioningStyle"]).to eq("Manual")
@@ -189,11 +199,11 @@ describe Fastlane do
       expect(UI).to receive(:important).with("Set Provisioning Profile UUID to: 1337 for target: demo")
       expect(UI).to receive(:important).with("Set Provisioning Profile UUID to: 1337 for target: today")
       result = Fastlane::FastFile.new.parse("lane :test do
-        disable_automatic_code_signing(path: './fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj', team_id: 'G3KGXDXQL9', profile_uuid: '1337')
+        disable_automatic_code_signing(path: '#{@xcodeproj_path}', team_id: 'G3KGXDXQL9', profile_uuid: '1337')
       end").runner.execute(:test)
       expect(result).to eq(false)
 
-      project = Xcodeproj::Project.open("./fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj")
+      project = Xcodeproj::Project.open(@xcodeproj_path)
       root_attrs = project.root_object.attributes["TargetAttributes"]
 
       expect(root_attrs["771D79501D9E69C900D840FA"]["ProvisioningStyle"]).to eq("Manual")
@@ -223,11 +233,11 @@ describe Fastlane do
       expect(UI).to receive(:important).with("Set Bundle identifier to: com.fastlane.mindera.cosigner for target: demo")
       expect(UI).to receive(:important).with("Set Bundle identifier to: com.fastlane.mindera.cosigner for target: today")
       result = Fastlane::FastFile.new.parse("lane :test do
-        disable_automatic_code_signing(path: './fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj', team_id: 'G3KGXDXQL9', bundle_identifier: 'com.fastlane.mindera.cosigner')
+        disable_automatic_code_signing(path: '#{@xcodeproj_path}', team_id: 'G3KGXDXQL9', bundle_identifier: 'com.fastlane.mindera.cosigner')
       end").runner.execute(:test)
       expect(result).to eq(false)
 
-      project = Xcodeproj::Project.open("./fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj")
+      project = Xcodeproj::Project.open(@xcodeproj_path)
       root_attrs = project.root_object.attributes["TargetAttributes"]
 
       expect(root_attrs["771D79501D9E69C900D840FA"]["ProvisioningStyle"]).to eq("Manual")
@@ -252,7 +262,7 @@ describe Fastlane do
       expect(UI).to receive(:deprecated).with("Please use `update_code_signing_settings` action instead.")
       expect(UI).to receive(:important).with("None of the specified targets has been modified")
       result = Fastlane::FastFile.new.parse("lane :test do
-        disable_automatic_code_signing(path: './fastlane/spec/fixtures/xcodeproj/automatic_code_signing.xcodeproj', targets: ['not_found'])
+        disable_automatic_code_signing(path: '#{@xcodeproj_path}', targets: ['not_found'])
       end").runner.execute(:test)
       expect(result).to eq(false)
     end

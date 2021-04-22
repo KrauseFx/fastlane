@@ -26,25 +26,29 @@ describe Spaceship::Client do
         end
 
         it "Falls back to user selection if team wasn't found" do
-          ENV["FASTLANE_TEAM_ID"] = "Not Here"
-          expect(Spaceship::Client::UserInterface).to receive(:interactive?).and_return(true)
-          allow($stdin).to receive(:gets).and_return("2")
-          expect(subject.select_team).to eq("XXXXXXXXXX") # a different team
+          FastlaneSpec::Env.with_env_values(FASTLANE_TEAM_ID: "Not Here") do
+            expect(Spaceship::Client::UserInterface).to receive(:interactive?).and_return(true)
+            allow($stdin).to receive(:gets).and_return("2")
+            expect(subject.select_team).to eq("XXXXXXXXXX") # a different team
+          end
         end
 
         it "Uses the specific team (1/2) using environment variables" do
-          ENV["FASTLANE_TEAM_ID"] = "SecondTeam"
-          expect(subject.select_team).to eq("SecondTeam") # a different team
+          FastlaneSpec::Env.with_env_values(FASTLANE_TEAM_ID: "SecondTeam") do
+            expect(subject.select_team).to eq("SecondTeam") # a different team
+          end
         end
 
         it "Uses the specific team (2/2) using environment variables" do
-          ENV["FASTLANE_TEAM_ID"] = "XXXXXXXXXX"
-          expect(subject.select_team).to eq("XXXXXXXXXX") # a different team
+          FastlaneSpec::Env.with_env_values(FASTLANE_TEAM_ID: "XXXXXXXXXX") do
+            expect(subject.select_team).to eq("XXXXXXXXXX") # a different team
+          end
         end
 
         it "Let's the user specify the team name using environment variables" do
-          ENV["FASTLANE_TEAM_NAME"] = "SecondTeamProfiName"
-          expect(subject.select_team).to eq("SecondTeam")
+          FastlaneSpec::Env.with_env_values(FASTLANE_TEAM_NAME: "SecondTeamProfiName") do
+            expect(subject.select_team).to eq("SecondTeam")
+          end
         end
 
         it "Uses the specific team (1/2) using method parameters" do
@@ -60,22 +64,25 @@ describe Spaceship::Client do
         end
 
         it "Strips out spaces before and after the team name" do
-          ENV["FASTLANE_TEAM_NAME"] = "   SecondTeamProfiName   "
-          expect(subject.select_team).to eq("SecondTeam")
+          FastlaneSpec::Env.with_env_values(FASTLANE_TEAM_NAME: "   SecondTeamProfiName   ") do
+            expect(subject.select_team).to eq("SecondTeam")
+          end
         end
 
         it "Asks for the team if the name couldn't be found (pick first)" do
-          ENV["FASTLANE_TEAM_NAME"] = "NotExistent"
-          expect(Spaceship::Client::UserInterface).to receive(:interactive?).and_return(true)
-          allow($stdin).to receive(:gets).and_return("1")
-          expect(subject.select_team).to eq("SecondTeam")
+          FastlaneSpec::Env.with_env_values(FASTLANE_TEAM_NAME: "NotExistent") do
+            expect(Spaceship::Client::UserInterface).to receive(:interactive?).and_return(true)
+            allow($stdin).to receive(:gets).and_return("1")
+            expect(subject.select_team).to eq("SecondTeam")
+          end
         end
 
         it "Asks for the team if the name couldn't be found (pick last)" do
-          ENV["FASTLANE_TEAM_NAME"] = "NotExistent"
-          expect(Spaceship::Client::UserInterface).to receive(:interactive?).and_return(true)
-          allow($stdin).to receive(:gets).and_return("2")
-          expect(subject.select_team).to eq("XXXXXXXXXX")
+          FastlaneSpec::Env.with_env_values(FASTLANE_TEAM_NAME: "NotExistent") do
+            expect(Spaceship::Client::UserInterface).to receive(:interactive?).and_return(true)
+            allow($stdin).to receive(:gets).and_return("2")
+            expect(subject.select_team).to eq("XXXXXXXXXX")
+          end
         end
 
         it "Raises an Error if shell is non interactive" do
@@ -83,11 +90,6 @@ describe Spaceship::Client do
           expect do
             subject.select_team
           end.to raise_error("Multiple Teams found; unable to choose, terminal not interactive!")
-        end
-
-        after do
-          ENV.delete("FASTLANE_TEAM_ID")
-          ENV.delete("FASTLANE_TEAM_NAME")
         end
       end
     end

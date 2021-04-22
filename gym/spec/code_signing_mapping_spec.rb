@@ -1,4 +1,9 @@
 describe Gym::CodeSigningMapping do
+  before do
+    options = { workspace: "./gym/examples/cocoapods/Example.xcworkspace" }
+    Gym.config = FastlaneCore::Configuration.create(Gym::Options.available_options, options)
+  end
+
   describe "#app_identifier_contains?" do
     it "returns false if it doesn't contain it" do
       csm = Gym::CodeSigningMapping.new(project: nil)

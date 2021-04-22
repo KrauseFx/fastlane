@@ -72,14 +72,16 @@ describe Fastlane do
 
       it "works with a destination list" do
         result = Fastlane::FastFile.new.parse("lane :test do
-        xcodebuild(
-          destination: [
-            'name=iPhone 5s,OS=8.1',
-            'name=iPhone 4,OS=7.1',
-          ],
-          destination_timeout: 240
-        )
-      end").runner.execute(:test)
+          xcodebuild(
+            destination: [
+              'name=iPhone 5s,OS=8.1',
+              'name=iPhone 4,OS=7.1',
+            ],
+            destination_timeout: 240,
+            scheme: 'MyApp',
+            workspace: 'MyApp.xcworkspace'
+          )
+        end").runner.execute(:test)
 
         expect(result).to eq(
           "set -o pipefail && " \
@@ -95,15 +97,17 @@ describe Fastlane do
 
       it "works with build settings" do
         result = Fastlane::FastFile.new.parse("lane :test do
-        xcodebuild(
-          build_settings: {
-            'CODE_SIGN_IDENTITY' => 'iPhone Developer: Josh',
-            'JOBS' => 16,
-            'PROVISIONING_PROFILE' => 'JoshIsCoolProfile',
-            'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) NDEBUG=1'
-          }
-        )
-      end").runner.execute(:test)
+          xcodebuild(
+            build_settings: {
+              'CODE_SIGN_IDENTITY' => 'iPhone Developer: Josh',
+              'JOBS' => 16,
+              'PROVISIONING_PROFILE' => 'JoshIsCoolProfile',
+              'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) NDEBUG=1'
+            },
+            scheme: 'MyApp',
+            workspace: 'MyApp.xcworkspace'
+          )
+        end").runner.execute(:test)
 
         expect(result).to eq(
           "set -o pipefail && " \
@@ -123,60 +127,65 @@ describe Fastlane do
       end
 
       it "works with export_options_plist as hash" do
-        result = Fastlane::FastFile.new.parse("lane :test do
-        xcodebuild(
-          archive_path: './build-dir/MyApp.xcarchive',
-          export_archive: true,
-          export_options_plist: {
-            method: \"ad-hoc\",
-            thinning: \"<thin-for-all-variants>\",
-            teamID: \"1234567890\",
-            manifest: {
-              appURL: \"https://example.com/path/MyApp Name.ipa\",
-              displayImageURL: \"https://example.com/display image.png\",
-              fullSizeImageURL: \"https://example.com/fullSize image.png\",
-            },
-          }
-        )
-      end").runner.execute(:test)
+        FastlaneSpec::Env.with_env_values(XCODE_BUILD_PATH: "./build-dir") do
+          result = Fastlane::FastFile.new.parse("lane :test do
+            xcodebuild(
+              build_path: './build-dir/',
+              archive_path: './build-dir/MyApp.xcarchive',
+              export_archive: true,
+              export_options_plist: {
+                method: \"ad-hoc\",
+                thinning: \"<thin-for-all-variants>\",
+                teamID: \"1234567890\",
+                manifest: {
+                  appURL: \"https://example.com/path/MyApp Name.ipa\",
+                  displayImageURL: \"https://example.com/display image.png\",
+                  fullSizeImageURL: \"https://example.com/fullSize image.png\",
+                },
+              }
+            )
+          end").runner.execute(:test)
 
-        expect(result).to start_with(
-          "set -o pipefail && " \
-          + "xcodebuild " \
-          + "-archivePath \"./build-dir/MyApp.xcarchive\" " \
-          + "-exportArchive " \
-        )
-        expect(result).to match(/-exportOptionsPlist \".*\.plist\"/)
-        expect(result).to end_with(
-          "-exportPath \"./build-dir/MyApp\" " \
-          + "| tee '#{build_log_path}' | xcpretty --color --simple"
-        )
+          expect(result).to start_with(
+            "set -o pipefail && " \
+            + "xcodebuild " \
+            + "-archivePath \"./build-dir/MyApp.xcarchive\" " \
+            + "-exportArchive " \
+          )
+          expect(result).to match(/-exportOptionsPlist \".*\.plist\"/)
+          expect(result).to end_with(
+            "-exportPath \"./build-dir/MyApp\" " \
+            + "| tee '#{build_log_path}' | xcpretty --color --simple"
+          )
+        end
       end
 
       it "works with export_options_plist as hash which contains no manifest" do
-        result = Fastlane::FastFile.new.parse("lane :test do
-        xcodebuild(
-          archive_path: './build-dir/MyApp.xcarchive',
-          export_archive: true,
-          export_options_plist: {
-            method: \"ad-hoc\",
-            thinning: \"<thin-for-all-variants>\",
-            teamID: \"1234567890\",
-          }
-        )
-      end").runner.execute(:test)
+        FastlaneSpec::Env.with_env_values(XCODE_BUILD_PATH: "./build-dir") do
+          result = Fastlane::FastFile.new.parse("lane :test do
+            xcodebuild(
+              archive_path: './build-dir/MyApp.xcarchive',
+              export_archive: true,
+              export_options_plist: {
+                method: \"ad-hoc\",
+                thinning: \"<thin-for-all-variants>\",
+                teamID: \"1234567890\",
+              }
+            )
+          end").runner.execute(:test)
 
-        expect(result).to start_with(
-          "set -o pipefail && " \
-          + "xcodebuild " \
-          + "-archivePath \"./build-dir/MyApp.xcarchive\" " \
-          + "-exportArchive " \
-        )
-        expect(result).to match(/-exportOptionsPlist \".*\.plist\"/)
-        expect(result).to end_with(
-          "-exportPath \"./build-dir/MyApp\" " \
-          + "| tee '#{build_log_path}' | xcpretty --color --simple"
-        )
+          expect(result).to start_with(
+            "set -o pipefail && " \
+            + "xcodebuild " \
+            + "-archivePath \"./build-dir/MyApp.xcarchive\" " \
+            + "-exportArchive " \
+          )
+          expect(result).to match(/-exportOptionsPlist \".*\.plist\"/)
+          expect(result).to end_with(
+            "-exportPath \"./build-dir/MyApp\" " \
+            + "| tee '#{build_log_path}' | xcpretty --color --simple"
+          )
+        end
       end
 
       it "when archiving, should cache the archive path for a later export step" do
@@ -242,55 +251,54 @@ describe Fastlane do
         expect(Fastlane::Actions.lane_context[:IPA_OUTPUT_PATH]).to eq("./build-dir/MyApp.app")
       end
 
-      context "when using environment variables"
-      before :each do
-        ENV["XCODE_BUILD_PATH"] = "./build-dir/"
-        ENV["XCODE_SCHEME"] = "MyApp"
-        ENV["XCODE_WORKSPACE"] = "MyApp.xcworkspace"
-      end
+      context "when using environment variables" do
+        it "can archive" do
+          FastlaneSpec::Env.with_env_values(
+            XCODE_BUILD_PATH: './build-dir/',
+            XCODE_SCHEME: 'MyApp',
+            XCODE_WORKSPACE: 'MyApp.xcworkspace'
+          ) do
+            result = Fastlane::FastFile.new.parse("lane :test do
+              xcodebuild(
+                archive: true
+              )
+            end").runner.execute(:test)
 
-      after :each do
-        ENV.delete("XCODE_BUILD_PATH")
-        ENV.delete("XCODE_SCHEME")
-        ENV.delete("XCODE_WORKSPACE")
-      end
+            expect(result).to eq(
+              "set -o pipefail && " \
+              + "xcodebuild " \
+              + "archive " \
+              + "-scheme \"MyApp\" " \
+              + "-workspace \"MyApp.xcworkspace\" " \
+              + "-archivePath \"./build-dir/MyApp.xcarchive\" " \
+              + "| tee '#{build_log_path}' | xcpretty --color --simple"
+            )
+          end
+        end
 
-      it "can archive" do
-        result = Fastlane::FastFile.new.parse("lane :test do
-          xcodebuild(
-            archive: true
-          )
-        end").runner.execute(:test)
+        it "can export" do
+          FastlaneSpec::Env.with_env_values(
+            XCODE_BUILD_PATH: './build-dir/',
+            XCODE_SCHEME: nil,
+            XCODE_WORKSPACE: nil
+          ) do
+            result = Fastlane::FastFile.new.parse("lane :test do
+              xcodebuild(
+                archive_path: './build-dir/MyApp.xcarchive',
+                export_archive: true
+              )
+            end").runner.execute(:test)
 
-        expect(result).to eq(
-          "set -o pipefail && " \
-          + "xcodebuild " \
-          + "archive " \
-          + "-scheme \"MyApp\" " \
-          + "-workspace \"MyApp.xcworkspace\" " \
-          + "-archivePath \"./build-dir/MyApp.xcarchive\" " \
-          + "| tee '#{build_log_path}' | xcpretty --color --simple"
-        )
-      end
-
-      it "can export" do
-        ENV.delete("XCODE_SCHEME")
-        ENV.delete("XCODE_WORKSPACE")
-        result = Fastlane::FastFile.new.parse("lane :test do
-          xcodebuild(
-            archive_path: './build-dir/MyApp.xcarchive',
-            export_archive: true
-          )
-        end").runner.execute(:test)
-
-        expect(result).to eq(
-          "set -o pipefail && " \
-          + "xcodebuild " \
-          + "-archivePath \"./build-dir/MyApp.xcarchive\" " \
-          + "-exportArchive " \
-          + "-exportPath \"./build-dir/MyApp\" " \
-          + "| tee '#{build_log_path}' | xcpretty --color --simple"
-        )
+            expect(result).to eq(
+              "set -o pipefail && " \
+              + "xcodebuild " \
+              + "-archivePath \"./build-dir/MyApp.xcarchive\" " \
+              + "-exportArchive " \
+              + "-exportPath \"./build-dir/MyApp\" " \
+              + "| tee '#{build_log_path}' | xcpretty --color --simple"
+            )
+          end
+        end
       end
     end
 
@@ -640,34 +648,32 @@ describe Fastlane do
       end
 
       it "should save reports to BUILD_PATH + \"/report\" by default" do
-        ENV["XCODE_BUILD_PATH"] = "./build"
+        FastlaneSpec::Env.with_env_values(XCODE_BUILD_PATH: "./build") do
+          result = Fastlane::FastFile.new.parse("lane :test do
+            xctest(
+              destination: 'name=iPhone 5s,OS=8.1',
+              scheme: 'MyApp',
+              workspace: 'MyApp.xcworkspace',
+              report_formats: ['html'],
+              report_screenshots: true
+            )
+          end").runner.execute(:test)
 
-        result = Fastlane::FastFile.new.parse("lane :test do
-          xctest(
-            destination: 'name=iPhone 5s,OS=8.1',
-            scheme: 'MyApp',
-            workspace: 'MyApp.xcworkspace',
-            report_formats: ['html'],
-            report_screenshots: true
+          expect(result).to eq(
+            "set -o pipefail && " \
+            + "xcodebuild " \
+            + "-destination \"name=iPhone 5s,OS=8.1\" " \
+            + "-scheme \"MyApp\" " \
+            + "-workspace \"MyApp.xcworkspace\" " \
+            + "build " \
+            + "test " \
+            + "| tee '#{build_log_path}' | xcpretty --color " \
+            + "--report html " \
+            + "--screenshots " \
+            + "--output \"./build/report\" " \
+            + "--test"
           )
-        end").runner.execute(:test)
-
-        expect(result).to eq(
-          "set -o pipefail && " \
-          + "xcodebuild " \
-          + "-destination \"name=iPhone 5s,OS=8.1\" " \
-          + "-scheme \"MyApp\" " \
-          + "-workspace \"MyApp.xcworkspace\" " \
-          + "build " \
-          + "test " \
-          + "| tee '#{build_log_path}' | xcpretty --color " \
-          + "--report html " \
-          + "--screenshots " \
-          + "--output \"./build/report\" " \
-          + "--test"
-        )
-
-        ENV.delete("XCODE_BUILD_PATH")
+        end
       end
 
       it "should support multiple output formats" do
@@ -733,37 +739,37 @@ describe Fastlane do
       end
 
       it "should support omitting output when specifying multiple reports " do
-        ENV["XCODE_BUILD_PATH"] = "./build"
+        FastlaneSpec::Env.with_env_values(XCODE_BUILD_PATH: "./build") do
+          result = Fastlane::FastFile.new.parse("lane :test do
+            xctest(
+              destination: 'name=iPhone 5s,OS=8.1',
+              scheme: 'MyApp',
+              workspace: 'MyApp.xcworkspace',
+              reports: [{
+                report: 'html',
+              },
+              {
+                report: 'junit',
+              }],
+            )
+          end").runner.execute(:test)
 
-        result = Fastlane::FastFile.new.parse("lane :test do
-          xctest(
-            destination: 'name=iPhone 5s,OS=8.1',
-            scheme: 'MyApp',
-            workspace: 'MyApp.xcworkspace',
-            reports: [{
-              report: 'html',
-            },
-            {
-              report: 'junit',
-            }],
+          expect(result).to eq(
+            "set -o pipefail && " \
+            + "xcodebuild " \
+            + "-destination \"name=iPhone 5s,OS=8.1\" " \
+            + "-scheme \"MyApp\" " \
+            + "-workspace \"MyApp.xcworkspace\" " \
+            + "build " \
+            + "test " \
+            + "| tee '#{build_log_path}' | xcpretty --color " \
+            + "--report html " \
+            + "--output \"./build/report/report.html\" " \
+            + "--report junit " \
+            + "--output \"./build/report/report.xml\" " \
+            + "--test"
           )
-        end").runner.execute(:test)
-
-        expect(result).to eq(
-          "set -o pipefail && " \
-          + "xcodebuild " \
-          + "-destination \"name=iPhone 5s,OS=8.1\" " \
-          + "-scheme \"MyApp\" " \
-          + "-workspace \"MyApp.xcworkspace\" " \
-          + "build " \
-          + "test " \
-          + "| tee '#{build_log_path}' | xcpretty --color " \
-          + "--report html " \
-          + "--output \"./build/report/report.html\" " \
-          + "--report junit " \
-          + "--output \"./build/report/report.xml\" " \
-          + "--test"
-        )
+        end
       end
 
       it "should detect and use the workspace, when a workspace is present" do

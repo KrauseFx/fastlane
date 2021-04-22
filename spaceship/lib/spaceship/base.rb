@@ -77,6 +77,16 @@ module Spaceship
     end
 
     class << self
+      # @return (Array<Class>) The list of subclasses of this including nested subclasses
+      attr_reader :subclasses
+
+      # This is to list all the subclasses and it helps unit tests to clean up the cache of `client` in each class
+      def inherited(subclass)
+        super
+        @subclasses ||= []
+        @subclasses << subclass
+      end
+
       attr_accessor :client
 
       ##

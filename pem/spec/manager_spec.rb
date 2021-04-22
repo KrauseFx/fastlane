@@ -1,10 +1,16 @@
 describe PEM do
   describe PEM::Manager do
     before do
-      ENV["DELIVER_USER"] = "test@fastlane.tools"
-      ENV["DELIVER_PASSWORD"] = "123"
-
       pem_stub_spaceship
+    end
+
+    around do |example|
+      FastlaneSpec::Env.with_env_values(
+        DELIVER_USER: 'test@fastlane.tools',
+        DELIVER_PASSWORD: '123'
+      ) do
+        example.run
+      end
     end
 
     before :all do

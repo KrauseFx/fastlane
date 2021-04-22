@@ -1,6 +1,16 @@
 require 'fastlane/cli_tools_distributor'
 
 describe Fastlane::CLIToolsDistributor do
+  after do
+    # Commander owns singleton instance which causes unexpected results in unit testing
+    # Reset the singleton on each example runs.
+    Commander::Runner.remove_instance_variable(:@singleton) if Commander::Runner.instance_variable_defined?(:@singleton)
+  end
+
+  around do |example|
+    FastlaneSpec::Env.with_env_values(FASTLANE_DISABLE_ANIMATION: 'true') { example.run }
+  end
+
   describe "command handling" do
     it "runs the lane instead of the tool when there is a conflict" do
       FastlaneSpec::Env.with_ARGV(["sigh"]) do

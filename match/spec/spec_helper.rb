@@ -4,7 +4,11 @@ RSpec::Matchers.define(:a_configuration_matching) do |expected|
   end
 end
 
-def before_each_match
-  ENV["DELIVER_USER"] = "flapple@krausefx.com"
-  ENV["DELIVER_PASSWORD"] = "so_secret"
+def around_each_match(example)
+  FastlaneSpec::Env.with_env_values(
+    DELIVER_USER: 'flapple@krausefx.com',
+    DELIVER_PASSWORD: 'so_secret'
+  ) do
+    example.run
+  end
 end

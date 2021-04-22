@@ -1,5 +1,5 @@
 describe Spaceship::ConnectAPI::BuildDelivery do
-  before { Spaceship::Tunes.login }
+  before { Spaceship::ConnectAPI.login }
 
   describe '#Spaceship::ConnectAPI' do
     it '#get_build_deliveries' do

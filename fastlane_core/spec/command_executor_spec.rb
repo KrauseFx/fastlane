@@ -1,3 +1,5 @@
+require 'pty'
+
 describe FastlaneCore do
   describe FastlaneCore::CommandExecutor do
     describe "execute" do

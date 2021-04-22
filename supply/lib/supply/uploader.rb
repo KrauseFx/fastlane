@@ -86,7 +86,7 @@ module Supply
           UI.user_error!("Could not find release for version code '#{version_code}' to update changelog") unless release
 
           release_notes = []
-          all_languages.each do |language|
+          self.class.all_languages(metadata_path).each do |language|
             next if language.start_with?('.') # e.g. . or .. or hidden folders
             UI.message("Preparing to upload for language '#{language}'...")
 
@@ -326,6 +326,14 @@ module Supply
       return aab_version_codes
     end
 
+    # returns only language directories from metadata_path
+    def self.all_languages(metadata_path)
+      Dir.entries(metadata_path)
+         .select { |f| File.directory?(File.join(metadata_path, f)) }
+         .reject { |f| f.start_with?('.') }
+         .sort { |x, y| x <=> y }
+    end
+
     private
 
     ##
@@ -411,14 +419,6 @@ module Supply
       end
 
       client.update_track(Supply.config[:track], track)
-    end
-
-    # returns only language directories from metadata_path
-    def all_languages
-      Dir.entries(metadata_path)
-         .select { |f| File.directory?(File.join(metadata_path, f)) }
-         .reject { |f| f.start_with?('.') }
-         .sort { |x, y| x <=> y }
     end
 
     def client

@@ -1,5 +1,5 @@
 describe Spaceship::ConnectAPI::Device do
-  before { Spaceship::Portal.login }
+  before { Spaceship::ConnectAPI.login }
 
   describe '#client' do
     it '#get_devices' do

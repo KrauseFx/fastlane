@@ -1,4 +1,6 @@
 describe Spaceship::Portal::ProvisioningProfileTemplate do
+  before { Spaceship.login }
+
   it "should factor a new provisioning profile template" do
     attrs = {
       "description" => "Template description",

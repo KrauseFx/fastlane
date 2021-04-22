@@ -2,6 +2,7 @@ module Fastlane
   # Alert the user when updates for plugins are available
   class PluginUpdateManager
     def self.start_looking_for_updates
+      return if Helper.test?
       return if FastlaneCore::Env.truthy?("FASTLANE_SKIP_UPDATE_CHECK")
 
       Thread.new do

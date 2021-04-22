@@ -10,27 +10,25 @@ describe CredentialsManager do
     end
 
     it "loads the user from the new 'FASTLANE_USER' variable" do
-      ENV['FASTLANE_USER'] = user
-      c = CredentialsManager::AccountManager.new
-      expect(c.user).to eq(user)
-      ENV.delete('FASTLANE_USER')
+      FastlaneSpec::Env.with_env_values(FASTLANE_USER: user) do
+        c = CredentialsManager::AccountManager.new
+        expect(c.user).to eq(user)
+      end
     end
 
     it "loads the password from the new 'FASTLANE_PASSWORD' variable" do
-      ENV['FASTLANE_PASSWORD'] = password
-      c = CredentialsManager::AccountManager.new
-      expect(c.password).to eq(password)
-      ENV.delete('FASTLANE_PASSWORD')
+      FastlaneSpec::Env.with_env_values(FASTLANE_PASSWORD: password) do
+        c = CredentialsManager::AccountManager.new
+        expect(c.password).to eq(password)
+      end
     end
 
     it "still supports the legacy `DELIVER_USER` `DELIVER_PASSWORD` format" do
-      ENV['DELIVER_USER'] = user
-      ENV['DELIVER_PASSWORD'] = password
-      c = CredentialsManager::AccountManager.new
-      expect(c.user).to eq(user)
-      expect(c.password).to eq(password)
-      ENV.delete('DELIVER_USER')
-      ENV.delete('DELIVER_PASSWORD')
+      FastlaneSpec::Env.with_env_values(DELIVER_USER: user, DELIVER_PASSWORD: password) do
+        c = CredentialsManager::AccountManager.new
+        expect(c.user).to eq(user)
+        expect(c.password).to eq(password)
+      end
     end
 
     it "fetches the Apple ID from the Appfile if available" do
@@ -41,29 +39,27 @@ describe CredentialsManager do
     end
 
     it "automatically loads the password from the keychain" do
-      ENV['FASTLANE_USER'] = user
-      c = CredentialsManager::AccountManager.new
+      FastlaneSpec::Env.with_env_values(FASTLANE_USER: user) do
+        c = CredentialsManager::AccountManager.new
 
-      dummy = Object.new
-      expect(dummy).to receive(:password).and_return("Yeah! Pass!")
+        dummy = Object.new
+        expect(dummy).to receive(:password).and_return("Yeah! Pass!")
 
-      expect(Security::InternetPassword).to receive(:find).with(server: "deliver.felix@krausefx.com").and_return(dummy)
-      expect(c.password).to eq("Yeah! Pass!")
-      ENV.delete('FASTLANE_USER')
+        expect(Security::InternetPassword).to receive(:find).with(server: "deliver.felix@krausefx.com").and_return(dummy)
+        expect(c.password).to eq("Yeah! Pass!")
+      end
     end
 
     it "loads the password from the keychain if empty password is stored by env" do
-      ENV['FASTLANE_USER'] = user
-      ENV['FASTLANE_PASSWORD'] = ''
-      c = CredentialsManager::AccountManager.new
+      FastlaneSpec::Env.with_env_values(FASTLANE_USER: user, FASTLANE_PASSWORD: '') do
+        c = CredentialsManager::AccountManager.new
 
-      dummy = Object.new
-      expect(dummy).to receive(:password).and_return("Yeah! Pass!")
+        dummy = Object.new
+        expect(dummy).to receive(:password).and_return("Yeah! Pass!")
 
-      expect(Security::InternetPassword).to receive(:find).with(server: "deliver.felix@krausefx.com").and_return(dummy)
-      expect(c.password).to eq("Yeah! Pass!")
-      ENV.delete('FASTLANE_USER')
-      ENV.delete('FASTLANE_PASSWORD')
+        expect(Security::InternetPassword).to receive(:find).with(server: "deliver.felix@krausefx.com").and_return(dummy)
+        expect(c.password).to eq("Yeah! Pass!")
+      end
     end
 
     it "removes the Keychain item if the user agrees when the credentials are invalid" do
@@ -84,10 +80,5 @@ describe CredentialsManager do
       c = CredentialsManager::AccountManager.new(user: user, prefix: prefix)
       expect(c.server_name).to eq("#{prefix}.#{user}")
     end
-  end
-
-  after(:each) do
-    ENV.delete("FASTLANE_USER")
-    ENV.delete("DELIVER_USER")
   end
 end

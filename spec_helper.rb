@@ -68,6 +68,23 @@ RSpec.configure do |config|
     end
   end
 
+  config.around(:each) do |current_test|
+    # execute `around_each_*` method from spec_helper for each tool
+    tool_name = current_test.id.match(%r{\.\/(\w+)\/})[1]
+    method_name = "around_each_#{tool_name}".to_sym
+
+    around_hook_defined = true
+    begin
+      my_main.send(method_name, current_test)
+    rescue NoMethodError
+      around_hook_defined = false
+    ensure
+      # Run current_test here if it's not run by the around hook
+      # If this is called in rescue clause, the backtrace messes up
+      current_test.run unless around_hook_defined
+    end
+  end
+
   config.example_status_persistence_file_path = "#{Dir.tmpdir}/rspec_failed_tests.txt"
 
   # skip some tests if not running on mac

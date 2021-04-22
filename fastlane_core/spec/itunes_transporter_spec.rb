@@ -228,25 +228,21 @@ describe FastlaneCore do
           end
 
           describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set" do
-            before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV,Signiant" }
-
             it 'generates a call to java directly' do
-              transporter = FastlaneCore::ItunesTransporter.new(email, password)
-              expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command(transporter: "-t DAV,Signiant"))
+              FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: '-t DAV,Signiant') do
+                transporter = FastlaneCore::ItunesTransporter.new(email, password)
+                expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command(transporter: "-t DAV,Signiant"))
+              end
             end
-
-            after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
           end
 
           describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set to empty string" do
-            before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = " " }
-
             it 'generates a call to java directly' do
-              transporter = FastlaneCore::ItunesTransporter.new(email, password)
-              expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command)
+              FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: ' ') do
+                transporter = FastlaneCore::ItunesTransporter.new(email, password)
+                expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command)
+              end
             end
-
-            after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
           end
 
           describe "download command generation" do
@@ -273,25 +269,21 @@ describe FastlaneCore do
           end
 
           describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set" do
-            before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV,Signiant" }
-
             it 'generates a call to java directly' do
-              transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
-              expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command(transporter: "-t DAV,Signiant", jwt: jwt))
+              FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: '-t DAV,Signiant') do
+                transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
+                expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command(transporter: "-t DAV,Signiant", jwt: jwt))
+              end
             end
-
-            after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
           end
 
           describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set to empty string" do
-            before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = " " }
-
             it 'generates a call to java directly' do
-              transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
-              expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command(jwt: jwt))
+              FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: ' ') do
+                transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
+                expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command(jwt: jwt))
+              end
             end
-
-            after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
           end
 
           describe "download command generation" do
@@ -485,25 +477,21 @@ describe FastlaneCore do
         end
 
         describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set" do
-          before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV,Signiant" }
-
           it 'generates a call to java directly' do
-            transporter = FastlaneCore::ItunesTransporter.new(email, password)
-            expect(transporter.upload('my.app.id', '/tmp')).to eq(shell_upload_command(transporter: "-t DAV,Signiant"))
+            FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: '-t DAV,Signiant') do
+              transporter = FastlaneCore::ItunesTransporter.new(email, password)
+              expect(transporter.upload('my.app.id', '/tmp')).to eq(shell_upload_command(transporter: "-t DAV,Signiant"))
+            end
           end
-
-          after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
         end
 
         describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set to empty string" do
-          before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = " " }
-
           it 'generates a call to java directly' do
-            transporter = FastlaneCore::ItunesTransporter.new(email, password)
-            expect(transporter.upload('my.app.id', '/tmp')).to eq(shell_upload_command)
+            FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: ' ') do
+              transporter = FastlaneCore::ItunesTransporter.new(email, password)
+              expect(transporter.upload('my.app.id', '/tmp')).to eq(shell_upload_command)
+            end
           end
-
-          after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
         end
 
         describe "download command generation" do
@@ -530,25 +518,21 @@ describe FastlaneCore do
         end
 
         describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set" do
-          before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV,Signiant" }
-
           it 'generates a call to java directly' do
-            transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
-            expect(transporter.upload('my.app.id', '/tmp')).to eq(shell_upload_command(transporter: "-t DAV,Signiant", jwt: jwt))
+            FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: '-t DAV,Signiant') do
+              transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
+              expect(transporter.upload('my.app.id', '/tmp')).to eq(shell_upload_command(transporter: "-t DAV,Signiant", jwt: jwt))
+            end
           end
-
-          after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
         end
 
         describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set to empty string" do
-          before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = " " }
-
           it 'generates a call to java directly' do
-            transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
-            expect(transporter.upload('my.app.id', '/tmp')).to eq(shell_upload_command(jwt: jwt))
+            FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: ' ') do
+              transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
+              expect(transporter.upload('my.app.id', '/tmp')).to eq(shell_upload_command(jwt: jwt))
+            end
           end
-
-          after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
         end
 
         describe "download command generation" do
@@ -584,25 +568,21 @@ describe FastlaneCore do
         end
 
         describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set" do
-          before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV,Signiant" }
-
           it 'generates a call to java directly' do
-            transporter = FastlaneCore::ItunesTransporter.new(email, password)
-            expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command_9(transporter: "-t DAV,Signiant"))
+            FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: '-t DAV,Signiant') do
+              transporter = FastlaneCore::ItunesTransporter.new(email, password)
+              expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command_9(transporter: "-t DAV,Signiant"))
+            end
           end
-
-          after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
         end
 
         describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set with empty string" do
-          before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = " " }
-
           it 'generates a call to java directly' do
-            transporter = FastlaneCore::ItunesTransporter.new(email, password)
-            expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command_9)
+            FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: ' ') do
+              transporter = FastlaneCore::ItunesTransporter.new(email, password)
+              expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command_9)
+            end
           end
-
-          after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
         end
 
         describe "download command generation" do
@@ -622,25 +602,21 @@ describe FastlaneCore do
         end
 
         describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set" do
-          before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV,Signiant" }
-
           it 'generates a call to java directly' do
-            transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
-            expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command_9(transporter: "-t DAV,Signiant", jwt: jwt))
+            FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: '-t DAV,Signiant') do
+              transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
+              expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command_9(transporter: "-t DAV,Signiant", jwt: jwt))
+            end
           end
-
-          after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
         end
 
         describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set with empty string" do
-          before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = " " }
-
           it 'generates a call to java directly' do
-            transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
-            expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command_9(jwt: jwt))
+            FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: ' ') do
+              transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
+              expect(transporter.upload('my.app.id', '/tmp')).to eq(java_upload_command_9(jwt: jwt))
+            end
           end
-
-          after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
         end
 
         describe "download command generation" do
@@ -674,25 +650,21 @@ describe FastlaneCore do
           end
 
           describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set" do
-            before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV,Signiant" }
-
             it 'generates a call to java directly' do
-              transporter = FastlaneCore::ItunesTransporter.new(email, password)
-              expect(transporter.upload('my.app.id', '/tmp')).to eq(xcrun_upload_command(transporter: "-t DAV,Signiant"))
+              FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: '-t DAV,Signiant') do
+                transporter = FastlaneCore::ItunesTransporter.new(email, password)
+                expect(transporter.upload('my.app.id', '/tmp')).to eq(xcrun_upload_command(transporter: "-t DAV,Signiant"))
+              end
             end
-
-            after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
           end
 
           describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set with empty string" do
-            before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = " " }
-
             it 'generates a call to java directly' do
-              transporter = FastlaneCore::ItunesTransporter.new(email, password)
-              expect(transporter.upload('my.app.id', '/tmp')).to eq(xcrun_upload_command)
+              FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: ' ') do
+                transporter = FastlaneCore::ItunesTransporter.new(email, password)
+                expect(transporter.upload('my.app.id', '/tmp')).to eq(xcrun_upload_command)
+              end
             end
-
-            after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
           end
 
           describe "download command generation" do
@@ -738,25 +710,21 @@ describe FastlaneCore do
         end
 
         describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set" do
-          before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV,Signiant" }
-
           it 'generates a call to java directly' do
-            transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
-            expect(transporter.upload('my.app.id', '/tmp')).to eq(xcrun_upload_command(transporter: "-t DAV,Signiant", jwt: jwt))
+            FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: '-t DAV,Signiant') do
+              transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
+              expect(transporter.upload('my.app.id', '/tmp')).to eq(xcrun_upload_command(transporter: "-t DAV,Signiant", jwt: jwt))
+            end
           end
-
-          after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
         end
 
         describe "upload command generation with DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS set with empty string" do
-          before(:each) { ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = " " }
-
           it 'generates a call to java directly' do
-            transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
-            expect(transporter.upload('my.app.id', '/tmp')).to eq(xcrun_upload_command(jwt: jwt))
+            FastlaneSpec::Env.with_env_values(DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS: ' ') do
+              transporter = FastlaneCore::ItunesTransporter.new(nil, nil, false, nil, jwt)
+              expect(transporter.upload('my.app.id', '/tmp')).to eq(xcrun_upload_command(jwt: jwt))
+            end
           end
-
-          after(:each) { ENV.delete("DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS") }
         end
 
         describe "download command generation" do
@@ -769,9 +737,11 @@ describe FastlaneCore do
     end
 
     describe "with `FASTLANE_ITUNES_TRANSPORTER_USE_SHELL_SCRIPT` set" do
-      before(:each) do
-        ENV["FASTLANE_ITUNES_TRANSPORTER_USE_SHELL_SCRIPT"] = "1"
-        allow(File).to receive(:exist?).with("C:/Program Files (x86)/itms").and_return(true) if FastlaneCore::Helper.windows?
+      around do |example|
+        FastlaneSpec::Env.with_env_values(FASTLANE_ITUNES_TRANSPORTER_USE_SHELL_SCRIPT: '1') do
+          allow(File).to receive(:exist?).with("C:/Program Files (x86)/itms").and_return(true) if FastlaneCore::Helper.windows?
+          example.run
+        end
       end
 
       describe "upload command generation" do
@@ -787,14 +757,11 @@ describe FastlaneCore do
           expect(transporter.download('my.app.id', '/tmp')).to eq(shell_download_command)
         end
       end
-
-      after(:each) { ENV.delete("FASTLANE_ITUNES_TRANSPORTER_USE_SHELL_SCRIPT") }
     end
 
     describe "with no special configuration" do
       before(:each) do
         allow(File).to receive(:exist?).and_return(true) unless FastlaneCore::Helper.mac?
-        ENV.delete("FASTLANE_ITUNES_TRANSPORTER_USE_SHELL_SCRIPT")
       end
 
       describe "upload command generation" do

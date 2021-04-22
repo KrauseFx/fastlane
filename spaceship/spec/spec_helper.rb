@@ -30,11 +30,6 @@ end
 
 def before_each_spaceship
   @cache_paths.each { |path| try_delete(path) }
-  ENV["DELIVER_USER"] = "spaceship@krausefx.com"
-  ENV["DELIVER_PASSWORD"] = "so_secret"
-  ENV['SPACESHIP_AVOID_XCODE_API'] = 'true'
-
-  ENV.delete("FASTLANE_USER")
 
   TunesStubbing.itc_stub_login
   PortalStubbing.adp_stub_login
@@ -95,8 +90,32 @@ def before_each_spaceship
   ConnectAPIStubbing::Users.stub_users
 end
 
+def clear_client_instance_cache_recurisvely(klass)
+  klass.subclasses.compact.each do |subclass|
+    subclass.client = nil
+    clear_client_instance_cache_recurisvely(subclass) if subclass.subclasses
+  end
+end
+
 def after_each_spaceship
+  # Clear client caches that may cause dependencies among unit test cases each other
+  Spaceship::ConnectAPI.client = nil
+  Spaceship::Tunes.client = nil
+  Spaceship::Portal.client = nil
+  clear_client_instance_cache_recurisvely(Spaceship::Base)
+
   @cache_paths.each { |path| try_delete(path) }
+end
+
+def around_each_spaceship(current_test)
+  FastlaneSpec::Env.with_env_values(
+    DELIVER_USER: 'spaceship@krausefx.com',
+    DELIVER_PASSWORD: 'so_secret',
+    SPACESHIP_AVOID_XCODE_API: 'true',
+    FASTLANE_USER: nil
+  ) do
+    current_test.run
+  end
 end
 
 RSpec.configure do |config|

@@ -2,6 +2,14 @@ require 'fileutils'
 
 describe Supply do
   describe Supply::Uploader do
+    before do
+      Supply.config = {}
+    end
+
+    after do
+      Supply.config = {}
+    end
+
     describe "#verify_config!" do
       let(:subject) { Supply::Uploader.new }
 
@@ -80,9 +88,6 @@ describe Supply do
       before(:all) do
         @obb_dir = Dir.mktmpdir('supply')
         @apk_path = File.join(@obb_dir, 'my.apk')
-
-        # Makes Supply::Uploader.new.all_languages public for testing reasons
-        Supply::Uploader.send(:public, *Supply::Uploader.private_instance_methods)
       end
 
       def create_obb(name)
@@ -152,18 +157,15 @@ describe Supply do
       end
     end
 
-    describe 'all_languages' do
+    describe '.all_languages' do
       it 'only grabs directories' do
-        Supply.config = {
-          metadata_path: 'supply/spec/fixtures/metadata/android'
-        }
-
-        only_directories = Supply::Uploader.new.all_languages
+        metadata_path = 'supply/spec/fixtures/metadata/android'
+        only_directories = Supply::Uploader.all_languages(metadata_path)
         expect(only_directories).to eq(['en-US', 'fr-FR', 'ja-JP'])
       end
     end
 
-    describe 'promote_track' do
+    describe '#promote_track' do
       subject { Supply::Uploader.new.promote_track }
 
       let(:client) { double('client') }

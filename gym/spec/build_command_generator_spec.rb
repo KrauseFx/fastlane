@@ -203,8 +203,10 @@ describe Gym do
         options = { project: "./gym/examples/standard/Example.xcodeproj", derived_data_path: "/tmp/my/derived_data", scheme: 'Example' }
         config = FastlaneCore::Configuration.create(Gym::Options.available_options, options)
         @project = FastlaneCore::Project.new(config)
+        Gym.config = config
         allow(Gym).to receive(:project).and_return(@project)
       end
+
       it "uses the correct build command with the example project", requires_xcodebuild: true do
         log_path = File.expand_path("#{FastlaneCore::Helper.buildlog_path}/gym/ExampleProductName-Example.log")
 

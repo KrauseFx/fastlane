@@ -2,6 +2,14 @@ require 'frameit/config_parser'
 
 describe Frameit do
   describe Frameit::Editor do
+    before do
+      Frameit.config = {}
+    end
+
+    after do
+      Frameit.config = nil
+    end
+
     describe "frame!" do
       before do
         allow_any_instance_of(MiniMagick::Tool::Mogrify).to receive(:call) { '' }
@@ -17,8 +25,6 @@ describe Frameit do
           "offset" => "+60+225",
           "width" => 752
         })
-
-        Frameit.config = {}
       end
 
       it "properly frame screenshots with captions that include apostrophes" do

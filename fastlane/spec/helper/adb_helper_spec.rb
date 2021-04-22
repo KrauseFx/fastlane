@@ -1,4 +1,8 @@
 describe Fastlane::Helper::AdbHelper do
+  around do |example|
+    FastlaneSpec::Env.with_env_values(ANDROID_SDK_ROOT: '/usr/local/android-sdk') { example.run }
+  end
+
   describe "#load_all_devices" do
     context 'adb host' do
       it 'no host specified' do

@@ -1,3 +1,5 @@
+require 'terminal-notifier'
+
 describe Fastlane do
   describe Fastlane::FastFile do
     describe "notification action" do

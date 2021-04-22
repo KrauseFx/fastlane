@@ -1,5 +1,5 @@
 describe Spaceship::ConnectAPI::BetaBuildMetric do
-  before { Spaceship::Tunes.login }
+  before { Spaceship::ConnectAPI.login }
 
   describe '#Spaceship::ConnectAPI' do
     it '#get_beta_build_metrics' do

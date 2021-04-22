@@ -1,6 +1,9 @@
 describe Spaceship::Portal do
   describe "InsufficientPermissions" do
-    before { Spaceship::Portal.login }
+    let(:username) { 'spaceship@krausefx.com' }
+    let(:password) { 'so_secret' }
+    before { Spaceship::Portal.login(username, password) }
+
     let(:certificate) { Spaceship::Certificate.all.first }
 
     it "raises an appropriate Developer Portal error when user doesn't have enough permission to do something" do

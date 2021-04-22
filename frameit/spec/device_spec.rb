@@ -10,8 +10,11 @@ describe Frameit::Device do
       screen_size_from(path)
     end
 
-    Frameit.config = instance_double("FastlaneCore::Configuration")
-    allow(Frameit.config).to receive(:[]).with(anything).and_return(false)
+    allow(Frameit).to receive_message_chain(:config, :[]).with(anything).and_return(false)
+  end
+
+  after do
+    Frameit.config = nil
   end
 
   Devices = Frameit::Devices

@@ -2,14 +2,15 @@ describe Match do
   describe Match::Runner do
     let(:keychain) { 'login.keychain' }
 
-    before do
-      allow(ENV).to receive(:[]).and_call_original
-      allow(ENV).to receive(:[]).with('MATCH_KEYCHAIN_NAME').and_return(keychain)
-      allow(ENV).to receive(:[]).with('MATCH_KEYCHAIN_PASSWORD').and_return(nil)
-
-      # There is another test
-      ENV.delete('FASTLANE_TEAM_ID')
-      ENV.delete('FASTLANE_TEAM_NAME')
+    around do |example|
+      FastlaneSpec::Env.with_env_values(
+        MATCH_KEYCHAIN_NAME: keychain,
+        MATCH_KEYCHAIN_PASSWORD: nil,
+        MATCH_PASSWORD: 'password',
+        # Remove values ad-hoc until other test cases refactored
+        FASTLANE_TEAM_ID: nil,
+        FASTLANE_TEAM_NAME: nil
+      ) { example.run }
     end
 
     ["10", "11"].each do |xcode_version|
