@@ -88,8 +88,7 @@ module Scan
     end
 
     def suffix
-      suffix = []
-      suffix
+      []
     end
 
     def pipe

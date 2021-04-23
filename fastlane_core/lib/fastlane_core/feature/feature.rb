@@ -42,6 +42,7 @@ module FastlaneCore
     @features = {}
 
     attr_reader :env_var, :description
+
     def initialize(env_var: nil, description: nil)
       raise "Invalid Feature" if env_var.nil? || description.nil?
       @env_var = env_var

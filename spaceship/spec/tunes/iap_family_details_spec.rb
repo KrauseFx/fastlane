@@ -9,7 +9,7 @@ describe Spaceship::Tunes::IAPFamilyList do
       element = app.in_app_purchases.families.all.first.edit
       expect(element.class).to eq(Spaceship::Tunes::IAPFamilyDetails)
       expect(element.name).to eq("Family Name")
-      expect(element.versions["de-DE".to_sym][:name]).to eq("dasdsads")
+      expect(element.versions[:"de-DE"][:name]).to eq("dasdsads")
     end
     it "can save version" do
       edit_version = app.in_app_purchases.families.all.first.edit

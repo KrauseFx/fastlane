@@ -27,6 +27,7 @@ module Snapshot
         end
     end
   end
+
   class SimulatorLauncher < SimulatorLauncherBase
     # With Xcode 9's ability to run tests on multiple concurrent simulators,
     # this method sets the maximum number of simulators to run simultaneously

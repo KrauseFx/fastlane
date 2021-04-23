@@ -72,7 +72,7 @@ module Precheck
       end
 
       it "skips items it is not explicitly support to handle via handle_item?" do
-        # Note: TextItemToCheck not TestItemToCheck
+        # NOTE: TextItemToCheck not TestItemToCheck
         item = TextItemToCheck.new("nothing", :description, "description")
         result = rule.check_item(item)
         expect(result).to eq(nil)

@@ -361,8 +361,7 @@ module FastlaneCore
 
     def build_xcodebuild_resolvepackagedependencies_command
       return nil if options[:skip_package_dependencies_resolution]
-      command = "xcodebuild -resolvePackageDependencies #{xcodebuild_parameters.join(' ')}"
-      command
+      "xcodebuild -resolvePackageDependencies #{xcodebuild_parameters.join(' ')}"
     end
 
     # Get the build settings for our project

@@ -55,8 +55,7 @@ module Fastlane
         %w{SRCROOT SOURCE_ROOT PROJECT_DIR}.each do |variable_name|
           path = path.sub("$(#{variable_name})", project_dir)
         end
-        path = File.absolute_path(path, project_dir)
-        path
+        File.absolute_path(path, project_dir)
       end
 
       #####################################################

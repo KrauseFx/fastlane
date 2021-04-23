@@ -89,10 +89,10 @@ module FastlaneCore
       if self.available_keys.include?(method_sym)
 
         value = arguments.first
-        value = yield if value.nil? && block_given?
+        value = yield if value.nil? && block
 
         if value.nil?
-          unless block_given?
+          unless block
             # The config file has something like this:
             #
             #   clean
@@ -142,11 +142,9 @@ module FastlaneCore
     # @param lane_name Symbol representing a lane name.
     # @yield Block to run for overriding configuration values.
     #
-    def for_lane(lane_name)
+    def for_lane(lane_name, &block)
       if ENV["FASTLANE_LANE_NAME"] == lane_name.to_s
-        with_a_clean_config_merged_when_complete do
-          yield
-        end
+        with_a_clean_config_merged_when_complete(&block)
       end
     end
 
@@ -157,11 +155,9 @@ module FastlaneCore
     # @param platform_name Symbol representing a platform name.
     # @yield Block to run for overriding configuration values.
     #
-    def for_platform(platform_name)
+    def for_platform(platform_name, &block)
       if ENV["FASTLANE_PLATFORM_NAME"] == platform_name.to_s
-        with_a_clean_config_merged_when_complete do
-          yield
-        end
+        with_a_clean_config_merged_when_complete(&block)
       end
     end
 

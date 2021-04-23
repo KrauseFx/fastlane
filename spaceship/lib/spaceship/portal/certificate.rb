@@ -220,7 +220,7 @@ module Spaceship
                                                   ['CN', 'PEM', OpenSSL::ASN1::UTF8STRING]
                                                 ])
           csr.public_key = key.public_key
-          csr.sign(key, OpenSSL::Digest::SHA1.new)
+          csr.sign(key, OpenSSL::Digest.new('SHA1'))
           return [csr, key]
         end
 

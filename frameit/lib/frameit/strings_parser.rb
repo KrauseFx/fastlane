@@ -14,7 +14,7 @@ module Frameit
       if encoding.include?('utf-8') || encoding.include?('us-ascii')
         content = File.read(path)
       else
-        content = `iconv -f UTF-16 -t UTF-8 "#{path}" 2>&1` # note: double quotes around path so command also works on Windows
+        content = `iconv -f UTF-16 -t UTF-8 "#{path}" 2>&1` # NOTE: double quotes around path so command also works on Windows
       end
 
       content.split("\n").each_with_index do |line, index|

@@ -196,11 +196,10 @@ module Gym
 
     def self.keys_to_symbols(hash)
       # Convert keys to symbols
-      hash = hash.each_with_object({}) do |(k, v), memo|
+      hash.each_with_object({}) do |(k, v), memo|
         memo[k.b.to_s.to_sym] = v
         memo
       end
-      hash
     end
   end
 end

@@ -426,7 +426,7 @@ describe FastlaneCore do
       end
 
       it "runs simple commands" do
-        cmd = 'echo HO' # note: this command is deliberately not using `"` around `HO` as `echo` would echo those back on Windows
+        cmd = 'echo HO' # NOTE: this command is deliberately not using `"` around `HO` as `echo` would echo those back on Windows
         expect(FastlaneCore::Project.run_command(cmd)).to eq("HO\n")
       end
 

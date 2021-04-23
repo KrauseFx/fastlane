@@ -14,7 +14,7 @@ module Deliver
     # @yieldparam [optional, Spaceship::ConnectAPI::AppStoreVersionLocalization] localization
     # @yieldparam [optional, Spaceship::ConnectAPI::AppStoreScreenshotSet] app_screenshot_set
     def each_app_screenshot_set(localizations = @localizations, &block)
-      return enum_for(__method__, localizations) unless block_given?
+      return enum_for(__method__, localizations) unless block
 
       # Collect app_screenshot_sets from localizations in parallel but
       # limit the number of threads working at a time with using `lazy` and `force` controls
@@ -43,7 +43,7 @@ module Deliver
     # @yieldparam [optional, Spaceship::ConnectAPI::AppStoreScreenshotSet] app_screenshot_set
     # @yieldparam [optional, Spaceship::ConnectAPI::AppStoreScreenshot] app_screenshot
     def each_app_screenshot(&block)
-      return enum_for(__method__) unless block_given?
+      return enum_for(__method__) unless block
 
       each_app_screenshot_set do |localization, app_screenshot_set|
         app_screenshot_set.app_screenshots.each do |app_screenshot|
@@ -61,7 +61,7 @@ module Deliver
     # @yieldparam [optional, Deliver::AppScreenshot] screenshot
     # @yieldparam [optional, Integer] index a number reperesents which position the screenshot will be
     def each_local_screenshot(screenshots_per_language, &block)
-      return enum_for(__method__, screenshots_per_language) unless block_given?
+      return enum_for(__method__, screenshots_per_language) unless block
 
       # filter unnecessary localizations
       supported_localizations = @localizations.reject { |l| screenshots_per_language[l.locale].nil? }

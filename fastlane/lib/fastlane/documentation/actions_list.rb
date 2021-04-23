@@ -38,7 +38,7 @@ module Fastlane
              title: "Available fastlane actions".green,
              headings: ['Action', 'Description', 'Author'],
              rows: FastlaneCore::PrintTable.transform_output(rows)
-      ))
+           ))
       puts("  Platform filter: #{platform}".magenta) if platform
       puts("  Total of #{rows.count} actions")
 
@@ -137,7 +137,7 @@ module Fastlane
                title: "#{name} Options".green,
                headings: ['Key', 'Description', 'Env Var(s)', 'Default'],
                rows: FastlaneCore::PrintTable.transform_output(options)
-        ))
+             ))
       else
         puts("No available options".yellow)
       end
@@ -153,7 +153,7 @@ module Fastlane
              title: "#{name} Output Variables".green,
              headings: ['Key', 'Description'],
              rows: FastlaneCore::PrintTable.transform_output(output.map { |key, desc| [key.yellow, desc] })
-      ))
+           ))
       puts("Access the output values using `lane_context[SharedValues::VARIABLE_NAME]`")
       puts("")
     end

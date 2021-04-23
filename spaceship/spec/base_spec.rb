@@ -5,7 +5,8 @@ describe Spaceship::Base do
   class TestBase < Spaceship::Base
     attr_accessor :child
 
-    def initialize # required
+    # required
+    def initialize
     end
   end
 

@@ -183,7 +183,7 @@ module Sigh
 
       UI.important("Creating new provisioning profile for '#{Sigh.config[:app_identifier]}' with name '#{name}' for '#{Sigh.config[:platform]}' platform")
 
-      profile = Spaceship::ConnectAPI::Profile.create(
+      Spaceship::ConnectAPI::Profile.create(
         name: name,
         profile_type: profile_type,
         bundle_id_id: bundle_id.id,
@@ -191,8 +191,6 @@ module Sigh
         device_ids: devices_to_use.map(&:id),
         template_name: Sigh.config[:template_name]
       )
-
-      profile
     end
 
     def filter_profiles_by_name(profiles)

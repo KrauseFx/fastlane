@@ -39,7 +39,7 @@ module FastlaneCore
           UI.user_error!("xcrun simctl not working.")
         end
 
-        output.split(/\n/).each do |line|
+        output.split("\n").each do |line|
           next if line =~ /unavailable/
           next if line =~ /^== /
           if line =~ /^-- /
@@ -97,7 +97,7 @@ module FastlaneCore
             instruments_devices_output = stdout.read
           end
 
-          instruments_devices_output.split(/\n/).each do |instruments_device|
+          instruments_devices_output.split("\n").each do |instruments_device|
             device_uuids.each do |device_uuid|
               match = instruments_device.match(/(.+) \(([0-9.]+)\) \[(\h{40}|\h{8}-\h{16})\]?/)
               if match && match[3].delete("-") == device_uuid

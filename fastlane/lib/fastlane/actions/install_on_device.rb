@@ -2,6 +2,7 @@ module Fastlane
   module Actions
     module SharedValues
     end
+
     class InstallOnDeviceAction < Action
       def self.run(params)
         unless Helper.test?

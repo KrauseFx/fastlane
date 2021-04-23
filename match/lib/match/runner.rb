@@ -296,7 +296,6 @@ module Match
       Utils.fill_environment(Utils.environment_variable_name(app_identifier: app_identifier,
                                                                        type: prov_type,
                                                                    platform: params[:platform]),
-
                              uuid)
 
       # TeamIdentifier is returned as an array, but we're not sure why there could be more than one

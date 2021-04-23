@@ -1,4 +1,3 @@
-
 import "./Fastfile"
 
 lane :main_lane do

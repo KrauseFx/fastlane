@@ -49,8 +49,7 @@ module FastlaneCore
         app_id_prefix = profile["ApplicationIdentifierPrefix"].first
         entitlements = profile["Entitlements"]
         app_identifier = entitlements["application-identifier"] || entitlements["com.apple.application-identifier"]
-        bundle_id = app_identifier.gsub("#{app_id_prefix}.", "")
-        bundle_id
+        app_identifier.gsub("#{app_id_prefix}.", "")
       rescue
         UI.error("Unable to extract the Bundle Id from the provided provisioning profile '#{path}'.")
       end

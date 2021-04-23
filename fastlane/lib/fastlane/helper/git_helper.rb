@@ -134,7 +134,6 @@ module Fastlane
       end
     end
 
-    private_class_method
     def self.git_log_merge_commit_filtering_option(merge_commit_filtering)
       case merge_commit_filtering
       when :exclude_merges

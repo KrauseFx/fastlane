@@ -11,6 +11,7 @@ end
 module FastlaneCore
   class FastlanePtyError < StandardError
     attr_reader :exit_status
+
     def initialize(e, exit_status)
       super(e)
       set_backtrace(e.backtrace) if e
@@ -40,7 +41,7 @@ module FastlaneCore
       $?.exitstatus
     rescue LoadError
       require 'open3'
-      Open3.popen2e(command) do |command_stdin, command_stdout, p| # note the inversion
+      Open3.popen2e(command) do |command_stdin, command_stdout, p| # NOTE: the inversion
         yield(command_stdout, command_stdin, p.value.pid)
 
         command_stdin.close

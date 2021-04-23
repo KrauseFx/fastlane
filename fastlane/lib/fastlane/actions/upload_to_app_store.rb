@@ -7,16 +7,14 @@ module Fastlane
       def self.run(config)
         require 'deliver'
 
-        begin
-          config.load_configuration_file("Deliverfile")
-          config[:screenshots_path] ||= Actions.lane_context[SharedValues::SNAPSHOT_SCREENSHOTS_PATH] if Actions.lane_context[SharedValues::SNAPSHOT_SCREENSHOTS_PATH]
-          config[:ipa] ||= Actions.lane_context[SharedValues::IPA_OUTPUT_PATH] if Actions.lane_context[SharedValues::IPA_OUTPUT_PATH]
-          config[:pkg] ||= Actions.lane_context[SharedValues::PKG_OUTPUT_PATH] if Actions.lane_context[SharedValues::PKG_OUTPUT_PATH]
-          config[:api_key] ||= Actions.lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+        config.load_configuration_file("Deliverfile")
+        config[:screenshots_path] ||= Actions.lane_context[SharedValues::SNAPSHOT_SCREENSHOTS_PATH] if Actions.lane_context[SharedValues::SNAPSHOT_SCREENSHOTS_PATH]
+        config[:ipa] ||= Actions.lane_context[SharedValues::IPA_OUTPUT_PATH] if Actions.lane_context[SharedValues::IPA_OUTPUT_PATH]
+        config[:pkg] ||= Actions.lane_context[SharedValues::PKG_OUTPUT_PATH] if Actions.lane_context[SharedValues::PKG_OUTPUT_PATH]
+        config[:api_key] ||= Actions.lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
-          return config if Helper.test?
-          Deliver::Runner.new(config).run
-        end
+        return config if Helper.test?
+        Deliver::Runner.new(config).run
       end
 
       def self.description

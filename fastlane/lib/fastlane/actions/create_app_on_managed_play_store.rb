@@ -129,7 +129,7 @@ module Fastlane
             description: "Root URL for the Google Play API. The provided URL will be used for API calls in place of https://www.googleapis.com/",
             optional: true,
             verify_block: proc do |value|
-              UI.user_error!("Could not parse URL '#{value}'") unless value =~ URI.regexp
+              UI.user_error!("Could not parse URL '#{value}'") unless value =~ URI::DEFAULT_PARSER.make_regexp
             end),
           FastlaneCore::ConfigItem.new(key: :timeout,
             env_name: "SUPPLY_TIMEOUT",

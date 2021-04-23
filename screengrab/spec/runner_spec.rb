@@ -235,7 +235,7 @@ describe Screengrab::Runner do
             List of devices attached
             e1dbf228               device usb:1-1.2 product:a33gdd model:SM_A300H device:a33g
 
-          ADB_OUTPUT
+      ADB_OUTPUT
 
       mock_adb_response_for_command("adb test", adb_response)
 

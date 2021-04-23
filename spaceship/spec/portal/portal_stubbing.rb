@@ -195,7 +195,7 @@ class PortalStubbing
         to_return(status: 200, body: adp_read_fixture_file("list_certificates_filtered.json"), headers: { 'Content-Type' => 'application/json' })
 
       stub_request(:get, "https://developer.apple.com/services-account/QH65B2/account/ios/certificate/downloadCertificateContent.action?certificateId=XC5PH8DAAA&teamId=XXXXXXXXXX&type=R58UK2EAAA").
-        to_return(status: 200, body: adp_read_binary_fixture_file('aps_development.cer')) # note: binary!
+        to_return(status: 200, body: adp_read_binary_fixture_file('aps_development.cer')) # NOTE: binary!
       stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/ios/certificate/submitCertificateRequest.action").
         with(body: { "appIdId" => "2HNR359G63", "specialIdentifierDisplayId" => "2HNR359G63", "csrContent" => adp_read_fixture_file('certificateSigningRequest.certSigningRequest'), "type" => "BKLRAVXMGM", "teamId" => "XXXXXXXXXX" }).
         to_return(status: 200, body: adp_read_fixture_file('submitCertificateRequest.action.json'), headers: { 'Content-Type' => 'application/json' })

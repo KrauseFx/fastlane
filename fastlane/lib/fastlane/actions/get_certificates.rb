@@ -11,20 +11,18 @@ module Fastlane
 
         return if Helper.test?
 
-        begin
-          Cert.config = params # we alread have the finished config
-          Cert.config[:api_key] ||= Actions.lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+        Cert.config = params # we alread have the finished config
+        Cert.config[:api_key] ||= Actions.lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
-          Cert::Runner.new.launch
-          cert_file_path = ENV["CER_FILE_PATH"]
-          certificate_id = ENV["CER_CERTIFICATE_ID"]
-          Actions.lane_context[SharedValues::CERT_FILE_PATH] = cert_file_path
-          Actions.lane_context[SharedValues::CERT_CERTIFICATE_ID] = certificate_id
+        Cert::Runner.new.launch
+        cert_file_path = ENV["CER_FILE_PATH"]
+        certificate_id = ENV["CER_CERTIFICATE_ID"]
+        Actions.lane_context[SharedValues::CERT_FILE_PATH] = cert_file_path
+        Actions.lane_context[SharedValues::CERT_CERTIFICATE_ID] = certificate_id
 
-          UI.success("Use signing certificate '#{certificate_id}' from now on!")
+        UI.success("Use signing certificate '#{certificate_id}' from now on!")
 
-          ENV["SIGH_CERTIFICATE_ID"] = certificate_id # for further use in the sigh action
-        end
+        ENV["SIGH_CERTIFICATE_ID"] = certificate_id # for further use in the sigh action
       end
 
       def self.description

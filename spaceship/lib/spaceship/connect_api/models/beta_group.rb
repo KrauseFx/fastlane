@@ -38,7 +38,7 @@ module Spaceship
         return client.post_bulk_beta_tester_assignments(beta_group_id: id, beta_testers: beta_testers)
       end
 
-      def add_beta_testers(client: nil, beta_tester_ids:)
+      def add_beta_testers(beta_tester_ids:, client: nil)
         client ||= Spaceship::ConnectAPI
         return client.add_beta_tester_to_group(beta_group_id: id, beta_tester_ids: beta_tester_ids)
       end

@@ -61,8 +61,6 @@ module Spaceship
         lookup.values
       end
 
-      private_class_method
-
       def self.lookup
         return @lookup if defined?(@lookup)
         display_families = JSON.parse(File.read(File.join(Spaceship::ROOT, "lib", "assets", "displayFamilies.json")))

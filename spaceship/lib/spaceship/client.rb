@@ -716,7 +716,7 @@ module Spaceship
 
       # form-encode the params only if there are params, and the block is not supplied.
       # this is so that certain requests can be made using the block for more control
-      if method == :post && params && !block_given?
+      if method == :post && params && !block
         params, headers = encode_params(params, headers)
       end
 
@@ -851,10 +851,11 @@ module Spaceship
     end
 
     def extract_key_from_block(key, &block)
-      if block_given?
+      if block
         obj = Object.new
         class << obj
           attr_accessor :body, :headers, :params, :url, :options
+
           # rubocop: disable Style/TrivialAccessors
           # the block calls `url` (not `url=`) so need to define `url` method
           def url(url)

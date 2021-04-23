@@ -53,9 +53,9 @@ describe Fastlane do
           stub_configuration_1 = 'stub config 1'
           stub_configuration_2 = 'stub config 2'
           stub_object = ['object']
-          stub_settings_1 = Hash['PRODUCT_BUNDLE_IDENTIFIER', 'com.something.else']
+          stub_settings_1 = { 'PRODUCT_BUNDLE_IDENTIFIER' => 'com.something.else' }
           stub_settings_1['INFOPLIST_FILE'] = plist_path
-          stub_settings_2 = Hash['PRODUCT_BUNDLE_IDENTIFIER', 'com.something.entirely.else']
+          stub_settings_2 = { 'PRODUCT_BUNDLE_IDENTIFIER' => 'com.something.entirely.else' }
           stub_settings_2['INFOPLIST_FILE'] = "Other-Info.plist"
 
           expect(Xcodeproj::Project).to receive(:open).with('/tmp/fastlane/tests/fastlane/bundle.xcodeproj').and_return(stub_project)
@@ -83,9 +83,9 @@ describe Fastlane do
           stub_configuration_1 = 'stub config 1'
           stub_configuration_2 = 'stub config 2'
           stub_object = ['object']
-          stub_settings_1 = Hash['PRODUCT_BUNDLE_IDENTIFIER', 'com.something.else']
+          stub_settings_1 = { 'PRODUCT_BUNDLE_IDENTIFIER' => 'com.something.else' }
           stub_settings_1['INFOPLIST_FILE'] = plist_path
-          stub_settings_2 = Hash['PRODUCT_BUNDLE_IDENTIFIER', 'com.something.entirely.else']
+          stub_settings_2 = { 'PRODUCT_BUNDLE_IDENTIFIER' => 'com.something.entirely.else' }
           stub_settings_2['INFOPLIST_FILE'] = "Other-Info.plist"
 
           expect(Xcodeproj::Project).to receive(:open).with('/tmp/fastlane/tests/fastlane/bundle.xcodeproj').and_return(stub_project)
@@ -113,9 +113,9 @@ describe Fastlane do
           stub_configuration_1 = 'stub config 1'
           stub_configuration_2 = 'stub config 2'
           stub_object = ['object']
-          stub_settings_1 = Hash['PRODUCT_BUNDLE_IDENTIFIER', 'com.something.else']
+          stub_settings_1 = { 'PRODUCT_BUNDLE_IDENTIFIER' => 'com.something.else' }
           stub_settings_1['INFOPLIST_FILE'] = plist_path_with_srcroot
-          stub_settings_2 = Hash['PRODUCT_BUNDLE_IDENTIFIER', 'com.something.entirely.else']
+          stub_settings_2 = { 'PRODUCT_BUNDLE_IDENTIFIER' => 'com.something.entirely.else' }
           stub_settings_2['INFOPLIST_FILE'] = "Other-Info.plist"
 
           expect(Xcodeproj::Project).to receive(:open).with('/tmp/fastlane/tests/fastlane/bundle.xcodeproj').and_return(stub_project)
@@ -143,9 +143,9 @@ describe Fastlane do
           stub_configuration_1 = 'stub config 1'
           stub_configuration_2 = 'stub config 2'
           stub_object = ['object']
-          stub_settings_1 = Hash['PRODUCT_BUNDLE_IDENTIFIER', 'com.something.else']
+          stub_settings_1 = { 'PRODUCT_BUNDLE_IDENTIFIER' => 'com.something.else' }
           stub_settings_1['INFOPLIST_FILE'] = plist_path_with_srcroot
-          stub_settings_2 = Hash['PRODUCT_BUNDLE_IDENTIFIER', 'com.something.entirely.else']
+          stub_settings_2 = { 'PRODUCT_BUNDLE_IDENTIFIER' => 'com.something.entirely.else' }
           stub_settings_2['INFOPLIST_FILE'] = "Other-Info.plist"
 
           expect(Xcodeproj::Project).to receive(:open).with('/tmp/fastlane/tests/fastlane/bundle.xcodeproj').and_return(stub_project)
@@ -172,7 +172,7 @@ describe Fastlane do
           stub_project = 'stub project'
           stub_configuration = 'stub config'
           stub_object = ['object']
-          stub_settings = Hash['PRODUCT_BUNDLE_IDENTIFIER', 'com.something.else']
+          stub_settings = { 'PRODUCT_BUNDLE_IDENTIFIER' => 'com.something.else' }
 
           expect(Xcodeproj::Project).to receive(:open).with('/tmp/fastlane/tests/fastlane/bundle.xcodeproj').and_return(stub_project)
           expect(stub_project).to receive(:objects).and_return(stub_object)

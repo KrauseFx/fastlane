@@ -4,6 +4,7 @@ module Fastlane
       DSYM_PATHS = :DSYM_PATHS
       DSYM_LATEST_UPLOADED_DATE = :DSYM_LATEST_UPLOADED_DATE
     end
+
     class DownloadDsymsAction < Action
       # rubocop:disable Metrics/PerceivedComplexity
       def self.run(params)

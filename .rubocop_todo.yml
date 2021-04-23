@@ -162,16 +162,6 @@ Lint/NonDeterministicRequireOrder:
 Lint/OrAssignmentToConstant:
   Enabled: false
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Lint/RedundantCopDisableDirective:
-  Enabled: false
-
-# Offense count: 6
-# Cop supports --auto-correct.
-Lint/RedundantCopEnableDirective:
-  Enabled: false
-
 # Offense count: 2
 # Cop supports --auto-correct.
 Lint/RedundantRequireStatement:

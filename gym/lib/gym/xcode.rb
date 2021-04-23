@@ -15,8 +15,7 @@ module Gym
       def pre_7?
         UI.user_error!("Unable to locate Xcode. Please make sure to have Xcode installed on your machine") if xcode_version.nil?
         v = xcode_version
-        is_pre = v.split('.')[0].to_i < 7
-        is_pre
+        v.split('.')[0].to_i < 7
       end
 
       def legacy_api_deprecated?

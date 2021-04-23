@@ -32,7 +32,7 @@ module Frameit
         self.frame = MiniMagick::Image.open(@frame_path)
         # Rotate the frame according to the device orientation
         self.frame.rotate(self.rotation_for_device_orientation)
-      elsif self.class == Editor
+      elsif self.instance_of?(Editor)
         # Couldn't find device frame (probably an iPhone 4, for which there are no images available any more)
         # Message is already shown elsewhere
         return
@@ -235,13 +235,11 @@ module Frameit
     end
 
     def device_top(background)
-      @device_top ||= begin
-        if title_below_image
-          background.height - effective_text_height - image.height
-        else
-          effective_text_height
-        end
-      end
+      @device_top ||= if title_below_image
+                        background.height - effective_text_height - image.height
+                      else
+                        effective_text_height
+                      end
     end
 
     def title_below_image
@@ -317,11 +315,10 @@ module Frameit
         c.geometry("+#{keyword_left_space}+#{keyword_top}")
       end
       # Place the title below the keyword
-      background = background.composite(title, "png") do |c|
+      background.composite(title, "png") do |c|
         c.compose("Over")
         c.geometry("+#{title_left_space}+#{title_top}")
       end
-      background
     end
 
     def put_title_into_background(background, stack_title)
@@ -378,11 +375,10 @@ module Frameit
       end
 
       # Then, put the title on top of the screenshot next to the keyword
-      background = background.composite(title, "png") do |c|
+      background.composite(title, "png") do |c|
         c.compose("Over")
         c.geometry("+#{left_space}+#{title_top}")
       end
-      background
     end
 
     def actual_font_size(key)

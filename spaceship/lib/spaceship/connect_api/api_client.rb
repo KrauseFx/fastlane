@@ -1,4 +1,3 @@
-
 require_relative '../client'
 require_relative './response'
 require_relative '../client'

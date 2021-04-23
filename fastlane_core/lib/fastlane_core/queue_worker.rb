@@ -1,5 +1,3 @@
-require 'thread'
-
 module FastlaneCore
   # This dispatches jobs to worker threads and make it work in parallel.
   # It's suitable for I/O bounds works and not for CPU bounds works.

@@ -102,7 +102,7 @@ describe Scan do
 Failing tests:
   FastlaneAppTests:
           FastlaneAppTests.testCoinToss()
-          ERROR_OUTPUT
+        ERROR_OUTPUT
 
         expect(Fastlane::UI).to receive(:important).with("Retrying tests: FastlaneAppTests/FastlaneAppTests/testCoinToss").once
         expect(Fastlane::UI).to receive(:important).with("Number of retries remaining: 4").once
@@ -116,7 +116,7 @@ Failing tests:
 Failing tests:
 FastlaneAppTests:
 FastlaneAppTests.testCoinToss()
-          ERROR_OUTPUT
+        ERROR_OUTPUT
 
         expect do
           @scan.retry_execute(retries: 5, error_output: error_output)

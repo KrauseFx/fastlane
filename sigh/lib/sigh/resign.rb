@@ -195,7 +195,7 @@ module Sigh
           ids[sha1] = name
         rescue
           nil
-        end # the last line does not match
+        end
       end
 
       ids

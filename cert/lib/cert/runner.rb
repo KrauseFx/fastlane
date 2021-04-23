@@ -232,7 +232,7 @@ module Cert
     end
 
     def store_certificate(certificate, filename = nil)
-      cert_name = filename ? filename : certificate.id
+      cert_name = filename || certificate.id
       cert_name = "#{cert_name}.cer" unless File.extname(cert_name) == ".cer"
       path = File.expand_path(File.join(Cert.config[:output_path], cert_name))
       raw_data = Base64.decode64(certificate.certificate_content)

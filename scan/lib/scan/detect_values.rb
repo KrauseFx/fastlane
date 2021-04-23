@@ -192,10 +192,10 @@ module Scan
 
       # Convert array to lazy enumerable (evaluate map only when needed)
       # grab the first unempty evaluated array
-      Scan.devices = [matches, default].lazy.reject(&:nil?).map { |x|
+      Scan.devices = [matches, default].lazy.reject(&:nil?).map do |x|
         arr = x.call
         arr unless arr.empty?
-      }.reject(&:nil?).first
+      end.reject(&:nil?).first
     end
 
     def self.min_xcode8?

@@ -52,14 +52,14 @@ describe Frameit do
           expect(Frameit::UI).to receive(:error).with(/Empty parsing result for .*translations.bad.strings/)
 
           translations = Frameit::StringsParser.parse("./frameit/spec/fixtures/translations.bad.strings")
-          expect(translations). to eq({})
+          expect(translations).to eq({})
         end
 
         it "explains that only UTF-8 and UTF-16 encoded are allowed" do
           expect(Frameit::UI).to receive(:error).with(/.*translations.utf32.strings.*UTF16/)
 
           translations = Frameit::StringsParser.parse("./frameit/spec/fixtures/translations.utf32.strings")
-          expect(translations). to eq({})
+          expect(translations).to eq({})
         end
       end
     end

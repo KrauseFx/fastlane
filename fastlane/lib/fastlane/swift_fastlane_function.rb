@@ -129,9 +129,9 @@ module Fastlane
       optional_specifier = "?" if (optional && default_value.nil?) && type != "((String) -> Void)?"
 
       # If we have a default value of true or false, we can infer it is a Bool
-      if default_value.class == FalseClass
+      if default_value.instance_of?(FalseClass)
         type = "Bool"
-      elsif default_value.class == TrueClass
+      elsif default_value.instance_of?(TrueClass)
         type = "Bool"
       elsif default_value.kind_of?(Array)
         type = "[String]"

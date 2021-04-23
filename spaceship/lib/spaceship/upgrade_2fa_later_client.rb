@@ -19,7 +19,7 @@ module Spaceship
 
       widget_key = params.dig('widgetKey', 0)
       if widget_key.nil?
-        STDERR.puts("Couldn't find widgetKey to continue with requests")
+        warn("Couldn't find widgetKey to continue with requests")
         return false
       end
 
@@ -78,13 +78,13 @@ module Spaceship
       if response_repair_complete.status == 204
         return true
       else
-        STDERR.puts("Failed with status code of #{response_repair_complete.status}")
+        warn("Failed with status code of #{response_repair_complete.status}")
         return false
       end
     rescue => error
-      STDERR.puts(error.backtrace)
-      STDERR.puts("Failed to bypass 2FA upgrade")
-      STDERR.puts("To disable this from trying again, set SPACESHIP_SKIP_UPGRADE_2FA_LATER=1")
+      warn(error.backtrace)
+      warn("Failed to bypass 2FA upgrade")
+      warn("To disable this from trying again, set SPACESHIP_SKIP_UPGRADE_2FA_LATER=1")
       return false
     end
   end

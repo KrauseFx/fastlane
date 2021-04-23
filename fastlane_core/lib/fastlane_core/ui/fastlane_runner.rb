@@ -4,8 +4,11 @@ unless Object.const_defined?("Faraday")
   # require Faraday or didn't use it
   module Faraday
     class Error < StandardError; end
+
     class ClientError < Error; end
+
     class SSLError < ClientError; end
+
     class ConnectionFailed < ClientError; end
   end
 end

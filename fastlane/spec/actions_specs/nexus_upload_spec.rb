@@ -29,7 +29,7 @@ describe Fastlane do
                  repo_project_name: 'myproject',
                  repo_project_version: '1.12',
                    file: file_path.to_s
-        )).to eq("http://localhost:8081/nexus/repository/artefacts/com/fastlane/myproject/1.12/myproject-1.12.ipa")
+               )).to eq("http://localhost:8081/nexus/repository/artefacts/com/fastlane/myproject/1.12/myproject-1.12.ipa")
       end
 
       it "sets upload url correctly for Nexus 3 with repo classifier" do
@@ -47,7 +47,7 @@ describe Fastlane do
                  repo_project_version: '1.12',
                    file: file_path.to_s,
                    repo_classifier: 'ipa'
-        )).to eq("http://localhost:8081/nexus/repository/artefacts/com/fastlane/myproject/1.12/myproject-1.12-ipa.ipa")
+               )).to eq("http://localhost:8081/nexus/repository/artefacts/com/fastlane/myproject/1.12/myproject-1.12-ipa.ipa")
       end
 
       it "sets upload options correctly for Nexus 2 with all required parameters" do

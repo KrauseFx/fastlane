@@ -78,7 +78,7 @@ module Spaceship
       command = "ffmpeg -i \"#{video_path}\" 2>&1"
       # puts "COMMAND: #{command}"
       output = `#{command}`
-      # Note: ffmpeg exits with 1 if no output specified
+      # NOTE: ffmpeg exits with 1 if no output specified
       # raise "Failed to find video information from #{video_path} (using #{command})" unless $CHILD_STATUS.to_i == 0
       output = output.force_encoding("BINARY")
       video_infos = output.split("\n").select { |l| l =~ /Stream.*Video/ }

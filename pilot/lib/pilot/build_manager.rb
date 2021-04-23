@@ -208,14 +208,14 @@ module Pilot
                title: "#{app.name} Processing Builds".green,
                headings: ["Version #", "Build #"],
                rows: FastlaneCore::PrintTable.transform_output(build_deliveries)
-        ))
+             ))
       end
 
       puts(Terminal::Table.new(
              title: "#{app.name} Builds".green,
              headings: ["Version #", "Build #", "Installs"],
              rows: FastlaneCore::PrintTable.transform_output(builds)
-      ))
+           ))
     end
 
     def update_beta_app_meta(options, build)
@@ -384,7 +384,7 @@ module Pilot
         UI.verbose("Inferred provider id #{provider_id} for team #{name}.")
         return FastlaneCore::ItunesTransporter.new(options[:username], nil, false, provider_id)
       rescue => ex
-        STDERR.puts(ex.to_s)
+        warn(ex.to_s)
         UI.verbose("Couldn't infer a provider short name for team with id #{tunes_client.team_id} automatically: #{ex}. Proceeding without provider short name.")
         return generic_transporter
       end
@@ -487,7 +487,7 @@ module Pilot
       localizations_by_lang.each do |lang_code, localization|
         info = info_by_lang[lang_code]
 
-        info = default_info unless info
+        info ||= default_info
         update_localized_app_review_for_lang(app, localization, lang_code, info) if info
       end
     end
@@ -533,7 +533,7 @@ module Pilot
       localizations_by_lang.each do |lang_code, localization|
         info = info_by_lang[lang_code]
 
-        info = default_info unless info
+        info ||= default_info
         update_localized_build_review_for_lang(build, localization, lang_code, info) if info
       end
     end

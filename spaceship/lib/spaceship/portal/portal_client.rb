@@ -595,7 +595,7 @@ module Spaceship
         type: type,
         csrContent: csr,
         appIdId: app_id, # optional
-        specialIdentifierDisplayId: app_id, # For requesting Web Push certificates
+        specialIdentifierDisplayId: app_id # For requesting Web Push certificates
       })
       parse_response(r, 'certRequest')
     end

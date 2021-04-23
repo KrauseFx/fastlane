@@ -6,11 +6,7 @@ module Snapshot
     require 'fastimage'
 
     def html_path
-      if Snapshot.config[:html_template]
-        Snapshot.config[:html_template]
-      else
-        File.join(Snapshot::ROOT, "lib", "snapshot/page.html.erb")
-      end
+      Snapshot.config[:html_template] || File.join(Snapshot::ROOT, "lib", "snapshot/page.html.erb")
     end
 
     def generate

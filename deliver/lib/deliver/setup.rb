@@ -131,7 +131,7 @@ module Deliver
                                   version.fetch_app_store_review_detail
                                 rescue
                                   nil
-                                end # errors if doesn't exist
+                                end
       UploadMetadata::REVIEW_INFORMATION_VALUES.each do |file_key, attribute_name|
         if app_store_review_detail
           content = app_store_review_detail.send(attribute_name) || ""

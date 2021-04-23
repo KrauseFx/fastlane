@@ -30,7 +30,7 @@ describe Fastlane do
 
         # login
         allow(Spaceship::ConnectAPI).to receive(:login)
-        allow(Spaceship::ConnectAPI::App). to receive(:find).and_return(app)
+        allow(Spaceship::ConnectAPI::App).to receive(:find).and_return(app)
         allow(app).to receive(:id).and_return("id")
         allow(app).to receive(:bundle_id).and_return('tools.fastlane.myapp')
 

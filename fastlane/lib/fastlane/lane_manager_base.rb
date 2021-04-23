@@ -52,7 +52,7 @@ module Fastlane
              title: "fastlane summary".green,
              headings: ["Step", "Action", "Time (in s)"],
              rows: FastlaneCore::PrintTable.transform_output(rows)
-      ))
+           ))
       puts("")
     end
 

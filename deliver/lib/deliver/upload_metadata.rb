@@ -308,7 +308,7 @@ module Deliver
                            version.fetch_app_store_version_phased_release
                          rescue
                            nil
-                         end # returns no data error so need to rescue
+                         end
         if !!options[:phased_release]
           unless phased_release
             UI.message("Creating phased release on App Store Connect")
@@ -328,7 +328,7 @@ module Deliver
                                  version.fetch_reset_ratings_request
                                rescue
                                  nil
-                               end # returns no data error so need to rescue
+                               end
         if !!options[:reset_ratings]
           unless reset_rating_request
             UI.message("Creating reset ratings request on App Store Connect")
@@ -616,7 +616,7 @@ module Deliver
                                 rescue => error
                                   UI.error("Error fetching app store review detail - #{error.message}")
                                   nil
-                                end # errors if doesn't exist
+                                end
       if app_store_review_detail
         app_store_review_detail.update(attributes: attributes)
       else

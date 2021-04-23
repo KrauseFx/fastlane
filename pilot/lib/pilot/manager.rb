@@ -45,7 +45,7 @@ module Pilot
 
       @app ||= Spaceship::ConnectAPI::App.get(app_id: @app_id)
       unless @app
-        UI.user_error!("Could not find app with #{(config[:apple_id] || config[:app_identifier])}")
+        UI.user_error!("Could not find app with #{config[:apple_id] || config[:app_identifier]}")
       end
       return @app
     end

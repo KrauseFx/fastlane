@@ -12,7 +12,7 @@ describe Spaceship::Tunes::IAPDetail do
     end
 
     it "Read language versions" do
-      expect(detailed.versions["de-DE".to_sym][:name]).to eq("test name german1")
+      expect(detailed.versions[:"de-DE"][:name]).to eq("test name german1")
     end
 
     it "humanizes status" do

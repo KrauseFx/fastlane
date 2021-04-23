@@ -17,8 +17,8 @@ module Gym
       final_mapping = (primary_mapping || {}).dup # for verbose output at the end of the method
       secondary_mapping ||= self.detect_project_profile_mapping # default to Xcode project
 
-      final_mapping = Hash[final_mapping.map { |k, v| [k.to_sym, v] }]
-      secondary_mapping = Hash[secondary_mapping.map { |k, v| [k.to_sym, v] }]
+      final_mapping = final_mapping.map { |k, v| [k.to_sym, v] }.to_h
+      secondary_mapping = secondary_mapping.map { |k, v| [k.to_sym, v] }.to_h
 
       # Now it's time to merge the (potentially) existing mapping
       #   (e.g. coming from `provisioningProfiles` of the `export_options` or from previous match calls)

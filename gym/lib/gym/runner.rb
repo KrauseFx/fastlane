@@ -84,7 +84,7 @@ module Gym
              title: title.green,
              headings: ["Option", "Value"],
              rows: FastlaneCore::PrintTable.transform_output(rows.delete_if { |c| c.to_s.empty? })
-      ))
+           ))
     end
 
     private

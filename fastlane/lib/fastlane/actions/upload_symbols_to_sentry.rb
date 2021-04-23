@@ -44,12 +44,11 @@ module Fastlane
 
         # Upload dsym(s)
         dsym_paths += [dsym_path]
-        uploaded_paths = dsym_paths.compact.map do |dsym|
+        dsym_paths.compact.map do |dsym|
           upload_dsym(resource, dsym)
         end
 
         # Return uplaoded dSYM paths
-        uploaded_paths
       end
 
       def self.upload_dsym(resource, dsym)

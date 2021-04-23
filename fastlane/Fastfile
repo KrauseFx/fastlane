@@ -467,13 +467,11 @@ lane :update_docs do |options|
   end
 end
 
-def clone_docs(debug: false)
+def clone_docs(debug: false, &block)
   if debug
     clone_url = ENV['FASTLANE_DOCS_CLONE_URL'] || "../../docs"
 
-    Dir.chdir(clone_url) do
-      yield
-    end
+    Dir.chdir(clone_url, &block)
   else
     require 'tmpdir'
     git_url = ENV['FASTLANE_DOCS_GIT_URL'] || "https://github.com/fastlane/docs"
@@ -481,9 +479,7 @@ def clone_docs(debug: false)
     Dir.mktmpdir("fl_clone") do |tmp_dir|
       Dir.chdir(tmp_dir) do
         sh("git clone #{git_url} --depth=1")
-        Dir.chdir("docs") do
-          yield
-        end
+        Dir.chdir("docs", &block)
       end
     end
   end

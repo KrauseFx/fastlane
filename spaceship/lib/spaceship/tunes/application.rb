@@ -352,10 +352,10 @@ module Spaceship
 
       # Get all builds that are already processed for all build trains
       # You can either use the return value (array) or pass a block
-      def builds(platform: nil)
+      def builds(platform: nil, &block)
         all = TestFlight::Build.all(app_id: self.apple_id, platform: platform || self.platform)
-        return all unless block_given?
-        all.each { |build| yield(build) }
+        return all unless block
+        all.each(&block)
       end
 
       #####################################################

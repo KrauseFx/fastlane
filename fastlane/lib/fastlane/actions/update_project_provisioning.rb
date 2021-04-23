@@ -1,5 +1,3 @@
-# coding: utf-8
-
 module Fastlane
   module Actions
     module SharedValues

@@ -20,7 +20,7 @@ describe FastlaneCore::Interface::FastlaneException do
       begin
         raise FastlaneCore::Interface::FastlaneError.new, 'EXPLICITLY RAISED ERROR'
       rescue => e
-        expect(e.caused_by_calling_ui_method?(method_name: 'user_error!')). to be(false)
+        expect(e.caused_by_calling_ui_method?(method_name: 'user_error!')).to be(false)
       end
     end
   end

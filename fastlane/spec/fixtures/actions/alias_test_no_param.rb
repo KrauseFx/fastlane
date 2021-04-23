@@ -2,6 +2,7 @@ module Fastlane
   module Actions
     class AliasTestNoParamAction < Action
       attr_accessor :global_test
+
       def self.run(params)
         UI.important(@global_test)
       end

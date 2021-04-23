@@ -817,7 +817,7 @@ describe FastlaneCore do
           it "prioritizes env_names after env_name" do
             ENV["abc"] = "val env"
             ENV["def"] = "val env wrong"
-            config_item = FastlaneCore::ConfigItem.new(key: :item, env_name: "abc", "env_names": ["def"], default_value: "val default")
+            config_item = FastlaneCore::ConfigItem.new(key: :item, env_name: "abc", env_names: ["def"], default_value: "val default")
             config = FastlaneCore::Configuration.create([config_item], {})
             config.config_file_options = { item: "val config" }
 

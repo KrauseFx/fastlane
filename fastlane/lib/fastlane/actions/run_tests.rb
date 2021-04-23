@@ -78,8 +78,6 @@ module Fastlane
         [:ios, :mac].include?(platform)
       end
 
-      private_class_method
-
       def self.example_code
         [
           'run_tests',

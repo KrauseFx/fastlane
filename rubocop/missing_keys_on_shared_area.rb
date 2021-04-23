@@ -20,6 +20,7 @@ module RuboCop
       PATTERN
 
       attr_writer :shared_values_constants
+
       def shared_values_constants
         @shared_values_constants ||= []
       end

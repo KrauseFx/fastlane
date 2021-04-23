@@ -328,7 +328,7 @@ module Spaceship
           end
 
           return profiles if self == ProvisioningProfile
-          return profiles.select { |profile| profile.class == self }
+          return profiles.select { |profile| profile.instance_of?(self) }
         end
 
         # @return (Array) Returns all profiles registered for this account

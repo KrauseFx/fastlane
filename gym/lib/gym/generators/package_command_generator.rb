@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # from https://stackoverflow.com/a/9857493/445598
 # because of
 # `incompatible encoding regexp match (UTF-8 regexp with ASCII-8BIT string) (Encoding::CompatibilityError)`

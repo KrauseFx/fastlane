@@ -1,7 +1,6 @@
 require 'shellwords'
 require 'plist'
 require 'os'
-require 'thread'
 require 'terminal-table'
 
 require 'fastlane_core/print_table'

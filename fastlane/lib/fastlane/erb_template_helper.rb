@@ -17,6 +17,7 @@ module Fastlane
       Fastlane::ErbalT.new(template_vars_hash, trim_mode).render(template)
     end
   end
+
   class ErbalT < OpenStruct
     def initialize(hash, trim_mode = nil)
       super(hash)

@@ -7,7 +7,6 @@ module Deliver
   # AppScreenshot represents one screenshots for one specific locale and
   # device type.
   class AppScreenshot
-    #
     module ScreenSize
       # iPhone 4
       IOS_35 = "iOS-3.5-in"

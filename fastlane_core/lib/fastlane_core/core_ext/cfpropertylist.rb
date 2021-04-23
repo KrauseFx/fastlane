@@ -19,5 +19,5 @@ require "plist"
     rescue NameError
     end
   end
-  c.module_eval("include Plist::Emit")
+  c.module_eval("include Plist::Emit", __FILE__, __LINE__)
 end

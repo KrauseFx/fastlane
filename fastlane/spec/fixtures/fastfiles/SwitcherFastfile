@@ -43,6 +43,5 @@ end
 
 platform :mac do
   lane :wrong_platform do
-
   end
 end

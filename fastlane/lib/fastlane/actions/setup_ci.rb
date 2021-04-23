@@ -79,7 +79,7 @@ module Fastlane
             Creates a new temporary keychain for use with match
             Switches match to `readonly` mode to not create new profiles/cert on CI
             Sets up log and test result paths to be easily collectible
-          LIST
+        LIST
 
         [
           list,

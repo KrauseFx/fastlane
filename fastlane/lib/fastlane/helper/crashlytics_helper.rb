@@ -50,8 +50,8 @@ module Fastlane
           command << "-emails '#{params[:emails]}'" if params[:emails]
           command << "-notesPath '#{params[:notes_path]}'" if params[:notes_path]
           command << "-groupAliases '#{params[:groups]}'" if params[:groups]
-          command << "-notifications #{(params[:notifications] ? 'YES' : 'NO')}"
-          command << "-debug #{(params[:debug] ? 'YES' : 'NO')}"
+          command << "-notifications #{params[:notifications] ? 'YES' : 'NO'}"
+          command << "-debug #{params[:debug] ? 'YES' : 'NO'}"
 
           return command
         end
@@ -77,7 +77,7 @@ module Fastlane
           command << "-betaDistributionEmails #{params[:emails].shellescape}" if params[:emails]
           command << "-betaDistributionReleaseNotesFilePath #{File.expand_path(params[:notes_path]).shellescape}" if params[:notes_path]
           command << "-betaDistributionGroupAliases #{params[:groups].shellescape}" if params[:groups]
-          command << "-betaDistributionNotifications #{(params[:notifications] ? 'true' : 'false')}"
+          command << "-betaDistributionNotifications #{params[:notifications] ? 'true' : 'false'}"
 
           return command
         end

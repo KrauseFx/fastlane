@@ -31,7 +31,7 @@ module Spaceship
         end
       end
 
-      def to_json
+      def to_json(*_args)
         raw_data.to_json
       end
     end

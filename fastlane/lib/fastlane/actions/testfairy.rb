@@ -70,7 +70,7 @@ module Fastlane
         end
 
         # Rejecting key `upload_url` and `timeout` as we don't need it in options
-        client_options = Hash[params.values.reject do |key, value|
+        client_options = params.values.reject do |key, value|
           [:upload_url, :timeout].include?(key)
         end.map do |key, value|
           case key
@@ -99,7 +99,7 @@ module Fastlane
           else
             UI.user_error!("Unknown parameter: #{key}")
           end
-        end]
+        end.to_h
 
         path = params[:ipa] || params[:apk]
         UI.user_error!("No ipa or apk were given") unless path

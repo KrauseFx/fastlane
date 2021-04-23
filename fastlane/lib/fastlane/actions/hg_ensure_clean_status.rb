@@ -3,6 +3,7 @@ module Fastlane
     module SharedValues
       HG_REPO_WAS_CLEAN_ON_START = :HG_REPO_WAS_CLEAN_ON_START
     end
+
     # Raises an exception and stop the lane execution if the repo is not in a clean state
     class HgEnsureCleanStatusAction < Action
       def self.run(params)

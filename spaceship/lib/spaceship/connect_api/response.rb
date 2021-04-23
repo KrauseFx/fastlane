@@ -60,9 +60,7 @@ module Spaceship
       end
 
       def each(&block)
-        to_models.each do |model|
-          yield(model)
-        end
+        to_models.each(&block)
       end
     end
   end

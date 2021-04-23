@@ -15,6 +15,7 @@ module RuboCop
       PATTERN
 
       attr_writer :good_nodes
+
       def good_nodes
         @good_nodes ||= []
       end

@@ -74,13 +74,13 @@ module Spaceship
       # API
       #
 
-      def self.all(client: nil, bundle_id_id:, limit: nil)
+      def self.all(bundle_id_id:, client: nil, limit: nil)
         client ||= Spaceship::ConnectAPI
         resp = client.get_bundle_id_capabilities(bundle_id_id: bundle_id_id, limit: limit).all_pages
         return resp.flat_map(&:to_models)
       end
 
-      def self.create(client: nil, bundle_id_id:, capability_type:, settings: [])
+      def self.create(bundle_id_id:, capability_type:, client: nil, settings: [])
         client ||= Spaceship::ConnectAPI
         resp = client.post_bundle_id_capability(bundle_id_id: bundle_id_id, capability_type: capability_type, settings: settings)
         return resp.to_models.first

@@ -1,4 +1,3 @@
-
 require_relative 'tunes_client'
 require_relative 'app_trailer'
 require_relative 'app_screenshot'
@@ -494,7 +493,7 @@ module Spaceship
         geojson_data = client.upload_geojson(self, upload_file)
 
         @transit_app_file = Tunes::TransitAppFile.factory({}) if @transit_app_file.nil?
-        @transit_app_file .url = nil # response.headers['Location']
+        @transit_app_file.url = nil # response.headers['Location']
         @transit_app_file.asset_token = geojson_data["token"]
         @transit_app_file.name = upload_file.file_name
         @transit_app_file.time_stamp = Time.now.to_i * 1000 # works without but...

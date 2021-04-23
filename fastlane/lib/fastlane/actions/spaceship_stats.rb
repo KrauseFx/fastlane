@@ -15,7 +15,7 @@ module Fastlane
                title: "Spaceship Stats",
                headings: ["Service", "Auth Type", "URL", "Number of requests"],
                rows: FastlaneCore::PrintTable.transform_output(rows)
-        ))
+             ))
         puts("")
 
         if params[:print_request_logs]
@@ -29,7 +29,7 @@ module Fastlane
                  title: "Spaceship Request Log",
                  headings: ["Auth Type", "URL"],
                  rows: FastlaneCore::PrintTable.transform_output(log_rows)
-          ))
+               ))
           puts("")
         end
       end

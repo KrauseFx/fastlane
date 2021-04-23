@@ -10,7 +10,7 @@ module Snapshot
 
       sure = true if FastlaneCore::Env.truthy?("SNAPSHOT_FORCE_DELETE") || force
       begin
-        sure = UI.confirm("Are you sure? All your simulators will be DELETED and new ones will be created! (You can use `SNAPSHOT_FORCE_DELETE` to skip this confirmation)") unless sure
+        sure ||= UI.confirm("Are you sure? All your simulators will be DELETED and new ones will be created! (You can use `SNAPSHOT_FORCE_DELETE` to skip this confirmation)")
       rescue => e
         UI.user_error!("Please make sure to pass the `--force` option to reset simulators when running in non-interactive mode") unless UI.interactive?
         raise e

@@ -418,7 +418,7 @@ module Supply
       Dir.entries(metadata_path)
          .select { |f| File.directory?(File.join(metadata_path, f)) }
          .reject { |f| f.start_with?('.') }
-         .sort { |x, y| x <=> y }
+         .sort
     end
 
     def client
