@@ -1,13 +1,18 @@
 describe Match do
   describe Match::Storage::GitStorage do
     describe "#generate_commit_message" do
-      it "works" do
-        storage = Match::Storage::GitStorage.new(
-          type: "appstore",
-          platform: "ios"
-        )
-        result = storage.generate_commit_message
-        expect(result).to eq("[fastlane] Updated appstore and platform ios")
+      [["tools.fastlane.com"], ["tools.fastlane.com", "tools.fastlane.com.extension"]].each do |identifiers|
+        context "With identifiers #{identifiers}" do
+          it "works" do
+            storage = Match::Storage::GitStorage.new(
+              type: "appstore",
+              platform: "ios",
+              identifiers: identifiers
+            )
+            result = storage.generate_commit_message
+            expect(result).to eq("[fastlane] Updated appstore and platform ios for identifier(s) #{identifiers.join(', ')}")
+          end
+        end
       end
     end
 
@@ -120,7 +125,8 @@ describe Match do
           platform: "ios",
           git_url: git_url,
           shallow_clone: false,
-          skip_docs: true
+          skip_docs: true,
+          identifiers: ["tools.fastlane.com"]
         )
 
         expected_commands = [
@@ -130,7 +136,7 @@ describe Match do
           "git reset --hard",
           "git add #{random_file}",
           "git add match_version.txt",
-          "git commit -m " + '[fastlane] Updated appstore and platform ios'.shellescape,
+          "git commit -m " + '[fastlane] Updated appstore and platform ios for identifier(s) tools.fastlane.com'.shellescape,
           "git push origin #{git_branch}"
         ]
 

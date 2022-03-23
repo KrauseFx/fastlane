@@ -30,6 +30,16 @@ module Match
 
       update_optional_values_depending_on_storage_type(params)
 
+      if params[:app_identifier].kind_of?(Array)
+        app_identifiers = params[:app_identifier]
+      else
+        app_identifiers = params[:app_identifier].to_s.split(/\s*,\s*/).uniq
+      end
+
+      # sometimes we get an array with arrays, this is a bug. To unblock people using match, I suggest we flatten!
+      # then in the future address the root cause of https://github.com/fastlane/fastlane/issues/11324
+      app_identifiers.flatten!
+
       # Choose the right storage and encryption implementations
       self.storage = Storage.for_mode(params[:storage_mode], {
         git_url: params[:git_url],
@@ -58,7 +68,8 @@ module Match
         team_id: params[:team_id],
         team_name: params[:team_name],
         api_key_path: params[:api_key_path],
-        api_key: params[:api_key]
+        api_key: params[:api_key],
+        identifiers: app_identifiers
       })
       storage.download
 
@@ -75,16 +86,6 @@ module Match
           UI.user_error!("You defined the profile type 'enterprise', but your Apple account doesn't support In-House profiles")
         end
       end
-
-      if params[:app_identifier].kind_of?(Array)
-        app_identifiers = params[:app_identifier]
-      else
-        app_identifiers = params[:app_identifier].to_s.split(/\s*,\s*/).uniq
-      end
-
-      # sometimes we get an array with arrays, this is a bug. To unblock people using match, I suggest we flatten!
-      # then in the future address the root cause of https://github.com/fastlane/fastlane/issues/11324
-      app_identifiers.flatten!
 
       # Verify the App ID (as we don't want 'match' to fail at a later point)
       if spaceship

@@ -20,6 +20,7 @@ module Match
       attr_accessor :git_basic_authorization
       attr_accessor :git_bearer_authorization
       attr_accessor :git_private_key
+      attr_accessor :identifiers
 
       def self.configure(params)
         return self.new(
@@ -34,7 +35,8 @@ module Match
           clone_branch_directly: params[:clone_branch_directly],
           git_basic_authorization: params[:git_basic_authorization],
           git_bearer_authorization: params[:git_bearer_authorization],
-          git_private_key: params[:git_private_key]
+          git_private_key: params[:git_private_key],
+          identifiers: params[:identifiers]
         )
       end
 
@@ -49,7 +51,8 @@ module Match
                      clone_branch_directly: false,
                      git_basic_authorization: nil,
                      git_bearer_authorization: nil,
-                     git_private_key: nil)
+                     git_private_key: nil,
+                     identifiers: [])
         self.git_url = git_url
         self.shallow_clone = shallow_clone
         self.skip_docs = skip_docs
@@ -60,6 +63,7 @@ module Match
         self.git_basic_authorization = git_basic_authorization
         self.git_bearer_authorization = git_bearer_authorization
         self.git_private_key = git_private_key
+        self.identifiers = identifiers
 
         self.type = type if type
         self.platform = platform if platform
@@ -147,7 +151,9 @@ module Match
           "Updated",
           self.type,
           "and platform",
-          self.platform
+          self.platform,
+          "for identifier(s)",
+          self.identifiers.join(', ')
         ].join(" ")
       end
 
