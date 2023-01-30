@@ -102,8 +102,11 @@ end
 
 desc "Increment the version number of this gem, after generating new Swift API"
 lane :bump do |options|
-  verify_env_variables
-  ensure_git_branch(branch: "master")
+  verify_env_variables(skip_rubygems: true)
+
+  new_version = options[:new_version]
+
+  ensure_git_branch(branch: "master") if new_version.nil?
   ensure_git_status_clean
 
   github_api_token = ENV["FL_GITHUB_RELEASE_API_TOKEN"]
@@ -119,11 +122,16 @@ lane :bump do |options|
 
   changelog_text = show_changelog
 
-  bump_type ||= 'minor' if prompt(text: "New feature, method or API?", boolean: true)
-  bump_type ||= 'patch'
-
   slug = "fastlane/fastlane"
-  new_version = version_bump_podspec(path: version_file_path, bump_type: bump_type, require_variable_prefix: false)
+
+  if new_version.nil?
+    bump_type ||= 'minor' if prompt(text: "New feature, method or API?", boolean: true)
+    bump_type ||= 'patch'
+
+    new_version = version_bump_podspec(path: version_file_path, bump_type: bump_type, require_variable_prefix: false)
+  else
+    new_version = version_bump_podspec(path: version_file_path, version_number: new_version, require_variable_prefix: false)
+  end
 
   # Everything looks good, let's generate the Swift API
   generate_swift_api(fastlane_version: new_version)
@@ -563,10 +571,12 @@ end
 
 desc "Ensure all the requirement environment variables are provided"
 desc "this way the deployment script will fail early (and often)"
-private_lane :verify_env_variables do
+private_lane :verify_env_variables do |options|
   ensure_env_vars(env_vars: ['GITHUB_USER_NAME', 'GITHUB_API_TOKEN'])
 
-  UI.user_error!("You're not logged in RubyGems. Log in using `gem push` if using RubyGems < 2.7.0 or `gem signin` if using RubyGems >=2.7.0") unless File.file?(File.expand_path("~/.gem/credentials"))
+  unless options[:skip_rubygems]
+    UI.user_error!("You're not logged in RubyGems. Log in using `gem push` if using RubyGems < 2.7.0 or `gem signin` if using RubyGems >=2.7.0") unless File.file?(File.expand_path("~/.gem/credentials"))
+  end
 end
 
 desc "Get the local version number per version.rb"

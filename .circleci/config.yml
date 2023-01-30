@@ -4,6 +4,11 @@ version: 2.1
 orbs:
     shellcheck: circleci/shellcheck@2.2.2 # brew install shellcheck stopped working so using this
 
+parameters:
+  new_version:
+    type: string
+    default: ""
+
 aliases:
   # common - cache
   - &cache_restore_git
@@ -61,6 +66,73 @@ aliases:
         bundle check || bundle install --jobs=4 --retry=3
 
 jobs:
+  prepare_release: &tests_macos_base
+    description: 'Prepare Release'
+    macos:
+      xcode: << parameters.xcode_version >>
+    parameters:
+      xcode_version:
+        type: string
+      ruby_version:
+        type: string
+      ruby_opt:
+        type: string
+        default: ''
+      new_version:
+        type: string
+    environment:
+      CIRCLE_TEST_REPORTS: '~/test-reports'
+      LC_ALL: 'en_US.UTF-8'
+      LANG: 'en_US.UTF-8'
+      _RUBY_VERSION: << parameters.ruby_version >>
+      GITHUB_USER_NAME: $CI_RELEASE_GITHUB_USER
+      GITHUB_API_TOKEN: $CI_RELEASE_GITHUB_API_TOKEN
+      FL_GITHUB_RELEASE_API_TOKEN: $CI_RELEASE_GITHUB_API_TOKEN
+    shell: '/bin/bash --login -eo pipefail'
+    steps:
+      - *cache_restore_git
+      - checkout
+      - *cache_save_git
+      - *cache_restore_bundler
+      - *set_ruby
+      - run:
+          name: debug | ruby version
+          command: |
+            ruby -v
+      - run:
+          name: Setup Build
+          command: |
+            mkdir -p ~/test-reports
+      - *bundle_install
+      - *cache_save_bundler
+      - run:
+          name: Check PR Metadata
+          command: bundle exec danger || echo "danger failed"
+      - *cache_restore_rubocop
+      - run:
+          name: bundle exec fastlane bump new_version:"<< parameters.new_version >>"
+          command: |
+            RUBYOPT=<< parameters.ruby_opt >> bundle exec fastlane bump new_version:"<< parameters.new_version >>"
+      - *cache_save_rubocop
+      - run:
+          name: Check compatibility with Ruby 3.0
+          command: |
+            touch ~/test-reports/ruby_warnings.txt
+            ! cat ~/test-reports/ruby_warnings.txt | grep -E "warning:\s.*(deprecated).*$" && echo "No deprecation message found."
+            ! cat ~/test-reports/ruby_warnings.txt | grep -E "warning:\s.*(obsolete).*$" && echo "No obsolete message found."
+      - store_test_results:
+          path: ~/test-reports
+      - store_artifacts:
+          path: ~/test-reports/rspec
+          destination: test-reports
+      - store_artifacts:
+          path: ~/test-reports/ruby_warnings.txt
+          destination: ruby_warnings.txt
+      - run:
+          name: Post Test Results to GitHub
+          command: bundle exec danger || echo "danger failed"
+          when: always  # Run this even when tests fail
+
   tests_macos: &tests_macos_base
     description: 'Execute tests on macOS with given Xcode and Ruby version'
     macos:
@@ -252,6 +324,18 @@ jobs:
 
 workflows:
   version: 2
+  prepare:
+    jobs:
+      - prepare_release:
+          name: 'Prepare Release'
+          xcode_version: '13.0.0'
+          ruby_version: '3.0'
+          ruby_opt: -W:deprecated
+          new_version: << pipeline.parameters.new_version >>
+    when:
+      and: 
+        - not:
+            equal: ["", << pipeline.parameters.new_version >>]
   build:
     jobs:
       - tests_macos:
@@ -289,3 +373,6 @@ workflows:
       - modules_load_up_tests:
           name: 'Modules load up tests'
           ruby_version: 'circleci/ruby:2.6'
+    when:
+      and: 
+        - equal: ["", << pipeline.parameters.new_version >>]
