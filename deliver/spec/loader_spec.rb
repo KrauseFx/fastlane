@@ -175,12 +175,6 @@ describe Deliver::Loader do
       expect(screenshots.first.screen_size).to eq(Deliver::AppScreenshot::ScreenSize::IOS_47)
     end
 
-    it "should not collect iPhone XR screenshots" do
-      add_screenshot("/Screenshots/en-GB/iPhoneXR-01First{828x1792}.jpg")
-      screenshots = collect_screenshots_from_dir("/Screenshots/")
-      expect(screenshots.count).to eq(0)
-    end
-
     it "should find different languages" do
       add_screenshot("/Screenshots/en-GB/iPhone8-01First{750x1334}.jpg")
       add_screenshot("/Screenshots/fr-FR/iPhone8-01First{750x1334}.jpg")

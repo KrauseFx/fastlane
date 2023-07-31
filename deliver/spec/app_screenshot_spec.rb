@@ -314,8 +314,9 @@ describe Deliver::AppScreenshot do
       expect(app_screenshot_with(ScreenSize::IOS_55_MESSAGES).device_type).to eq("IMESSAGE_APP_IPHONE_55")
     end
 
-    it "should return nil for 6.1 inch displays (iPhone XR)" do
-      expect(app_screenshot_with(ScreenSize::IOS_61).device_type).to be_nil
+    it "should return nil for 6.1 inch displays (iPhone 14 Pro)" do
+      expect(app_screenshot_with(ScreenSize::IOS_61).device_type).to eq("APP_IPHONE_61")
+      expect(app_screenshot_with(ScreenSize::IOS_61_MESSAGES).device_type).to eq("IMESSAGE_APP_IPHONE_61")
     end
 
     it "should return iphone67 for 6.7 inch displays" do
