@@ -10,8 +10,6 @@ module Frameit
     end
 
     def put_device_into_background(background)
-      self.top_space_above_device = offset['titleHeight'] # needed for centering the title
-
       @image = background.composite(image, "png") do |c|
         c.compose("Over")
         c.geometry(offset['offset'])
@@ -29,7 +27,7 @@ module Frameit
     end
 
     def generate_background
-      MiniMagick::Image.open(fetch_config['background']) # no resizing on the Mac
+      MiniMagick::Image.open(@config['background']) # no resizing on the Mac
     end
   end
 end

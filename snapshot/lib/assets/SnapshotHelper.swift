@@ -33,8 +33,10 @@ func snapshot(_ name: String, waitForLoadingIndicator: Bool) {
 /// - Parameters:
 ///   - name: The name of the snapshot
 ///   - timeout: Amount of seconds to wait until the network loading indicator disappears. Pass `0` if you don't want to wait.
-func snapshot(_ name: String, timeWaitingForIdle timeout: TimeInterval = 20) {
-    Snapshot.snapshot(name, timeWaitingForIdle: timeout)
+///   - screenshotProvider: The provider to screenshot. Otherwise `XCUIScreen.main` is screenshotted. This is useful when taking screenshots for macOS and you'd prefer to screenshot the window and not the screen.
+func snapshot(_ name: String, timeWaitingForIdle timeout: TimeInterval = 20, screenshotProvider: XCUIScreenshotProviding = XCUIScreen.main) {
+    Snapshot.snapshot(name, timeWaitingForIdle: timeout, screenshotProvider: screenshotProvider)
+    
 }
 
 enum SnapshotError: Error, CustomDebugStringConvertible {
@@ -139,7 +141,7 @@ open class Snapshot: NSObject {
         }
     }
 
-    open class func snapshot(_ name: String, timeWaitingForIdle timeout: TimeInterval = 20) {
+    open class func snapshot(_ name: String, timeWaitingForIdle timeout: TimeInterval = 20, screenshotProvider: XCUIScreenshotProviding = XCUIScreen.main) {
         if timeout > 0 {
             waitForLoadingIndicatorToDisappear(within: timeout)
         }
@@ -149,22 +151,30 @@ open class Snapshot: NSObject {
         if Snapshot.waitForAnimations {
             sleep(1) // Waiting for the animation to be finished (kind of)
         }
+        
+        guard self.app != nil else {
+            NSLog("XCUIApplication is not set. Please call setupSnapshot(app) before snapshot().")
+            return
+        }
 
+        let screenshot = screenshotProvider.screenshot()
+        
         #if os(OSX)
-            guard let app = self.app else {
-                NSLog("XCUIApplication is not set. Please call setupSnapshot(app) before snapshot().")
-                return
-            }
-
-            app.typeKey(XCUIKeyboardKeySecondaryFn, modifierFlags: [])
+        
+        let image = screenshot.pngRepresentation
+        guard let screenshotsDir = screenshotsDirectory else { return }
+        let path = screenshotsDir.appendingPathComponent("MacBook-\(name).png", isDirectory: false)
+        
+        do {
+            try FileManager.default.createDirectory(at: screenshotsDir, withIntermediateDirectories: true, attributes: nil)
+            try image.write(to: path, options: .atomic)
+        } catch let error {
+            NSLog("Problem writing screenshot: \(name) to \(path)")
+            NSLog(error.localizedDescription)
+        }
+        
         #else
 
-            guard self.app != nil else {
-                NSLog("XCUIApplication is not set. Please call setupSnapshot(app) before snapshot().")
-                return
-            }
-
-            let screenshot = XCUIScreen.main.screenshot()
             #if os(iOS) && !targetEnvironment(macCatalyst)
             let image = XCUIDevice.shared.orientation.isLandscape ?  fixLandscapeOrientation(image: screenshot.image) : screenshot.image
             #else
@@ -191,7 +201,8 @@ open class Snapshot: NSObject {
             }
         #endif
     }
-
+    
+    #if os(iOS) || os(watchOS) || os(tvOS)
     class func fixLandscapeOrientation(image: UIImage) -> UIImage {
         #if os(watchOS)
             return image
@@ -208,6 +219,7 @@ open class Snapshot: NSObject {
             }
         #endif
     }
+    #endif
 
     class func waitForLoadingIndicatorToDisappear(within timeout: TimeInterval) {
         #if os(tvOS)
