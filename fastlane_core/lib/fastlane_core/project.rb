@@ -342,8 +342,12 @@ module FastlaneCore
         proj << "-clonedSourcePackagesDirPath #{options[:cloned_source_packages_path].shellescape}"
       end
 
-      if xcode_at_least_11 && options[:disable_package_automatic_updates]
+      if xcode_at_least_11 && options[:skip_package_dependencies_resolution]
         proj << "-disableAutomaticPackageResolution"
+      end
+
+      if xcode_at_least_11 && options[:disable_package_automatic_updates]
+        proj << "-skipPackageUpdates"
       end
 
       return proj

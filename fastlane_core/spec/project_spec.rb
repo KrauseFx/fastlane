@@ -497,11 +497,23 @@ describe FastlaneCore do
     end
 
     describe "xcodebuild disable_package_automatic_updates" do
-      it 'generates xcodebuild -showBuildSettings command with disabled automatic package resolution' do
+      it 'generates xcodebuild -showBuildSettings command with disabled automatic package updates' do
         allow(FastlaneCore::Helper).to receive(:xcode_at_least?).and_return(true)
         project = FastlaneCore::Project.new({
           project: "./fastlane_core/spec/fixtures/projects/Example.xcodeproj",
           disable_package_automatic_updates: true
+        })
+        command = "xcodebuild -showBuildSettings -project ./fastlane_core/spec/fixtures/projects/Example.xcodeproj -skipPackageUpdates"
+        expect(project.build_xcodebuild_showbuildsettings_command).to eq(command)
+      end
+    end
+
+    describe "xcodebuild skip_package_dependencies_resolution" do
+      it 'generates xcodebuild -showBuildSettings command with skip package dependencies resolution' do
+        allow(FastlaneCore::Helper).to receive(:xcode_at_least?).and_return(true)
+        project = FastlaneCore::Project.new({
+          project: "./fastlane_core/spec/fixtures/projects/Example.xcodeproj",
+          skip_package_dependencies_resolution: true
         })
         command = "xcodebuild -showBuildSettings -project ./fastlane_core/spec/fixtures/projects/Example.xcodeproj -disableAutomaticPackageResolution"
         expect(project.build_xcodebuild_showbuildsettings_command).to eq(command)
