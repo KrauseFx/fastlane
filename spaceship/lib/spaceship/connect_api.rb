@@ -74,6 +74,24 @@ require 'spaceship/connect_api/models/resolution_center_thread'
 require 'spaceship/connect_api/models/review_rejection'
 require 'spaceship/connect_api/models/actor'
 
+require 'spaceship/connect_api/models/iap/in_app_purchase'
+require 'spaceship/connect_api/models/iap/in_app_purchase_submission'
+require 'spaceship/connect_api/models/iap/in_app_purchase_localization'
+require 'spaceship/connect_api/models/iap/in_app_purchase_price_point'
+require 'spaceship/connect_api/models/iap/in_app_purchase_price'
+require 'spaceship/connect_api/models/iap/in_app_purchase_price_schedule'
+require 'spaceship/connect_api/models/iap/in_app_purchase_app_store_review_screenshot'
+require 'spaceship/connect_api/models/iap/subscription_app_store_review_screenshot'
+require 'spaceship/connect_api/models/iap/subscription_availability'
+require 'spaceship/connect_api/models/iap/subscription_group'
+require 'spaceship/connect_api/models/iap/subscription_group_localization'
+require 'spaceship/connect_api/models/iap/subscription_introductory_offer'
+require 'spaceship/connect_api/models/iap/subscription_price_point'
+require 'spaceship/connect_api/models/iap/subscription_price'
+require 'spaceship/connect_api/models/iap/subscription_localization'
+require 'spaceship/connect_api/models/iap/subscription'
+require 'spaceship/connect_api/models/iap/subscription_submission'
+
 module Spaceship
   class ConnectAPI
     MAX_OBJECTS_PER_PAGE_LIMIT = 200

@@ -154,6 +154,16 @@ module Spaceship
       end
 
       #
+      # App Base Territory
+      #
+
+      def fetch_base_territory(client: nil)
+        client ||= Spaceship::ConnectAPI
+        resp = client.get_app_base_territory(app_id: id)
+        return resp.to_models.first
+      end
+
+      #
       # Available Territories
       #
 
@@ -477,6 +487,67 @@ module Spaceship
           client.delete_user_visible_apps(user_id: user_id, app_ids: [id])
         end
       end
+
+      #
+      # In-App Purchases
+      #
+
+      def get_in_app_purchase(client: nil, purchase_id:, includes: nil)
+        client ||= Spaceship::ConnectAPI
+        resps = client.get_in_app_purchase(purchase_id: purchase_id, includes: includes)
+        return resps.to_models.first
+      end
+
+      def get_in_app_purchases(client: nil, filter: {}, includes: nil, limit: nil, sort: nil)
+        client ||= Spaceship::ConnectAPI
+        resps = client.get_in_app_purchases(app_id: id, filter: filter, includes: includes, limit: limit, sort: sort).all_pages
+        return resps.flat_map(&:to_models)
+      end
+
+      def create_in_app_purchase(client: nil, name:, product_id:, in_app_purchase_type:, review_note: nil, family_sharable: nil, available_in_all_territories: nil)
+        client ||= Spaceship::ConnectAPI
+        resps = client.create_in_app_purchase(app_id: id, name: name, product_id: product_id, in_app_purchase_type: in_app_purchase_type, review_note: review_note, family_sharable: family_sharable, available_in_all_territories: available_in_all_territories)
+        return resps.to_models.first
+      end
+
+      #
+      # Subscription Groups
+      #
+
+      def get_subscription_group(client: nil, family_id:, includes: Spaceship::ConnectAPI::SubscriptionGroup::ESSENTIAL_INCLUDES)
+        client ||= Spaceship::ConnectAPI
+        resps = client.get_subscription_group(family_id: family_id, includes: includes).all_pages
+        return resps.flat_map(&:to_models).first
+      end
+
+      def get_subscription_groups(client: nil, filter: {}, includes: Spaceship::ConnectAPI::SubscriptionGroup::ESSENTIAL_INCLUDES, limit: nil, sort: nil)
+        client ||= Spaceship::ConnectAPI
+        resps = client.get_subscription_groups(app_id: id, filter: filter, includes: includes, limit: limit, sort: sort).all_pages
+        return resps.flat_map(&:to_models)
+      end
+
+      def create_subscription_group(client: nil, reference_name:)
+        client ||= Spaceship::ConnectAPI
+        resps = client.create_subscription_group(reference_name: reference_name, app_id: id)
+        return resps.to_models.first
+      end
+
+      #
+      # Subscriptions
+      #
+
+      def get_subscription(client: nil, purchase_id:, includes: nil)
+        client ||= Spaceship::ConnectAPI
+        resps = client.get_subscription(purchase_id: purchase_id, includes: includes)
+        return resps.to_models.first
+      end
+
+      def create_subscription(client: nil, family_id:, name:, product_id:, available_in_all_territories: nil, family_sharable: nil, review_note: nil, subscription_period: nil, group_level: nil)
+        client ||= Spaceship::ConnectAPI
+        resps = client.create_subscription(family_id: family_id, name: name, product_id: product_id, available_in_all_territories: available_in_all_territories, family_sharable: family_sharable, review_note: review_note, subscription_period: subscription_period, group_level: group_level)
+        return resps.to_models.first
+      end
+
     end
   end
 end
