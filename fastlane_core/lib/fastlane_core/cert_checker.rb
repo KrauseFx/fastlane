@@ -30,6 +30,16 @@ WWDRCA_CERTIFICATES = [
     alias: 'G6',
     sha256: 'bdd4ed6e74691f0c2bfd01be0296197af1379e0418e2d300efa9c3bef642ca30',
     url: 'https://www.apple.com/certificateauthority/AppleWWDRCAG6.cer'
+  },
+  {
+    alias: 'DEV-ID-G1',
+    sha256: '7afc9d01a62f03a2de9637936d4afe68090d2de18d03f29c88cfb0b1ba63587f',
+    url: 'https://www.apple.com/certificateauthority/DeveloperIDCA.cer'
+  },
+  {
+    alias: 'DEV-ID-G2',
+    sha256: 'f16cd3c54c7f83cea4bf1a3e6a0819c8aaa8e4a1528fd144715f350643d2df3a',
+    url: 'https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer'
   }
 ]
 
