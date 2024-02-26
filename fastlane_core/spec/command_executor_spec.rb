@@ -7,7 +7,7 @@ describe FastlaneCore do
             expect(Process).to receive(:wait)
           end
 
-          result = FastlaneCore::CommandExecutor.execute(command: 'echo foo')
+          result = FastlaneCore::CommandExecutor.execute(command: "echo 'foo'")
 
           expect(result).to eq('foo')
         end
@@ -31,7 +31,7 @@ describe FastlaneCore do
           # PTY uses "$?" to get exitcode, which is filled in by Process.wait(),
           # so we have to spawn a real process unless we want to mock methods
           # on nil.
-          child_process_id = Process.spawn('echo foo', out: File::NULL)
+          child_process_id = Process.spawn("echo 'foo'", out: File::NULL)
           expect(Process).to receive(:wait).with(child_process_id)
 
           block.yield(fake_std_in, fake_std_out, child_process_id)
@@ -58,18 +58,18 @@ describe FastlaneCore do
         expect(fake_std_out).to receive(:close)
 
         expect(PTY).to receive(:spawn) do |command, &block|
-          expect(command).to eq('echo foo')
+          expect(command).to eq("echo 'foo'")
 
           # PTY uses "$?" to get exitcode, which is filled in by Process.wait(),
           # so we have to spawn a real process unless we want to mock methods
           # on nil.
-          child_process_id = Process.spawn('echo foo', out: File::NULL)
+          child_process_id = Process.spawn("echo 'foo'", out: File::NULL)
           expect(Process).to receive(:wait).with(child_process_id)
 
           block.yield(fake_std_in, fake_std_out, child_process_id)
         end
 
-        result = FastlaneCore::CommandExecutor.execute(command: 'echo foo')
+        result = FastlaneCore::CommandExecutor.execute(command: "echo 'foo'")
 
         # We are implicitly also checking that the error was not rethrown because that would
         # have crashed the test
