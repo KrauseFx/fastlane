@@ -16,8 +16,10 @@ gem "danger-junit", "~> 1.0"
 # A fake filesystem.
 # Version 1.9+ requires Ruby >=2.7, while fastlane uses a `required_ruby_version` of `>= 2.6`.
 gem "fakefs", "1.8"
+# for file uploads with Faraday
+gem "mime-types", ['>= 1.16', '< 4.0']
 # Fast XML parser and object marshaller.
-gem "ox", "2.13.2"
+gem "ox", "2.14.16"
 # Provides an interactive debugging environment for Ruby.
 gem "pry"
 # A plugin for pry that adds step-by-step debugging and stack navigation.
@@ -31,8 +33,6 @@ gem "rake"
 # A readline implementation in Ruby
 # See: https://github.com/deivid-rodriguez/byebug/issues/289#issuecomment-251383465
 gem "rb-readline"
-# A simple and flexible REST client.
-gem "rest-client", ">= 1.8.0"
 # Behavior-driven testing tool for Ruby.
 gem "rspec", "~> 3.10"
 # Formatter for RSpec to generate JUnit compatible reports.

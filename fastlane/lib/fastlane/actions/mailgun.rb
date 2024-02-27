@@ -8,8 +8,15 @@ module Fastlane
       end
 
       def self.run(options)
-        Actions.verify_gem!('rest-client')
-        require 'rest-client'
+        Actions.verify_gem!('faraday')
+        Actions.verify_gem!('mime-types')
+        require 'faraday'
+        begin
+          # Use mime/types/columnar if available, for reduced memory usage
+          require 'mime/types/columnar'
+        rescue LoadError
+          require 'mime/types'
+        end
         handle_params_transition(options)
         mailgunit(options)
       end
@@ -101,11 +108,15 @@ module Fastlane
       end
 
       def self.handle_params_transition(options)
-        options[:postmaster] = options[:mailgun_sandbox_postmaster] if options[:mailgun_sandbox_postmaster]
-        puts("\nUsing :mailgun_sandbox_postmaster is deprecated, please change to :postmaster".yellow) if options[:mailgun_sandbox_postmaster]
+        if options[:mailgun_sandbox_postmaster] && !options[:postmaster]
+          options[:postmaster] = options[:mailgun_sandbox_postmaster]
+          puts("\nUsing :mailgun_sandbox_postmaster is deprecated, please change to :postmaster".yellow)
+        end
 
-        options[:apikey] = options[:mailgun_apikey] if options[:mailgun_apikey]
-        puts("\nUsing :mailgun_apikey is deprecated, please change to :apikey".yellow) if options[:mailgun_apikey]
+        if options[:mailgun_apikey] && !options[:apikey]
+          options[:apikey] = options[:mailgun_apikey]
+          puts("\nUsing :mailgun_apikey is deprecated, please change to :apikey".yellow)
+        end
       end
 
       def self.mailgunit(options)
@@ -122,12 +133,23 @@ module Fastlane
 
         unless options[:attachment].nil?
           attachment_filenames = [*options[:attachment]]
-          attachments = attachment_filenames.map { |filename| File.new(filename, 'rb') }
+          attachments = attachment_filenames.map { |filename| Faraday::UploadIO.new(filename, mime_for(filename), filename) }
           params.store(:attachment, attachments)
         end
 
-        RestClient.post("https://api:#{options[:apikey]}@api.mailgun.net/v3/#{sandbox_domain}/messages", params)
+        conn = Faraday.new(url: "https://api:#{options[:apikey]}@api.mailgun.net") do |f|
+          f.request(:multipart)
+          f.request(:url_encoded)
+          f.adapter(:net_http)
+        end
+        response = conn.post("/v3/#{sandbox_domain}/messages", params)
+        UI.user_error!("Failed to send message via Mailgun, response: #{response.status}: #{response.body}.") if response.status != 200
         mail_template(options)
+      end
+
+      def self.mime_for(path)
+        mime = MIME::Types.type_for(path)
+        mime.empty? ? 'text/plain' : mime[0].content_type
       end
 
       def self.mail_template(options)

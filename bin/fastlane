@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-if RUBY_VERSION < '2.0.0'
-  abort("fastlane requires Ruby 2.0.0 or higher")
+if RUBY_VERSION < '2.7.0'
+  abort("fastlane requires Ruby 2.7.0 or higher")
 end
 
 def self.windows?

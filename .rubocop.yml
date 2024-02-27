@@ -8,7 +8,7 @@ require:
   - ./rubocop/is_string_usage.rb
 
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.7
   NewCops: enable
   Include:
     - '**/*.rb'

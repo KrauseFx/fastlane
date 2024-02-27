@@ -1,4 +1,5 @@
 # https://www.appveyor.com/docs/appveyor-yml/
+image: Visual Studio 2019
 
 version: "{build}"
 
@@ -20,12 +21,15 @@ skip_branch_with_pr: true
 init:
   - git config --global core.autocrlf true
 
+cache:
+  - .vendor/bundle
+
 # cloning the repository happens here
 
 install:
-  - set PATH=C:\Ruby26-x64\bin;%PATH%
-  - FOR /F "usebackq delims==" %%A IN (`ruby .ci/compatible_gem_version`) DO gem update --system %%A
-  - FOR /F "usebackq delims==" %%A IN (`ruby .ci/bundler_version.rb`) DO gem install bundler -v %%A
+  - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
+  - bundle config --local path .vendor/bundle
+  - ridk install 3 # for ruby >= 3.1, we need the full compiler toolchain for gems with native extensions
   - bundle install
   # iconv
   - appveyor DownloadFile
@@ -37,6 +41,11 @@ environment:
   LC_ALL: en_US.UTF-8
   LANG: en_US.UTF-8
   FASTLANE_ITUNES_TRANSPORTER_PATH: C:/tmp
+  matrix:
+    - ruby_version: 27-x64
+    # - ruby_version: 30-x64 # disabled for now as we only have 1 concurent job
+    # - ruby_version: 31-x64
+    - ruby_version: 32-x64
 
 before_test:
   - ruby -v

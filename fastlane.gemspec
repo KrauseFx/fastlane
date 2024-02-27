@@ -7,7 +7,7 @@ require 'fastlane/version'
 # Copy over the latest .rubocop.yml style guide
 require 'yaml'
 rubocop_config = File.expand_path('../.rubocop.yml', __FILE__)
-config = YAML.safe_load(open(rubocop_config))
+config = YAML.safe_load(open(rubocop_config), aliases: true)
 config['require'] = [
   'rubocop/require_tools',
   'rubocop-performance'
@@ -62,7 +62,7 @@ Gem::Specification.new do |spec|
     "source_code_uri" => "https://github.com/fastlane/fastlane"
   }
 
-  spec.required_ruby_version = '>= 2.6'
+  spec.required_ruby_version = '>= 2.7'
 
   spec.files = Dir.glob("*/lib/**/*", File::FNM_DOTMATCH) + Dir["fastlane/swift/**/*"] + Dir["bin/*"] + Dir["*/README.md"] + %w(README.md LICENSE .yardopts) - Dir["fastlane/lib/fastlane/actions/device_grid/assets/*"] - Dir["fastlane/lib/fastlane/actions/docs/assets/*"]
   spec.bindir = "bin"
