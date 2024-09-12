@@ -4,7 +4,7 @@ describe FastlaneCore do
       it 'executes a simple command successfully' do
         @all_lines = []
 
-        exit_status = FastlaneCore::FastlanePty.spawn('echo foo') do |command_stdout, command_stdin, pid|
+        exit_status = FastlaneCore::FastlanePty.spawn("echo 'foo'") do |command_stdout, command_stdin, pid|
           command_stdout.each do |line|
             @all_lines << line.chomp
           end
@@ -16,7 +16,7 @@ describe FastlaneCore do
       it 'doesn t return -1 if an exception was raised in the block in PTY.spawn' do
         exception = StandardError.new
         expect {
-          exit_status = FastlaneCore::FastlanePty.spawn('echo foo') do |command_stdout, command_stdin, pid|
+          exit_status = FastlaneCore::FastlanePty.spawn("echo 'foo'") do |command_stdout, command_stdin, pid|
             raise exception
           end
         }.to raise_error(FastlaneCore::FastlanePtyError) { |error|
@@ -31,7 +31,7 @@ describe FastlaneCore do
 
         exception = StandardError.new
         expect {
-          exit_status = FastlaneCore::FastlanePty.spawn('echo foo') do |command_stdout, command_stdin, pid|
+          exit_status = FastlaneCore::FastlanePty.spawn("echo 'foo'") do |command_stdout, command_stdin, pid|
             raise exception
           end
         }.to raise_error(FastlaneCore::FastlanePtyError) { |error|
