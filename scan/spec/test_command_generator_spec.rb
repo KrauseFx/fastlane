@@ -521,6 +521,27 @@ describe Scan do
                                          :test
                                        ])
         end
+
+        it "uses the correct build command with the example project when using Xcode 11 or later and a custom result bundle path", requires_xcodebuild: true do
+          allow(FastlaneCore::Helper).to receive(:xcode_version).and_return('11')
+          log_path = File.expand_path("~/Library/Logs/scan/app-app.log")
+
+          options = { project: "./scan/examples/standard/app.xcodeproj", result_bundle_path: './my_test_output/custom 2024-09-30 at 5.10.35 PM.xcresult', scheme: 'app' }
+          Scan.config = FastlaneCore::Configuration.create(Scan::Options.available_options, options)
+
+          result = @test_command_generator.generate
+          expect(result).to start_with([
+                                         "set -o pipefail &&",
+                                         "env NSUnbufferedIO=YES xcodebuild",
+                                         "-scheme app",
+                                         "-project ./scan/examples/standard/app.xcodeproj",
+                                         "-destination 'platform=iOS Simulator,id=E697990C-3A83-4C01-83D1-C367011B31EE'",
+                                         "-derivedDataPath #{Scan.config[:derived_data_path].shellescape}",
+                                         "-resultBundlePath './my_test_output/custom 2024-09-30 at 5.10.35 PM.xcresult'",
+                                         :build,
+                                         :test
+                                       ])
+        end
       end
 
       describe "Test Exclusion Example" do
