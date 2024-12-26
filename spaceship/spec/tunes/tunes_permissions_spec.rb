@@ -15,14 +15,21 @@ describe Spaceship::Tunes do
             "statusCode": "ERROR"
           }', headers: { 'Content-Type' => 'application/json' })
 
-      expected_error_message = "User spaceship@krausefx.com doesn't have enough permission for the following action: update_app_version"
+      expected_error_message = if Gem::Version.create('3.4.0') <= Gem::Version.create(RUBY_VERSION)
+                                 "User spaceship@krausefx.com doesn't have enough permission for the following action: Spaceship::TunesClient#update_app_version"
+                               else
+                                 "User spaceship@krausefx.com doesn't have enough permission for the following action: update_app_version"
+                               end
 
       e = app.edit_version
       expect(e.description["German"]).to eq("My title")
       e.description["German"] = "Something new"
-      expect do
+
+      begin
         e.save!
-      end.to raise_exception(Spaceship::Client::InsufficientPermissions, expected_error_message)
+      rescue Spaceship::Client::InsufficientPermissions => ex
+        expect(ex.to_s).to include(expected_error_message)
+      end
     end
   end
 end

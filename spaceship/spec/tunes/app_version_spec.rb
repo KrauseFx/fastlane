@@ -250,7 +250,12 @@ describe Spaceship::AppVersion, all: true do
         version.description = "Yes"
         raise "Should raise exception before"
       rescue NoMethodError => ex
-        expect(ex.to_s).to include("undefined method `description='")
+        expected_message = if Gem::Version.create('3.4.0') <= Gem::Version.create(RUBY_VERSION)
+                             "undefined method 'description='"
+                           else
+                             "undefined method `description='"
+                           end
+        expect(ex.to_s).to include(expected_message)
       end
     end
 

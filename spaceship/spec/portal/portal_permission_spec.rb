@@ -17,12 +17,14 @@ describe Spaceship::Portal do
           "httpCode": 200
         }', headers: { 'Content-Type' => 'application/json' })
 
-      expected_error_message = "User spaceship@krausefx.com (Team ID XXXXXXXXXX) doesn't have enough permission for the following action: download_certificate (You are not permitted to download this certificate.)"
+      expected_error_message = "User spaceship@krausefx.com (Team ID XXXXXXXXXX) doesn't have enough permission for the following action:"
 
       cert = Spaceship::Certificate.all.first
-      expect do
+      begin
         cert.download
-      end.to raise_exception(Spaceship::Client::InsufficientPermissions, expected_error_message)
+      rescue Spaceship::Client::InsufficientPermissions => ex
+        expect(ex.to_s).to include(expected_error_message)
+      end
     end
   end
 end

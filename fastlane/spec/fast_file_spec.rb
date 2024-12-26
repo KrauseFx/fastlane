@@ -395,15 +395,25 @@ describe Fastlane do
         it "use case 4: Passing parameters to another lane" do
           ff = Fastlane::FastFile.new('./fastlane/spec/fixtures/fastfiles/SwitcherFastfile')
           ff.runner.execute(:lane5, :ios)
+          expected_value = if Gem::Version.create('3.4.0') <= Gem::Version.create(RUBY_VERSION)
+                             "{key: :value}"
+                           else
+                             "{:key=>:value}"
+                           end
 
-          expect(File.read("/tmp/deliver_result.txt")).to eq("{:key=>:value}")
+          expect(File.read("/tmp/deliver_result.txt")).to eq(expected_value)
         end
 
         it "use case 5: Calling a method outside of the current platform" do
           ff = Fastlane::FastFile.new('./fastlane/spec/fixtures/fastfiles/SwitcherFastfile')
           ff.runner.execute(:call_general_lane, :ios)
+          expected_value = if Gem::Version.create('3.4.0') <= Gem::Version.create(RUBY_VERSION)
+                             "{random: :value}"
+                           else
+                             "{:random=>:value}"
+                           end
 
-          expect(File.read("/tmp/deliver_result.txt")).to eq("{:random=>:value}")
+          expect(File.read("/tmp/deliver_result.txt")).to eq(expected_value)
         end
 
         it "calling a lane that doesn't exist" do
@@ -471,18 +481,33 @@ lane :beta do
   sigh(app_identifier: "hi"
 end
 RUBY
-        expect(UI).to receive(:user_error!).with(%r{Syntax error in your Fastfile on line 17: fastlane/spec/fixtures/fastfiles/FastfileSyntaxError:17: syntax error, unexpected (keyword_end|end|`end'), expecting '\)'})
+        expected_message = if Gem::Version.create('3.4.0') <= Gem::Version.create(RUBY_VERSION)
+                             %r{Syntax error in your Fastfile on line 17: fastlane/spec/fixtures/fastfiles/FastfileSyntaxError:17: syntax error found}
+                           else
+                             %r{Syntax error in your Fastfile on line 17: fastlane/spec/fixtures/fastfiles/FastfileSyntaxError:17: syntax error, unexpected (keyword_end|end|`end'), expecting '\)'}
+                           end
+        expect(UI).to receive(:user_error!).with(expected_message)
         ff = Fastlane::FastFile.new('./fastlane/spec/fixtures/fastfiles/FastfileSyntaxError')
       end
 
       it "properly shows an error message when there is a syntax error in the Fastfile from string" do
         # ruby error message differs in 2.5 and earlier. We use a matcher
-        expect(UI).to receive(:content_error).with(<<-RUBY.chomp, "3")
+        expected_arg = if Gem::Version.create('3.4.0') <= Gem::Version.create(RUBY_VERSION)
+                         "2"
+                       else
+                         "3"
+                       end
+        expect(UI).to receive(:content_error).with(<<-RUBY.chomp, expected_arg)
         lane :test do
           cases = [:abc,
         end
         RUBY
-        expect(UI).to receive(:user_error!).with(/Syntax error in your Fastfile on line 3: \(eval\):3: syntax error, unexpected (keyword_end|end|`end'), expecting '\]'\n        end\n.*/)
+        expected_message = if Gem::Version.create('3.4.0') <= Gem::Version.create(RUBY_VERSION)
+                             /Syntax error in your Fastfile on line 2: \(eval\):2: syntax errors found.*/
+                           else
+                             /Syntax error in your Fastfile on line 3: \(eval\):3: syntax error, unexpected (keyword_end|end|`end'), expecting '\]'\n        end\n.*/
+                           end
+        expect(UI).to receive(:user_error!).with(expected_message)
 
         ff = Fastlane::FastFile.new.parse(<<-RUBY.chomp)
         lane :test do
@@ -513,7 +538,12 @@ lane :beta do
   sigh(app_identifier: "hi"
 end
 RUBY
-        expect(UI).to receive(:user_error!).with(%r{Syntax error in your Fastfile on line 17: fastlane/spec/fixtures/fastfiles/FastfileSyntaxError:17: syntax error, unexpected (keyword_end|end|`end'), expecting '\)'})
+        expected_message = if Gem::Version.create('3.4.0') <= Gem::Version.create(RUBY_VERSION)
+                             %r{Syntax error in your Fastfile on line 17: fastlane/spec/fixtures/fastfiles/FastfileSyntaxError:17: syntax error found}
+                           else
+                             %r{Syntax error in your Fastfile on line 17: fastlane/spec/fixtures/fastfiles/FastfileSyntaxError:17: syntax error, unexpected (keyword_end|end|`end'), expecting '\)'}
+                           end
+        expect(UI).to receive(:user_error!).with(expected_message)
         ff.import('./FastfileSyntaxError')
       end
 
