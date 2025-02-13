@@ -206,6 +206,21 @@ FastlaneAppTests.testCoinToss()
           @scan.retry_execute(retries: 5, error_output: error_output)
         end.to raise_error(FastlaneCore::Interface::FastlaneBuildFailure, "Failed to find failed tests to retry (could not parse error output)")
       end
+
+      it "retries with additional text about Test session results", requires_xcodebuild: true do
+        error_output = <<-ERROR_OUTPUT
+Failing tests:
+  Test session results, code coverage, and logs: /tmp/fastlane/scan/logs/FastlaneAppTests.xcresult
+  FastlaneAppTests:
+          FastlaneAppTests.testCoinToss()
+          ERROR_OUTPUT
+
+        expect(Fastlane::UI).to receive(:important).with("Retrying tests: FastlaneAppTests/FastlaneAppTests/testCoinToss").once
+        expect(Fastlane::UI).to receive(:important).with("Number of retries remaining: 4").once
+        expect(@scan).to receive(:execute)
+
+        @scan.retry_execute(retries: 5, error_output: error_output)
+      end
     end
 
     describe "test_results" do

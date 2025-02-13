@@ -127,6 +127,11 @@ module Scan
       failing_tests = input.split("Failing tests:\n").fetch(1, [])
                            .split("\n\n").first
 
+      if failing_tests.include?("Test session")
+        failing_tests = input.split(/^Failing tests:\n\s+.+\n/).fetch(1, [])
+                             .split("\n\n").first
+      end
+
       suites = failing_tests.split(/(?=\n\s+[\w\s]+:\n)/)
 
       suites.each do |suite|
