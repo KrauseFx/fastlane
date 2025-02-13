@@ -49,7 +49,6 @@ module Fastlane
 
       def self.optional_flags(params)
         command = ""
-        command << " --path #{params[:path].shellescape}" if params[:path]
         command << supported_option_switch(params, :strict, "0.9.2", true)
         command << " --config #{params[:config_file].shellescape}" if params[:config_file]
         command << " --reporter #{params[:reporter]}" if params[:reporter]
@@ -57,6 +56,7 @@ module Fastlane
         command << supported_option_switch(params, :format, "0.11.0", true) if params[:mode] == :autocorrect
         command << supported_no_cache_option(params) if params[:no_cache]
         command << " --compiler-log-path #{params[:compiler_log_path].shellescape}" if params[:compiler_log_path]
+        command << " #{params[:path].shellescape}" if params[:path]
         return command
       end
 
