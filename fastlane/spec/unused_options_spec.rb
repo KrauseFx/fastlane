@@ -41,6 +41,7 @@ describe Fastlane do
           plugin_scores
           google_play_track_version_codes
           google_play_track_release_names
+          google_play_track_rollout_percentages
           modify_services
           build_app
           build_android_app

@@ -32,6 +32,29 @@ module Supply
       release_names
     end
 
+    def track_rollout_percentages
+      track = Supply.config[:track]
+
+      client.begin_edit(package_name: Supply.config[:package_name])
+      releases = client.track_releases(track)
+      rollout_percentages = releases.map do |release|
+        {
+          name: release.name,
+          version_codes: release.version_codes.join(', '),
+          user_fraction: release.user_fraction
+        }
+      end
+      client.abort_current_edit
+
+      if rollout_percentages.empty?
+        UI.important("No rollout percentages found in track '#{track}'")
+      else
+        UI.success("Found rollout percentages for track '#{track}'")
+      end
+
+      rollout_percentages
+    end
+
     private
 
     def client
