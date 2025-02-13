@@ -133,14 +133,52 @@ module Fastlane
       def self.upload_app_data_usages(params, app, usages_config)
         UI.message("Preparing to upload App Data Usage")
 
-        # Delete all existing usages for new ones
-        all_usages = Spaceship::ConnectAPI::AppDataUsage.all(app_id: app.id, includes: "category,grouping,purpose,dataProtection", limit: 500)
-        all_usages.each(&:delete!)
+        remote_usages = Spaceship::ConnectAPI::AppDataUsage.all(app_id: app.id, includes: "category,grouping,purpose,dataProtection", limit: 500)
+        remote_usages_config_hash = Fastlane::Helper::AppPrivacyDetailsHelper.usages_config_from_raw_usages(raw_usages: remote_usages)
 
+        remote_advertising_data_config = remote_usages_config_hash.find do |config|
+          config["category"] == Spaceship::ConnectAPI::AppDataUsageCategory::ID::ADVERTISING_DATA
+        end
+        local_advertising_data_config = usages_config.find do |config|
+          config["category"] == Spaceship::ConnectAPI::AppDataUsageCategory::ID::ADVERTISING_DATA
+        end
+        local_usages_include_advertising_data = !local_advertising_data_config.nil?
+        local_and_remote_advertising_data_config_are_identical = local_advertising_data_config == remote_advertising_data_config
+        skipped_advertising_data_deletion = false
+
+        # Delete all remote app data usage we can, so we can reupload local ones
+        remote_usages.each do |usage|
+          if usage.category.id == Spaceship::ConnectAPI::AppDataUsageCategory::ID::ADVERTISING_DATA
+            if local_usages_include_advertising_data
+              UI.verbose("The app privacy details currently stored in App Store Connect indicate this app tracks advertising data, and so does the local app privacy details that are being uploaded to App Store Connect.")
+              UI.verbose("We normally delete all remote settings, but we can't delete the 'ADVERTISING_DATA' one. This is because:")
+              UI.verbose("    a) If the app still collects advertising data (i.e. contains 'NSUserTrackingUsageDescription' in its Info.plist), then attempting to delete it from App Store Connect would raise an error such as 'Your binary indicates that your app tracks users.'")
+              UI.verbose("    b) If the remote and local app privacy details are identical, we don't really have a need to delete or re-upload anything.")
+              unless local_and_remote_advertising_data_config_are_identical
+                UI.important("Looks like you're attempting to make changes to your ADVERTISING_DATA app privacy details.")
+                UI.important("Please make this change manually via App Store Connect. Since this is a one-off (and rare) situation, which the App Store Connect API doesn't really support, unfortunately this is the only solution for now.")
+                UI.important("Don't forget to download the app privacy details using the 'download_app_privacy_details_from_app_store' action when you're done, to update the local json.")
+              end
+              skipped_advertising_data_deletion = true
+              next
+            else
+              UI.important("The app privacy details currently stored in App Store Connect indicate this app tracks advertising data, while the local app privacy details that is being uploaded to App Store Connect indicate it doesn't.")
+              UI.important("We're going to assume that your app's Info.plist that is currently available in App Store Connect doesn't contain a `NSUserTrackingUsageDescription` key anymore, already. If it does, the following actions will fail.")
+              UI.important("This is often caused by either bad configuration on the local app privacy settings, or because the app is legitimately not tracking advertisements anymore.")
+              UI.important("If the former, make sure the data collection questionnaire (or json file) is accurate.")
+              UI.important("If the latter, make sure you upload your app's latest binary to App Store Connect, and remember that its Info.plist cannot contain the `NSUserTrackingUsageDescription` key anymore.")
+            end
+          end
+          usage.delete!
+        end
+
+        # Upload local app data usage
         usages_config.each do |usage_config|
           category = usage_config["category"]
           purposes = usage_config["purposes"] || []
           data_protections = usage_config["data_protections"] || []
+          # If we don't skip it, an error would be raised, e.g. "A data usage with category ADVERTISING_DATA, purpose THIRD_PARTY_ADVERTISING and data protection DATA_NOT_LINKED_TO_YOU already exists." because we skipped the setting deletion previously
+          next if skipped_advertising_data_deletion
 
           # There will not be any purposes if "not collecting data"
           # However, an AppDataUsage still needs to be created for not collecting data

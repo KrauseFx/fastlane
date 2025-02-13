@@ -20,26 +20,7 @@ module Fastlane
 
         # Download usages and return a config
         raw_usages = download_app_data_usages(params, app)
-
-        usages_config = []
-        if raw_usages.count == 1 && raw_usages.first.data_protection.id == Spaceship::ConnectAPI::AppDataUsageDataProtection::ID::DATA_NOT_COLLECTED
-          usages_config << {
-            "data_protections" => [Spaceship::ConnectAPI::AppDataUsageDataProtection::ID::DATA_NOT_COLLECTED]
-          }
-        else
-          grouped_usages = raw_usages.group_by do |usage|
-            usage.category.id
-          end
-          grouped_usages.sort_by(&:first).each do |key, usage_group|
-            purposes = usage_group.map(&:purpose).compact || []
-            data_protections = usage_group.map(&:data_protection).compact || []
-            usages_config << {
-              "category" => key,
-              "purposes" => purposes.map(&:id).sort.uniq,
-              "data_protections" => data_protections.map(&:id).sort.uniq
-            }
-          end
-        end
+        usages_config = Fastlane::Helper::AppPrivacyDetailsHelper.usages_config_from_raw_usages(raw_usages: raw_usages)
 
         # Save to JSON file
         json = JSON.pretty_generate(usages_config)
@@ -57,7 +38,6 @@ module Fastlane
       def self.download_app_data_usages(params, app)
         UI.message("Downloading App Data Usage")
 
-        # Delete all existing usages for new ones
         Spaceship::ConnectAPI::AppDataUsage.all(app_id: app.id, includes: "category,grouping,purpose,dataProtection", limit: 500)
       end
 
