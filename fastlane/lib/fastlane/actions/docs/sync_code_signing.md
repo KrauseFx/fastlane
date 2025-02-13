@@ -490,6 +490,19 @@ You'll be asked for the new password on all your machines on the next run.
 
 ### Import
 
+Before importing an existing certificate/key pair from your Mac to match, you need to export the certificates in the right formats.
+
+1. Open Keychain Access
+2. Go into the certificates tab
+3. Filter for the certificate you want to export
+4. Klick the small “>” next to the certificate to reveal the key
+5. Right Klick on the key, choose export
+6. Choose the “P12” Format, klick “OK”
+7. Do not set a password, just klick “OK”
+8. Right Click on the certificate, choose export
+9. Choose the “CER” Format, klick “OK”
+10. Copy the Certificates.cer and Certificates.p12 files into your project folder
+
 To import and encrypt a certificate (`.cer`), the private key (`.p12`) and the provisioning profiles (`.mobileprovision` or `.provisionprofile`) into the _match_ repo run:
 
 ```no-highlight
