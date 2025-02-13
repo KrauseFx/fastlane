@@ -129,10 +129,13 @@ module FastlaneCore
       end
 
       def latest_simulator_version_for_device(device)
-        simulators.select { |s| s.name == device }
-                  .sort_by { |s| Gem::Version.create(s.os_version) }
-                  .last
-                  .os_version
+        latest_simulator = simulators.select { |s| s.name == device }
+                                     .sort_by { |s| Gem::Version.create(s.os_version) }
+                                     .last
+
+        UI.error("No simulator found for device: #{device}") unless latest_simulator
+
+        latest_simulator.os_version
       end
 
       # The code below works from Xcode 7 on
