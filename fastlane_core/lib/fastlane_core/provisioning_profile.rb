@@ -73,7 +73,16 @@ module FastlaneCore
       end
 
       def profiles_path
-        path = File.expand_path("~") + "/Library/MobileDevice/Provisioning Profiles/"
+        xcode_version = Helper.xcode_version
+
+        # Provisioning profile location changed for XCode 16
+        if xcode_version >= "16"
+          provisioning_path = "/Library/Developer/Xcode/UserData/Provisioning Profiles/"
+        else
+          provisioning_path = "/Library/MobileDevice/Provisioning Profiles/"
+        end
+
+        path = File.expand_path("~") + provisioning_path
         # If the directory doesn't exist, create it first
         unless File.directory?(path)
           FileUtils.mkdir_p(path)
