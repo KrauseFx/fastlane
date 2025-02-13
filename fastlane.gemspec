@@ -110,4 +110,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency('xcodeproj', '>= 1.13.0', '< 2.0.0') # Modify Xcode projects
   spec.add_dependency('xcpretty-travis-formatter', '>= 0.0.3', '< 2.0.0')
   spec.add_dependency('xcpretty', '~> 0.4.0') # prettify xcodebuild output
+  spec.add_dependency('mutex_m', '~> 0.3.0') # workaround for httpclient gem dependency resolution
+  spec.add_dependency('csv', '~> 3.3') # CSV Reading and Writing
+  spec.add_dependency('abbrev', '~> 0.1.2') # commander and highline dependency for Ruby 3.4 or higher. highline (~> 3.0.0) depends on Ruby >= 3.0
 end
