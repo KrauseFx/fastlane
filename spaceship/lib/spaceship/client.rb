@@ -480,9 +480,10 @@ module Spaceship
       salt = Base64.strict_decode64(body["salt"])
       b = Base64.strict_decode64(body["b"])
       c = body["c"]
+      protocol = body["protocol"]
 
       key_length = 32
-      encrypted_password = pbkdf2(password, salt, iterations, key_length)
+      encrypted_password = pbkdf2(password, salt, iterations, key_length, protocol)
 
       m1 = client.process_challenge(
         user,
@@ -524,9 +525,15 @@ module Spaceship
       return response
     end
 
-    def pbkdf2(password, salt, iterations, key_length, digest = OpenSSL::Digest::SHA256.new)
+    def pbkdf2(password, salt, iterations, key_length, protocol, digest = OpenSSL::Digest::SHA256.new)
       require 'openssl'
       password = OpenSSL::Digest::SHA256.digest(password)
+
+      if protocol == 's2k_fo'
+        puts("Using legacy s2k_fo protocol for password digest") if Spaceship::Globals.verbose?
+        password = to_byte(to_hex(password))
+      end
+
       OpenSSL::PKCS5.pbkdf2_hmac(password, salt, iterations, key_length, digest)
     end
 
