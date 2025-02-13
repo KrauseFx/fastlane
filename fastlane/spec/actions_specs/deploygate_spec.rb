@@ -41,7 +41,7 @@ describe Fastlane do
               user: 'deploygate'
             })
           end").runner.execute(:test)
-        end.to raise_error(FastlaneCore::Interface::FastlaneError, 'missing `ipa` and `apk`. deploygate action needs least one.')
+        end.to raise_error(FastlaneCore::Interface::FastlaneError, 'missing `ipa`, `apk` and `aab`. deploygate action needs least one.')
       end
 
       it "raises an error if the given ipa path was not found" do
@@ -66,6 +66,18 @@ describe Fastlane do
             })
           end").runner.execute(:test)
         end.to raise_error(FastlaneCore::Interface::FastlaneError, "Couldn't find apk file at path './fastlane/nonexistent'")
+      end
+
+      it "raises an error if the given aab path was not found" do
+        expect do
+          Fastlane::FastFile.new.parse("lane :test do
+            deploygate({
+              api_token: 'testistest',
+              user: 'deploygate',
+              aab: './fastlane/nonexistent'
+            })
+          end").runner.execute(:test)
+        end.to raise_error(FastlaneCore::Interface::FastlaneError, "Couldn't find aab file at path './fastlane/nonexistent'")
       end
 
       it "works with valid parameters" do

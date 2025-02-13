@@ -43,12 +43,12 @@ module Fastlane
 
         api_token = options[:api_token]
         user_name = options[:user]
-        binary = options[:ipa] || options[:apk]
+        binary = options[:ipa] || options[:apk] || options[:aab]
         upload_options = options.values.select do |key, _|
           [:message, :distribution_key, :release_note, :disable_notify, :distribution_name].include?(key)
         end
 
-        UI.user_error!('missing `ipa` and `apk`. deploygate action needs least one.') unless binary
+        UI.user_error!('missing `ipa`, `apk` and `aab`. deploygate action needs least one.') unless binary
 
         return binary if Helper.test?
 
@@ -142,6 +142,15 @@ module Fastlane
                                        verify_block: proc do |value|
                                          UI.user_error!("Couldn't find apk file at path '#{value}'") unless File.exist?(value)
                                        end),
+          FastlaneCore::ConfigItem.new(key: :aab,
+                                       env_name: "DEPLOYGATE_AAB_PATH",
+                                       description: "Path to your AAB file",
+                                       default_value: Actions.lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
+                                       default_value_dynamic: true,
+                                       optional: true,
+                                       verify_block: proc do |value|
+                                         UI.user_error!("Couldn't find aab file at path '#{value}'") unless File.exist?(value)
+                                       end),
           FastlaneCore::ConfigItem.new(key: :message,
                                        env_name: "DEPLOYGATE_MESSAGE",
                                        description: "Release Notes",
@@ -190,6 +199,14 @@ module Fastlane
             api_token: "...",
             user: "target username or organization name",
             apk: "./apk_file.apk",
+            message: "Build #{lane_context[SharedValues::BUILD_NUMBER]}",
+            distribution_key: "(Optional) Target Distribution Key",
+            distribution_name: "(Optional) Target Distribution Name"
+          )',
+          'deploygate(
+            api_token: "...",
+            user: "target username or organization name",
+            aab: "./aab_file.aab",
             message: "Build #{lane_context[SharedValues::BUILD_NUMBER]}",
             distribution_key: "(Optional) Target Distribution Key",
             distribution_name: "(Optional) Target Distribution Name"
