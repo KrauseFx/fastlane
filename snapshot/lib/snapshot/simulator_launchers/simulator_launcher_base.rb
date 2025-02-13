@@ -137,8 +137,9 @@ module Snapshot
         time = Time.new(2007, 1, 9, 9, 41, 0)
 
         # If you don't override the operator name, you'll get "Carrier" in the status bar on no-notch devices such as iPhone 8. Pass an empty string to blank it out.
+        # Some versions of `simctl` are quite picky about time format, and return an error if no fractional seconds are given
 
-        arguments = "--time #{time.iso8601} --dataNetwork wifi --wifiMode active --wifiBars 3 --cellularMode active --operatorName '' --cellularBars 4 --batteryState charged --batteryLevel 100"
+        arguments = "--time #{time.iso8601(1)} --dataNetwork wifi --wifiMode active --wifiBars 3 --cellularMode active --operatorName '' --cellularBars 4 --batteryState charged --batteryLevel 100"
       end
 
       Helper.backticks("xcrun simctl status_bar #{device_udid} override #{arguments} &> /dev/null")
