@@ -49,6 +49,7 @@ GEM
   specs:
     CFPropertyList (3.0.6)
       rexml
+    abbrev (0.1.2)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
     artifactory (3.0.15)
@@ -210,6 +211,7 @@ GEM
     multipart-post (2.0.0)
     mustermann (2.0.2)
       ruby2_keywords (~> 0.0.1)
+    mutex_m (0.3.0)
     nanaimo (0.3.0)
     nap (1.1.0)
     naturally (2.2.1)
@@ -365,6 +367,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  abbrev
   climate_control (~> 0.2.0)
   coveralls (~> 0.8.13)
   danger (~> 8.0)
@@ -375,6 +378,7 @@ DEPENDENCIES
   fastlane-plugin-ruby
   fastlane-plugin-slack_train (>= 0.2.0)
   mime-types (>= 1.16, < 4.0)
+  mutex_m
   ox (= 2.13.2)
   pry
   pry-byebug
@@ -394,4 +398,4 @@ DEPENDENCIES
   yard (~> 0.9.11)
 
 BUNDLED WITH
-   2.3.21
+   2.6.2

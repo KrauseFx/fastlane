@@ -54,6 +54,11 @@ gem "xcov", "~> 1.4.1"
 # A documentation generation tool for Ruby.
 gem "yard", "~> 0.9.11"
 
+if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.4.0')
+  gem "abbrev"
+  gem "mutex_m"
+end
+
 gemspec(path: ".")
 
 plugins_path = File.join(File.expand_path("..", __FILE__), "fastlane", "Pluginfile")
