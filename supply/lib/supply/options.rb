@@ -230,6 +230,12 @@ module Supply
                                      verify_block: proc do |value|
                                                      UI.user_error!("Value must be one of '#{Supply::RELEASE_STATUS}'") unless Supply::ReleaseStatus::ALL.include?(value)
                                                    end),
+        FastlaneCore::ConfigItem.new(key: :track_promote_force,
+                                     env_name: "SUPPLY_TRACK_PROMOTE_FORCE",
+                                     optional: true,
+                                     description: "Force promote a specific version code (:version_name is required)",
+                                     type: Boolean,
+                                     default_value: false),
         FastlaneCore::ConfigItem.new(key: :validate_only,
                                      env_name: "SUPPLY_VALIDATE_ONLY",
                                      optional: true,

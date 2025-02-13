@@ -185,6 +185,16 @@ module Supply
       end
 
       releases = track_from.releases
+
+      if Supply.config[:track_promote_force]
+        if Supply.config[:version_name].nil?
+          UI.user_error!("To force promote a :version_code, it is mandatory to enter the :version_name")
+        end
+
+        releases.first.name = Supply.config[:version_name]
+        releases.first.version_codes = [Supply.config[:version_code].to_s]
+      end
+
       if Supply.config[:version_code].to_s != ""
         releases = releases.select do |release|
           release.version_codes.include?(Supply.config[:version_code].to_s)

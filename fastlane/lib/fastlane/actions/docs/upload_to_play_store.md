@@ -174,6 +174,12 @@ A common Play publishing scenario might involve uploading an APK version to a te
 
 This can be done using the `--track_promote_to` parameter. The `--track_promote_to` parameter works with the `--track` parameter to command the Play API to promote existing Play track APK version(s) (those active on the track identified by the `--track` param value) to a new track (`--track_promote_to` value).
 
+### Force a Track Promotion
+
+The AndroidPublisherV3 API now returns only the latest version of each track instead of multiple versions as before. This created a difficulty when trying to promote older versions, as they were not being returned by the API. See [fastlane/fastlane#18497](https://github.com/fastlane/fastlane/issues/18497) for more info.
+
+To work around this issue, a solution was implemented to force the submission of the version with `version_code = 1`, requiring the inclusion of the `--version_name` parameter and also the `--track_promote_force` parameter. This ensures that the older version is submitted correctly, even after the change in the API.
+
 ## Retrieve Track Release Names & Version Codes
 
 Before performing a new APK upload you may want to check existing track version codes or release names, or you may simply want to provide an informational lane that displays the currently promoted version codes or release name for the production track. You can use the `google_play_track_version_codes` action to retrieve existing version codes for a package and track. You can use the `google_play_track_release_names` action to retrieve existing release names for a package and track.
