@@ -42,8 +42,7 @@ module Sigh
 
       # validate that we have valid values for all these params, we don't need to check signing_identity because `find_signing_identity` will only ever return a valid value
       validate_params(resign_path, ipa, provisioning_profiles)
-      entitlements = "-e #{entitlements.shellescape}" if entitlements
-
+      entitlements = create_entitlements_options(entitlements) if entitlements
       provisioning_options = create_provisioning_options(provisioning_profiles)
       version = "-n #{version}" if version
       display_name = "-d #{display_name.shellescape}" if display_name
@@ -131,6 +130,18 @@ module Sigh
       identities = installed_identities
       return signing_identity if identities.keys.include?(signing_identity)
       identities.key(signing_identity)
+    end
+
+    def create_entitlements_options(entitlements)
+      # entitlements is passed as an array (to be able to resign extensions/nested apps):
+      # (resign.sh also takes "-e /folder/mobile.mobileprovision" as a param)
+      #   [
+      #        "/folder/mobile.mobileprovision"
+      #   ]
+      entitlements.map do |entitlement|
+        entitlement_file = File.expand_path(entitlement)
+        "-e #{entitlement_file.shellescape}"
+      end.join(' ')
     end
 
     def create_provisioning_options(provisioning_profiles)

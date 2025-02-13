@@ -163,7 +163,7 @@ fi
 
 ORIGINAL_FILE="$1"
 CERTIFICATE="$2"
-ENTITLEMENTS=
+ENTITLEMENTS=()
 BUNDLE_IDENTIFIER=""
 DISPLAY_NAME=""
 KEYCHAIN=""
@@ -173,6 +173,7 @@ BUNDLE_VERSION=
 KEYCHAIN_PATH=
 RAW_PROVISIONS=()
 PROVISIONS_BY_ID=()
+ENTITLEMENTS_BY_ID=()
 DEFAULT_PROVISION=""
 TEMP_DIR="_floatsignTemp"
 USE_APP_ENTITLEMENTS=""
@@ -193,7 +194,7 @@ while [ "$1" != "" ]; do
             ;;
         -e | --entitlements )
             shift
-            ENTITLEMENTS="$1"
+            ENTITLEMENTS+=("$1")
             ;;
         -d | --display-name )
             shift
@@ -242,6 +243,11 @@ while [ "$1" != "" ]; do
     shift
 done
 
+function entitlementsNotEmpty { 
+    (( "${#ENTITLEMENTS[@]}" ))
+}
+    
+
 KEYCHAIN_FLAG=
 if [ -n "$KEYCHAIN_PATH" ]; then
     KEYCHAIN_FLAG="--keychain $KEYCHAIN_PATH"
@@ -259,7 +265,7 @@ done
 log "Original file: '$ORIGINAL_FILE'"
 log "Certificate: '$CERTIFICATE'"
 [[ -n "${DISPLAY_NAME}" ]] && log "Specified display name: '$DISPLAY_NAME'"
-[[ -n "${ENTITLEMENTS}" ]] && log "Specified signing entitlements: '$ENTITLEMENTS'"
+entitlementsNotEmpty && log "Specified signing entitlement files: '${ENTITLEMENTS[@]}'"
 [[ -n "${BUNDLE_IDENTIFIER}" ]] && log "Specified bundle identifier: '$BUNDLE_IDENTIFIER'"
 [[ -n "${KEYCHAIN}" ]] && log "Specified keychain to use: '$KEYCHAIN'"
 [[ -n "${VERSION_NUMBER}" ]] && log "Specified version number to use: '$VERSION_NUMBER'"
@@ -273,7 +279,7 @@ log "Certificate: '$CERTIFICATE'"
 [[ -n "$VERSION_NUMBER" && (-n "$SHORT_VERSION" || -n "$BUNDLE_VERSION") ]] && error "versionNumber option cannot be used in combination with shortVersion or bundleVersion options"
 
 # Check that --use-app-entitlements and -e, --entitlements are not used at the same time
-[[ -n "${USE_APP_ENTITLEMENTS}" && -n ${ENTITLEMENTS} ]] && error "--use-app-entitlements option cannot be used in combination with -e, --entitlements option."
+[[ -n "${USE_APP_ENTITLEMENTS}" ]] && entitlementsNotEmpty && error "--use-app-entitlements option cannot be used in combination with -e, --entitlements option."
 
 # Check output file name
 if [ -z "$NEW_FILE" ]; then
@@ -360,6 +366,39 @@ function bundle_id_for_provision {
     checkStatus
     echo "${FULL_BUNDLE_ID#*.}"
 }
+
+function entitlement_for_bundle_id {
+
+    local NEEDLE_BUNDLE_ID="$1"
+
+    for ARG in "${ENTITLEMENTS_BY_ID[@]}"; do
+        local BUNDLE_ID="${ARG%%=*}"
+        if [ "$BUNDLE_ID" = "$NEEDLE_BUNDLE_ID" ]; then
+            echo "${ARG#*=}"
+            break
+        fi
+    done
+
+}
+
+# Add given entitlement file and bundle identifier to the search list
+function add_entitlement {
+
+    local ENTITLEMENT_FILE="$1"
+
+    local FULL_BUNDLE_ID=$(PlistBuddy -c 'Print :application-identifier' "$ENTITLEMENT_FILE")
+    checkStatus
+    local BUNDLE_ID="${FULL_BUNDLE_ID#*.}"
+
+    log "Using bundle id $BUNDLE_ID for entitlement file $ENTITLEMENT_FILE"
+    
+    ENTITLEMENTS_BY_ID+=("$BUNDLE_ID=$ENTITLEMENT_FILE")
+}
+
+# Load bundle identifiers from entitlement files
+for ARG in "${ENTITLEMENTS[@]}"; do
+    add_entitlement "$ARG"
+done
 
 # Add given provisioning profile and bundle identifier to the search list
 function add_provision_for_bundle_id {
@@ -461,6 +500,13 @@ function resign {
 
     log "Current bundle identifier is: '$CURRENT_BUNDLE_IDENTIFIER'"
     log "New bundle identifier will be: '$BUNDLE_IDENTIFIER'"
+
+    local ENTITLEMENT_FILE="$(entitlement_for_bundle_id "$BUNDLE_IDENTIFIER")"
+
+    if [[ "$ENTITLEMENT_FILE" == "" ]]
+    then
+        error "No matching entitlement file found for new bundle identifier $BUNDLE_IDENTIFIER. Specify an entitlement file with the -e option that has an app-identifier equal to $BUNDLE_IDENTIFIER"
+    fi
 
     # Update the CFBundleDisplayName property in the Info.plist if a new name has been provided
     if [ "${DISPLAY_NAME}" != "" ]; then
@@ -598,10 +644,10 @@ function resign {
         fi
     done
 
-    if [ "$ENTITLEMENTS" != "" ]; then
+    if entitlementsNotEmpty; then
         if [ -n "$APP_IDENTIFIER_PREFIX" ]; then
             # sanity check the 'application-identifier' is present in the provided entitlements and matches the provisioning profile value
-            ENTITLEMENTS_APP_ID_PREFIX=$(PlistBuddy -c "Print :application-identifier" "$ENTITLEMENTS" | grep -E '^[A-Z0-9]*' -o | tr -d '\n')
+            ENTITLEMENTS_APP_ID_PREFIX=$(PlistBuddy -c "Print :application-identifier" "$ENTITLEMENT_FILE" | grep -E '^[A-Z0-9]*' -o | tr -d '\n')
             if [ "$ENTITLEMENTS_APP_ID_PREFIX" == "" ]; then
                 error "Provided entitlements file is missing a value for the required 'application-identifier' key"
             elif [ "$ENTITLEMENTS_APP_ID_PREFIX" != "$APP_IDENTIFIER_PREFIX" ]; then
@@ -611,7 +657,7 @@ function resign {
 
         if [ -n "$TEAM_IDENTIFIER" ]; then
             # sanity check the 'com.apple.developer.team-identifier' is present in the provided entitlements and matches the provisioning profile value
-            ENTITLEMENTS_TEAM_IDENTIFIER=$(PlistBuddy -c "Print :com.apple.developer.team-identifier" "$ENTITLEMENTS" | tr -d '\n')
+            ENTITLEMENTS_TEAM_IDENTIFIER=$(PlistBuddy -c "Print :com.apple.developer.team-identifier" "$ENTITLEMENT_FILE" | tr -d '\n')
             if [ "$ENTITLEMENTS_TEAM_IDENTIFIER" == "" ]; then
                 error "Provided entitlements file is missing a value for the required 'com.apple.developer.team-identifier' key"
             elif [ "$ENTITLEMENTS_TEAM_IDENTIFIER" != "$TEAM_IDENTIFIER" ]; then
@@ -620,12 +666,12 @@ function resign {
         fi
 
         log "Resigning application using certificate: '$CERTIFICATE'"
-        log "and entitlements: $ENTITLEMENTS"
+        log "and entitlements: $ENTITLEMENT_FILE"
         if [[ "${XCODE_VERSION/.*/}" -lt 10 ]]; then
             log "Creating an archived-expanded-entitlements.xcent file for Xcode 9 builds or earlier"
-            cp -f "$ENTITLEMENTS" "$APP_PATH/archived-expanded-entitlements.xcent"
+            cp -f "$ENTITLEMENT_FILE" "$APP_PATH/archived-expanded-entitlements.xcent"
         fi
-        /usr/bin/codesign ${VERBOSE} --generate-entitlement-der -f -s "$CERTIFICATE" --entitlements "$ENTITLEMENTS" "$APP_PATH"
+        /usr/bin/codesign ${VERBOSE} --generate-entitlement-der -f -s "$CERTIFICATE" --entitlements "$ENTITLEMENT_FILE" "$APP_PATH"
         checkStatus
     elif  [[ -n "${USE_APP_ENTITLEMENTS}" ]]; then
         # Extract entitlements from provisioning profile and from the app binary

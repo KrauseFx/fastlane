@@ -108,7 +108,9 @@ module Sigh
                  'The path may be prefixed with a identifier in order to determine which provisioning profile should be used on which app.',
                  &multiple_values_option_proc(c, "provisioning_profile", &proc { |value| value.split('=', 2) }))
         c.option('-d', '--display_name STRING', String, 'Display name to use')
-        c.option('-e', '--entitlements PATH', String, 'The path to the entitlements file to use.')
+        c.option('-e', '--entitlements PATH', String, 'The path to the entitlements file to use.' \
+                 'Can be provided multiple times if the application contains nested applications and app extensions, which need their own entitlements file. ',
+                 &multiple_values_option_proc(c, "entitlements"))
         c.option('--short_version STRING', String, 'Short version string to force binary and all nested binaries to use (CFBundleShortVersionString).')
         c.option('--bundle_version STRING', String, 'Bundle version to force binary and all nested binaries to use (CFBundleVersion).')
         c.option('--use_app_entitlements', 'Extract app bundle codesigning entitlements and combine with entitlements from new provisioning profile.')
