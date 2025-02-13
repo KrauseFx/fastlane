@@ -1,10 +1,10 @@
 ## [fastlane match](https://docs.fastlane.tools/actions/match/)
 
+> Do not modify this file, as it gets overwritten every time you run _match_.
+
 This repository contains all your certificates and provisioning profiles needed to build and sign your applications. They are encrypted using OpenSSL via a passphrase.
 
 **Important:** Make sure this repository is set to private and only your team members have access to this repo.
-
-Do not modify this file, as it gets overwritten every time you run _match_.
 
 ### Installation
 
