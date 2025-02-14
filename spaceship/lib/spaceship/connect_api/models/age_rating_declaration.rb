@@ -22,6 +22,7 @@ module Spaceship
       attr_accessor :gambling
       attr_accessor :seventeen_plus
       attr_accessor :unrestricted_web_access
+      attr_accessor :loot_box
 
       # KidsAge
       attr_accessor :kids_age_band
@@ -58,6 +59,7 @@ module Spaceship
         "violenceRealisticProlongedGraphicOrSadistic" => "violence_realistic_prolonged_graphic_or_sadistic",
         "violenceRealistic" => "violence_realistic",
         "kidsAgeBand" => "kids_age_band",
+        "lootBox" => "loot_box",
 
         # Deprecated as of App Store Connect API 1.3
         "gamblingAndContests" => "gambling_and_contests",

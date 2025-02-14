@@ -13,5 +13,6 @@
   "violenceRealistic": "INFREQUENT_OR_MILD",
   "gambling": false,  
   "seventeenPlus": false,
-  "unrestrictedWebAccess": true
+  "unrestrictedWebAccess": true,
+  "lootBox": false
 }
