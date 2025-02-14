@@ -149,6 +149,14 @@ describe Fastlane do
           end.to raise_error("Your current version (#{version}) does not respect the format A or A.B or A.B.C")
         end
       end
+
+      it "raises an exception when version_number is not formatted as a SemVer" do
+        expect do
+          Fastlane::FastFile.new.parse("lane :test do
+            increment_version_number(version_number: 'release/1.2.3')
+          end").runner.execute(:test)
+        end.to raise_error("The version_number parameter (release/1.2.3) does not respect the format A or A.B or A.B.C")
+      end
     end
   end
 end

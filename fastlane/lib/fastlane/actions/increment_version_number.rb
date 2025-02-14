@@ -37,6 +37,7 @@ module Fastlane
           UI.verbose(version_format_error(current_version)) unless current_version =~ version_regex
 
           # Specific version
+          UI.user_error!(version_number_format_error(params[:version_number])) unless params[:version_number] =~ version_regex
           next_version_number = params[:version_number]
         else
           UI.user_error!(version_format_error(current_version)) unless current_version =~ version_regex
@@ -90,6 +91,10 @@ module Fastlane
 
       def self.version_format_error(version)
         "Your current version (#{version}) does not respect the format A or A.B or A.B.C"
+      end
+
+      def self.version_number_format_error(version)
+        "The version_number parameter (#{version}) does not respect the format A or A.B or A.B.C"
       end
 
       def self.version_token_error
