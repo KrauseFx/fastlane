@@ -55,7 +55,9 @@
     "friendly_category_name": "iPad",
     "screenshot_resolutions": [
       [2048, 2732],
-      [2732, 2048]
+      [2732, 2048],
+      [2064, 2752],
+      [2752, 2064]
     ],
     "picture_type": "MZPFT.SortedJ320ScreenShot",
     "messages_picture_type": "MZPFT.SortedJ320MessagesScreenShot"

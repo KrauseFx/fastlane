@@ -257,7 +257,9 @@ module Deliver
         ],
         ScreenSize::IOS_IPAD_PRO_MESSAGES => [
           [2732, 2048],
-          [2048, 2732]
+          [2048, 2732],
+          [2752, 2064],
+          [2064, 2752]
         ]
       }
     end
