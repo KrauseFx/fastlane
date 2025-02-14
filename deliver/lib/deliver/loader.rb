@@ -1,6 +1,7 @@
 require_relative 'module'
 require_relative 'app_screenshot'
 require_relative 'app_screenshot_validator'
+require_relative 'app_clip_header_image'
 require_relative 'upload_metadata'
 require_relative 'languages'
 
@@ -114,6 +115,42 @@ module Deliver
       end
 
       valid_screenshots
+    end
+
+    # Returns the list of valid app clip header images. When detecting invalid header images, this
+    # will cause an error. There may only be a max of one image per language and each image must be
+    # exactly 1800x1200.
+    #
+    # @param root [String] A directory path
+    # @param ignore_validation [String] Set false not to raise the error when
+    # finding invalid folder name @return [Array<Deliver::AppClipHeaderImage>]
+    # The list of AppClipHeaderImage that exists under given `root` directory
+    def self.load_app_clip_header_images(root, ignore_validation)
+      app_clip_header_images = language_folders(root, ignore_validation, true).flat_map do |language_folder|
+        paths = language_folder.file_paths
+        paths.map { |path| AppClipHeaderImage.new(path, language_folder.language) }
+      end
+
+      # validate the header images are 1800x1200 in size
+      app_clip_header_images.each do |header_image|
+        size = FastImage.size(header_image.path)
+        if size.nil?
+          UI.user_error!("Unable to read app clip header image file: #{header_image.path}")
+        end
+        size = size.join('x')
+        unless size.eql?("1800x1200")
+          UI.user_error!("App clip header images must be exactly 1800x1200 in size. Offending image has size #{size}: '#{header_image.path}'")
+        end
+      end
+
+      # validate there is only one header image per language
+      app_clip_header_images.map(&:language).each do |language|
+        if app_clip_header_images.find_all { |header_image| header_image.language.eql?(language) }.length > 1
+          UI.user_error!("There can only be one app clip header image per language. The language #{language} has more than one image.")
+        end
+      end
+
+      app_clip_header_images
     end
 
     # Returns the list of language folders

@@ -4,6 +4,8 @@ require 'credentials_manager/appfile_config'
 require_relative 'module'
 
 module Pilot
+  # rubocop:disable Metrics/ClassLength
+  # rubocop:disable Metrics/PerceivedComplexity
   class Options
     def self.available_options
       user = CredentialsManager::AppfileConfig.try_fetch_value(:itunes_connect_id)
@@ -180,6 +182,25 @@ module Pilot
                                      description: "Update build info immediately after validation. This is deprecated and will be removed in a future release. App Store Connect no longer supports setting build info until after build processing has completed, which is when build info is updated by default",
                                      is_string: false,
                                      default_value: false),
+        FastlaneCore::ConfigItem.new(key: :app_clip_invocations,
+                                     env_name: "APP_CLIP_INVOCATIONS",
+                                     description: "Add beta app clip invocations to your builds in TestFlight",
+                                     optional: true,
+                                     type: Array,
+                                     verify_block: proc do |app_clip_invocations|
+                                       UI.user_error!("Could not evaluate array from '#{app_clip_invocations}'") unless app_clip_invocations.kind_of?(Array)
+
+                                       app_clip_invocations.each do |invocation|
+                                         UI.user_error!("Each app clip invocation must contain a url.") unless invocation[:url]
+                                         UI.user_error!("Each app clip invocation must contain a localized title.") unless invocation[:title] && invocation[:title].kind_of?(Hash)
+                                       end
+                                     end),
+        FastlaneCore::ConfigItem.new(key: :overwrite_app_clip_invocations,
+                                     env_name: "OVERWRITE_APP_CLIP_INVOCATIONS",
+                                     description: "Clear all previous beta app clip invocations before adding new ones",
+                                     optional: true,
+                                     type: Boolean,
+                                     default_value: false),
 
         # distribution
         FastlaneCore::ConfigItem.new(key: :distribute_only,
@@ -333,4 +354,6 @@ module Pilot
       ]
     end
   end
+  # rubocop:enable Metrics/ClassLength
+  # rubocop:enable Metrics/PerceivedComplexity
 end

@@ -182,6 +182,11 @@ Path to the metadata you want to use. The folder has to be structured like this
 
 If you run `deliver init` this will automatically be created for you.
 
+##### app_clip_default_experience_metadata_path
+Path to the App Clip metadata you want to use. The folder has to be structured like this
+
+![/img/actions/deliver_metadata.png](/img/actions/deliver_app_clip_metadata_from_folder.png)
+
 ##### force
 
 ```ruby-skip-tests
@@ -237,6 +242,26 @@ app_review_information(
 
 You can also provide these values by creating files in a `metadata/review_information/` directory. The file names must match the pattern `<key>.txt` (e.g. `first_name.txt`, `notes.txt` etc.). The contents of each file will be used as the value for the matching key. Values provided in the `Deliverfile` or `Fastfile` will be take priority over values from these files.
 
+##### app_clip_review_information
+Review information on the app clips for the app review team. Available options: `invocation_urls`
+
+
+```ruby-skip-tests
+app_clip_review_information(
+  invocation_urls: ["http://localhost.com"]
+)
+```
+
+You can also provide these values by creating files in a `metadata/app_clip_review_information/` directory. The file names must match the pattern `<key>.txt` (e.g. `invocation_urls`). The contents of each file will be used as the value for the matching key. Values provided in the `Deliverfile` or `Fastfile` will take priority over values from these files.
+
+Example of the `invocation_urls.txt` file:
+
+
+```
+http://localhost.com/1, http://localhost.com/2
+```
+
+
 ##### app_review_attachment_file
 You can provide additional information to the app review team as a file attachment. As of this writing, Apple supports following file attachment formats: .pdf, .doc, .docx, .rtf, .pages, .xls, .xlsx, .numbers, .zip, .rar, .plist, .crash, .jpg, .png, .mp4, or .avi.
 
@@ -290,6 +315,16 @@ You can set the app age ratings using _deliver_. You'll have to create and store
 
 The keys/values on the top allow one of 3 strings: "NONE", "INFREQUENT_OR_MILD" or "FREQUENT_OR_INTENSE", and the items on the bottom allow false or true. More information in [#reference](#reference).
 
+##### app_clip_header_images_path
+
+A path to a folder containing subfolders for each language. Each language folder must contain
+only one image and these images must be exactly 1800x1200px. These images will be used for the
+[default App Clip experience](https://developer.apple.com/documentation/app_clips/configuring_the_launch_experience_of_your_app_clip/#3604096)
+for this particular release.
+
+See the [App Clip docs](#app-clips) for more info.
+
+![/img/actions/deliver_app_clip_header_images.png](/img/actions/deliver_app_clip_header_images.png)
 
 ## Metadata
 
@@ -377,6 +412,11 @@ The available options:
 - 'xros'
 - 'osx'
 
+##### app_clip_default_experience_subtitle
+
+The subtitle that shows up for the default App Clip experience.
+
+See the [App Clip docs](#app-clips) for more info.
 
 ### Non-Localized
 
@@ -405,6 +445,16 @@ The english name of the secondary first sub category you want to set
 
 ##### secondary_second_sub_category
 The english name of the secondary second sub category you want to set
+
+##### app_clip_default_experience_action
+
+The action button that shows up for the default App Clip experience. The valid options are listed below:
+
+- `OPEN`
+- `VIEW`
+- `PLAY`
+
+See the [App Clip docs](#app-clips) for more info.
 </details>
 
 # Submit Build
@@ -494,6 +544,26 @@ Key | Editable While Live | Directory | Filename | Deprecated Filename
 ----|--------|--------|--------|--------
 <%- Deliver::UploadMetadata::REVIEW_INFORMATION_VALUES_LEGACY.each do |key, value| -%>
   `<%= value %>` | Yes | `<metadata_path>/<%= Deliver::UploadMetadata::REVIEW_INFORMATION_DIR %>` | `<%= value %>.txt` | `<%= key %>.txt`
+<%- end %>
+
+## Available App Clip Metadata Folder Options
+
+_deliver_ allows for metadata to be set through `.txt` files in the App Clip metadata folder. This folder can be set using `app_clip_default_experience_metadata_path`. Below are all the allowed metadata options.
+
+### Non-Localized Metadata
+
+Key | Editable While Live | Directory | Filename
+----|--------|--------|--------
+<%- Deliver::UploadAppClipDefaultExperienceMetadata::NON_LOCALISED_APP_CLIP_DEFAULT_EXPERIENCE_VALUES.keys.each do |value| -%>
+  `<%= value %>` | No | `<app_clip_metadata_path>` | `<%= value %>.txt`
+<%- end %>
+
+### Localized Metadata
+
+Key | Editable While Live | Directory | Filename
+----|--------|--------|--------
+<%- Deliver::UploadAppClipDefaultExperienceMetadata::LOCALISED_APP_CLIP_DEFAULT_EXPERIENCE_VALUES.keys.each do |value| -%>
+  `<%= value %>` | No | `<app_clip_metadata_path>/<lang>/` | `<%= value %>.txt`
 <%- end %>
 
 ## Reference
@@ -747,3 +817,33 @@ Change syntax highlighting to *Ruby*.
 
 ## Provider Short Name
 If you are on multiple App Store Connect teams, _deliver_ needs a provider short name to know where to upload your binary. _deliver_ will try to use the long name of the selected team to detect the provider short name. To override the detected value with an explicit one, use the `itc_provider` option.
+
+## App Clips
+
+You can optionally specify the default App Clip experience using the following options:
+- `app_clip_default_experience_action`
+- `app_clip_default_experience_subtitle`
+- `app_clip_header_images_path`
+
+The default App Store Connect behavior is to not carry-over the previous version's default App Clip
+experience metadata. This is a contradictory behavior because it automatically carries over all
+other version metadata when creating a new version.
+
+_deliver_ fixes this issue by carrying over the previous version's default App Clip
+experience metadata by default, even if the options above are not specified.
+
+Example usage in your `Deliverfile`:
+
+```ruby-skip-tests
+deliver(
+  app_clip_default_experience_action: "PLAY",
+  app_clip_default_experience_subtitle: {
+    "en-US": "this is a test from fastlane",
+    "es-MX": "está es una prueba de fastlane"
+  },
+  app_clip_header_images_path: "./fastlane/app-clip-header-images"
+)
+```
+
+Note that the **default** App Clip experience and the **advanced** App Clip experiences are
+different, [Apple explains this here](https://developer.apple.com/documentation/app_clips/configuring_the_launch_experience_of_your_app_clip/#3671988).

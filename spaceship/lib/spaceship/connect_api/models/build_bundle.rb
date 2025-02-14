@@ -27,7 +27,7 @@ module Spaceship
 
       module BundleType
         APP = "APP"
-        # APP_CLIP might be in here as well
+        APP_CLIP = "APP_CLIP"
       end
 
       attr_mapping({

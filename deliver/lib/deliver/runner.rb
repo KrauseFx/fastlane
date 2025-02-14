@@ -9,6 +9,8 @@ require_relative 'html_generator'
 require_relative 'submit_for_review'
 require_relative 'upload_price_tier'
 require_relative 'upload_metadata'
+require_relative 'upload_app_clip_default_experience_metadata'
+require_relative 'upload_app_clip_default_experience_header_images'
 require_relative 'upload_screenshots'
 require_relative 'sync_screenshots'
 require_relative 'detect_values'
@@ -135,7 +137,13 @@ module Deliver
 
     # Upload all metadata, screenshots, pricing information, etc. to App Store Connect
     def upload_metadata
-      upload_metadata = UploadMetadata.new(options)
+      # App clip experience metadata upload must happen before the upload metadata step. The app
+      # clip app store review detail upload depends on there being a valid app clip default
+      # experience on the edit version.
+      UploadAppClipDefaultExperienceMetadata.new.upload_metadata(options)
+      UploadAppClipDefaultExperienceHeaderImages.new.find_and_upload(options)
+
+      upload_metadata = UploadMetadata.new
       upload_screenshots = UploadScreenshots.new
 
       # First, collect all the things for the HTML Report

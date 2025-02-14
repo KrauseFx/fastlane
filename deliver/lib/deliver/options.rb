@@ -127,6 +127,14 @@ module Deliver
                                      env_name: "DELIVER_SCREENSHOTS_PATH",
                                      description: "Path to the folder containing the screenshots",
                                      optional: true),
+        FastlaneCore::ConfigItem.new(key: :app_clip_header_images_path,
+                                     env_name: "APP_CLIP_HEADER_IMAGES_PATH",
+                                     description: "Path to the folder containing the app clip header images",
+                                     optional: true),
+        FastlaneCore::ConfigItem.new(key: :app_clip_default_experience_metadata_path,
+                                     env_name: "APP_CLIP_DEFAULT_EXPERIENCE_METADATA_PATH",
+                                     description: "Path to the folder containing the app clip default experience metadata",
+                                     optional: true),
 
         # skip
         FastlaneCore::ConfigItem.new(key: :skip_binary_upload,
@@ -381,6 +389,10 @@ module Deliver
                                      description: "Metadata: A hash containing the review information",
                                      optional: true,
                                      type: Hash),
+        FastlaneCore::ConfigItem.new(key: :app_clip_review_information,
+                                     description: "Metadata: A hash containing the app clip review information",
+                                     optional: true,
+                                     type: Hash),
         FastlaneCore::ConfigItem.new(key: :app_review_attachment_file,
                                      env_name: "DELIVER_APP_REVIEW_ATTACHMENT_FILE",
                                      description: "Metadata: Path to the app review attachment file",
@@ -460,6 +472,17 @@ module Deliver
                                      type: Boolean,
                                      optional: true,
                                      default_value: true),
+
+        # app clip default experience
+        FastlaneCore::ConfigItem.new(key: :app_clip_default_experience_subtitle,
+                                     env_name: "APP_CLIP_DEFAULT_EXPERIENCE_SUBTITLE",
+                                     description: "The localized subtitle for the default app clip experience",
+                                     optional: true,
+                                     type: Hash),
+        FastlaneCore::ConfigItem.new(key: :app_clip_default_experience_action,
+                                     env_name: "APP_CLIP_DEFAULT_EXPERIENCE_ACTION",
+                                     description: "Action for the default app clip experience (OPEN, VIEW, PLAY)",
+                                     optional: true),
 
         # internal
         FastlaneCore::ConfigItem.new(key: :app,

@@ -59,6 +59,9 @@ module Deliver
       demo_password: "demo_account_password",
       notes: "notes"
     }
+    APP_CLIP_REVIEW_INFORMATION_VALUES = {
+      invocation_urls: "invocation_urls"
+    }
 
     # Localized app details values, that are editable in live state
     LOCALISED_LIVE_VALUES = [:description, :release_notes, :support_url, :marketing_url, :promotional_text, :privacy_url]
@@ -72,7 +75,10 @@ module Deliver
     # Directory name it contains review information
     REVIEW_INFORMATION_DIR = "review_information"
 
-    ALL_META_SUB_DIRS = [TRADE_REPRESENTATIVE_CONTACT_INFORMATION_DIR, REVIEW_INFORMATION_DIR]
+    # Directory name it contains app clip review information
+    APP_CLIP_REVIEW_INFORMATION_DIR = "app_clip_review_information"
+
+    ALL_META_SUB_DIRS = [TRADE_REPRESENTATIVE_CONTACT_INFORMATION_DIR, REVIEW_INFORMATION_DIR, APP_CLIP_REVIEW_INFORMATION_DIR]
 
     # rubocop:disable Metrics/PerceivedComplexity
 
@@ -100,7 +106,7 @@ module Deliver
 
       if options[:edit_live]
         # not all values are editable when using live_version
-        version = app.get_live_app_store_version(platform: platform)
+        version = app.get_live_app_store_version(platform: platform, includes: 'appClipDefaultExperience')
         localised_options = LOCALISED_LIVE_VALUES
         non_localised_options = NON_LOCALISED_LIVE_VALUES
 
@@ -349,6 +355,7 @@ module Deliver
       end
 
       review_information(version)
+      app_clip_review_information(version)
       review_attachment_file(version)
       app_rating(app_info)
     end
@@ -433,9 +440,9 @@ module Deliver
         .uniq
     end
 
-    def fetch_edit_app_store_version(app, platform)
-      retry_if_nil("Cannot find edit app store version") do
-        app.get_edit_app_store_version(platform: platform)
+    def fetch_edit_app_store_version(app, platform, wait_time: 10)
+      retry_if_nil("Cannot find edit app store version", wait_time: wait_time) do
+        app.get_edit_app_store_version(platform: platform, includes: 'appClipDefaultExperience')
       end
     end
 
@@ -452,9 +459,8 @@ module Deliver
     end
 
     # Retries a block of code if the return value is nil, with an exponential backoff.
-    def retry_if_nil(message)
+    def retry_if_nil(message, wait_time: 10)
       tries = options[:version_check_wait_retry_limit]
-      wait_time = 10
       loop do
         tries -= 1
 
@@ -633,6 +639,22 @@ module Deliver
         next if path.nil?
         options[:app_review_information][option_name] ||= File.read(path)
       end
+
+      # Load app clip review information
+      options[:app_clip_review_information] ||= {}
+      resolve_app_clip_review_info_path = lambda do |option_name|
+        path = File.join(options[:metadata_path], APP_CLIP_REVIEW_INFORMATION_DIR, "#{option_name}.txt")
+        return nil unless File.exist?(path)
+        return nil if options[:app_review_information][option_name].to_s.length > 0
+        return path
+      end
+
+      # Then app clip load review information from new App Store Connect filenames
+      APP_CLIP_REVIEW_INFORMATION_VALUES.keys.each do |option_name|
+        path = resolve_app_clip_review_info_path.call(option_name)
+        next if path.nil?
+        options[:app_clip_review_information][option_name] ||= File.read(path)
+      end
     end
 
     private
@@ -681,6 +703,48 @@ module Deliver
         app_store_review_detail.update(attributes: attributes)
       else
         version.create_app_store_review_detail(attributes: attributes)
+      end
+    end
+
+    def app_clip_review_information(version)
+      info = options[:app_clip_review_information]
+      return if info.nil? || info.empty?
+
+      info = info.transform_keys(&:to_sym)
+      UI.user_error!("`app_clip_review_information` must be a hash", show_github_issues: true) unless info.kind_of?(Hash)
+      attributes = {}
+      APP_CLIP_REVIEW_INFORMATION_VALUES.each do |key, attribute_name|
+        if info[key].kind_of?(Array)
+          attributes[attribute_name] = info[key].map { |value| value.to_s.strip } unless info[key].empty?
+        else
+          strip_value = info[key].to_s.strip
+          attributes[attribute_name] = strip_value unless strip_value.empty?
+        end
+      end
+
+      if attributes["invocation_urls"].kind_of?(String)
+        attributes["invocation_urls"] = attributes["invocation_urls"].split(", ")
+      end
+
+      UI.message("Uploading app clip review information to App Store Connect")
+      default_experience = version.app_clip_default_experience
+      if default_experience.nil?
+        # By this point the upload app clip default experience metadata step should have run and
+        # created a default experience, if not, we shouldn't create the default experience here.
+        UI.important("Could not upload app clip review information due to the app clip default experience missing.")
+        return
+      end
+
+      app_clip_app_store_review_detail = begin
+                                  Spaceship::ConnectAPI::AppClipDefaultExperience.get(app_clip_default_experience_id: default_experience.id, includes: "appClipAppStoreReviewDetail").app_clip_app_store_review_detail
+                                rescue => error
+                                  UI.error("Error fetching app clip app store review detail - #{error.message}")
+                                  nil
+                                end # errors if doesn't exist
+      if app_clip_app_store_review_detail
+        app_clip_app_store_review_detail.update(attributes: attributes)
+      else
+        Spaceship::ConnectAPI::AppClipAppStoreReviewDetail.create(app_clip_default_experience_id: default_experience.id, attributes: attributes)
       end
     end
 
