@@ -66,7 +66,7 @@ module Snapshot
 
           config[:devices] << sim.name
         end
-      elsif Snapshot.project.mac?
+      elsif config[:devices].nil? && Snapshot.project.mac?
         config[:devices] = ["Mac"]
       end
     end
