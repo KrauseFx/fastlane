@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package xmlns="http://apple.com/itunes/importer" version="software5.4">
-  <software_assets apple_id="<%= @data[:apple_id] %>" app_platform="<%= @data[:platform] %>">
+  <software_assets apple_id="<%= @data[:apple_id] %>" app_platform="<%= @data[:platform] %>"
+      <%= %Q[bundle_short_version_string="#{@data[:short_version]}"] if @data&.key?(:short_version) %>
+      <%= %Q[bundle_version="#{@data[:bundle_version]}"] if @data&.key?(:bundle_version) %>
+      <%= %Q[bundle_identifier="#{@data[:app_identifier]}"] if @data&.key?(:app_identifier) %>
+    >
     <asset type="<%= @data[:archive_type] %>">
       <data_file>
         <size><%= @data[:file_size] %></size>

@@ -604,12 +604,15 @@ describe "Build Manager" do
       let(:fake_app_id) { 123 }
       let(:fake_dir) { "fake dir" }
       let(:fake_app_platform) { "ios" }
+      let(:fake_app_identifier) { "org.fastlane.very-capable-app" }
+      let(:fake_short_version) { "1.0" }
+      let(:fake_bundle_version) { "1" }
       let(:upload_options) do
         {
           apple_id: fake_app_id,
           skip_waiting_for_build_processing: true,
           changelog: "changelog contents",
-          ipa: 'foo'
+          ipa: File.expand_path("./fastlane_core/spec/fixtures/ipas/very-capable-app.ipa")
         }
       end
 
@@ -619,7 +622,7 @@ describe "Build Manager" do
         allow(Dir).to receive(:mktmpdir).and_return(fake_dir)
 
         fake_ipauploadpackagebuilder = double
-        allow(fake_ipauploadpackagebuilder).to receive(:generate).with(app_id: fake_app_id, ipa_path: upload_options[:ipa], package_path: fake_dir, platform: fake_app_platform).and_return(true)
+        allow(fake_ipauploadpackagebuilder).to receive(:generate).with(app_id: fake_app_id, ipa_path: upload_options[:ipa], package_path: fake_dir, platform: fake_app_platform, app_identifier: fake_app_identifier, short_version: fake_short_version, bundle_version: fake_bundle_version).and_return(true)
         allow(FastlaneCore::IpaUploadPackageBuilder).to receive(:new).and_return(fake_ipauploadpackagebuilder)
 
         fake_itunestransporter = double
@@ -651,11 +654,14 @@ describe "Build Manager" do
       let(:fake_app_id) { 123 }
       let(:fake_dir) { "fake dir" }
       let(:fake_app_platform) { "ios" }
+      let(:fake_app_identifier) { "org.fastlane.very-capable-app" }
+      let(:fake_short_version) { "1.0" }
+      let(:fake_bundle_version) { "1" }
       let(:upload_options) do
         {
           apple_id: fake_app_id,
           skip_waiting_for_build_processing: true,
-          ipa: 'foo'
+          ipa: File.expand_path("./fastlane_core/spec/fixtures/ipas/very-capable-app.ipa")
         }
       end
 
@@ -664,7 +670,7 @@ describe "Build Manager" do
         allow(Dir).to receive(:mktmpdir).and_return(fake_dir)
 
         fake_ipauploadpackagebuilder = double
-        allow(fake_ipauploadpackagebuilder).to receive(:generate).with(app_id: fake_app_id, ipa_path: upload_options[:ipa], package_path: fake_dir, platform: fake_app_platform).and_return(true)
+        allow(fake_ipauploadpackagebuilder).to receive(:generate).with(app_id: fake_app_id, ipa_path: upload_options[:ipa], package_path: fake_dir, platform: fake_app_platform, app_identifier: fake_app_identifier, short_version: fake_short_version, bundle_version: fake_bundle_version).and_return(true)
         allow(FastlaneCore::IpaUploadPackageBuilder).to receive(:new).and_return(fake_ipauploadpackagebuilder)
 
         fake_itunestransporter = double
@@ -696,16 +702,16 @@ describe "Build Manager" do
         # other stuff required to let `upload` work:
 
         expect(fake_build_manager).to receive(:fetch_app_id).and_return(fake_app_id).exactly(2).times
-        expect(FastlaneCore::IpaFileAnalyser).to receive(:fetch_app_version)
-        expect(FastlaneCore::IpaFileAnalyser).to receive(:fetch_app_build)
+        expect(FastlaneCore::IpaFileAnalyser).to receive(:fetch_app_version).and_return(fake_short_version).exactly(2).times
+        expect(FastlaneCore::IpaFileAnalyser).to receive(:fetch_app_build).and_return(fake_bundle_version).exactly(2).times
 
         fake_app = double
         expect(fake_app).to receive(:id).and_return(fake_app_id)
         expect(fake_build_manager).to receive(:app).and_return(fake_app)
 
         fake_build = double
-        expect(fake_build).to receive(:app_version)
-        expect(fake_build).to receive(:version)
+        expect(fake_build).to receive(:app_version).and_return(fake_short_version)
+        expect(fake_build).to receive(:version).and_return(fake_bundle_version)
         expect(UI).to receive(:message).with("If you want to skip waiting for the processing to be finished, use the `skip_waiting_for_build_processing` option")
         expect(UI).to receive(:message).with("Note that if `skip_waiting_for_build_processing` is used but a `changelog` is supplied, this process will wait for the build to appear on App Store Connect, update the changelog and then skip the remaining of the processing steps.")
         expect(FastlaneCore::BuildWatcher).to receive(:wait_for_build_processing_to_be_complete).and_return(fake_build)
@@ -742,8 +748,8 @@ describe "Build Manager" do
         expect(fake_build_manager).to receive(:app).and_return(fake_app)
 
         fake_build = double
-        expect(fake_build).to receive(:app_version)
-        expect(fake_build).to receive(:version)
+        expect(fake_build).to receive(:app_version).and_return(fake_short_version)
+        expect(fake_build).to receive(:version).and_return(fake_bundle_version)
         expect(UI).to receive(:message).with("If you want to skip waiting for the processing to be finished, use the `skip_waiting_for_build_processing` option")
         expect(UI).to receive(:message).with("Note that if `skip_waiting_for_build_processing` is used but a `changelog` is supplied, this process will wait for the build to appear on App Store Connect, update the changelog and then skip the remaining of the processing steps.")
         expect(FastlaneCore::BuildWatcher).to receive(:wait_for_build_processing_to_be_complete).and_return(fake_build)
@@ -753,9 +759,12 @@ describe "Build Manager" do
 
       context "ipa for ios platform" do
         let(:fake_app_platform) { "ios" }
+        let(:fake_app_identifier) { "org.fastlane.very-capable-app" }
+        let(:fake_short_version) { "1.0" }
+        let(:fake_bundle_version) { "1" }
         let(:upload_options) do
           {
-            ipa: 'foo'
+            ipa: File.expand_path("./fastlane_core/spec/fixtures/ipas/very-capable-app.ipa")
           }
         end
 
@@ -763,14 +772,14 @@ describe "Build Manager" do
           allow(fake_build_manager).to receive(:fetch_app_platform).and_return(fake_app_platform)
 
           fake_ipauploadpackagebuilder = double
-          allow(fake_ipauploadpackagebuilder).to receive(:generate).with(app_id: fake_app_id, ipa_path: upload_options[:ipa], package_path: fake_dir, platform: fake_app_platform).and_return(true)
+          allow(fake_ipauploadpackagebuilder).to receive(:generate).with(app_id: fake_app_id, ipa_path: upload_options[:ipa], package_path: fake_dir, platform: fake_app_platform, app_identifier: fake_app_identifier, short_version: fake_short_version, bundle_version: fake_bundle_version).and_return(true)
           allow(FastlaneCore::IpaUploadPackageBuilder).to receive(:new).and_return(fake_ipauploadpackagebuilder)
         end
 
         it "gets file analysed with IpaFileAnalyser" do
           expect(fake_build_manager).to receive(:fetch_app_id).and_return(fake_app_id).exactly(2).times
-          expect(FastlaneCore::IpaFileAnalyser).to receive(:fetch_app_version)
-          expect(FastlaneCore::IpaFileAnalyser).to receive(:fetch_app_build)
+          expect(FastlaneCore::IpaFileAnalyser).to receive(:fetch_app_version).and_return(fake_short_version).exactly(2).times
+          expect(FastlaneCore::IpaFileAnalyser).to receive(:fetch_app_build).and_return(fake_bundle_version).exactly(2).times
           expect(FastlaneCore::PkgFileAnalyser).to_not(receive(:fetch_app_version))
           expect(FastlaneCore::PkgFileAnalyser).to_not(receive(:fetch_app_build))
 
@@ -780,6 +789,8 @@ describe "Build Manager" do
 
       context "pkg for osx platform" do
         let(:fake_app_platform) { "osx" }
+        let(:fake_short_version) { nil }
+        let(:fake_bundle_version) { nil }
         let(:upload_options) do
           {
             pkg: 'bar'
@@ -807,6 +818,8 @@ describe "Build Manager" do
 
       context "pkg for osx platform when both ipa and pkg are available" do
         let(:fake_app_platform) { "osx" }
+        let(:fake_short_version) { nil }
+        let(:fake_bundle_version) { nil }
         let(:upload_options) do
           {
             ipa: 'foo',
@@ -838,9 +851,12 @@ describe "Build Manager" do
 
       context "ipa for ios platform when both ipa and pkg are available" do
         let(:fake_app_platform) { "ios" }
+        let(:fake_app_identifier) { "org.fastlane.very-capable-app" }
+        let(:fake_short_version) { "1.0" }
+        let(:fake_bundle_version) { "1" }
         let(:upload_options) do
           {
-            ipa: 'foo',
+            ipa: File.expand_path("./fastlane_core/spec/fixtures/ipas/very-capable-app.ipa"),
             pkg: 'bar'
           }
         end
@@ -849,7 +865,7 @@ describe "Build Manager" do
           allow(fake_build_manager).to receive(:fetch_app_platform).and_return(fake_app_platform)
 
           fake_ipauploadpackagebuilder = double
-          allow(fake_ipauploadpackagebuilder).to receive(:generate).with(app_id: fake_app_id, ipa_path: upload_options[:ipa], package_path: fake_dir, platform: fake_app_platform).and_return(true)
+          allow(fake_ipauploadpackagebuilder).to receive(:generate).with(app_id: fake_app_id, ipa_path: upload_options[:ipa], package_path: fake_dir, platform: fake_app_platform, app_identifier: fake_app_identifier, short_version: fake_short_version, bundle_version: fake_bundle_version).and_return(true)
           allow(FastlaneCore::IpaUploadPackageBuilder).to receive(:new).and_return(fake_ipauploadpackagebuilder)
 
           expect(UI).to receive(:important).with("WARNING: Both `ipa` and `pkg` options are defined either explicitly or with default_value (build found in directory)")
@@ -858,8 +874,8 @@ describe "Build Manager" do
 
         it "gets file analysed with IpaFileAnalyser" do
           expect(fake_build_manager).to receive(:fetch_app_id).and_return(fake_app_id).exactly(2).times
-          expect(FastlaneCore::IpaFileAnalyser).to receive(:fetch_app_version)
-          expect(FastlaneCore::IpaFileAnalyser).to receive(:fetch_app_build)
+          expect(FastlaneCore::IpaFileAnalyser).to receive(:fetch_app_version).and_return(fake_short_version).exactly(2).times
+          expect(FastlaneCore::IpaFileAnalyser).to receive(:fetch_app_build).and_return(fake_bundle_version).exactly(2).times
           expect(FastlaneCore::PkgFileAnalyser).to_not(receive(:fetch_app_version))
           expect(FastlaneCore::PkgFileAnalyser).to_not(receive(:fetch_app_build))
 

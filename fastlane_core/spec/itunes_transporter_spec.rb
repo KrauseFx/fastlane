@@ -13,22 +13,36 @@ describe FastlaneCore do
       allow(SecureRandom).to receive(:uuid).and_return(random_uuid)
     end
 
-    def shell_upload_command(provider_short_name: nil, transporter: nil, jwt: nil, use_asset_path: false)
+    def shell_upload_command(provider_short_name: nil, transporter: nil, jwt: nil, use_asset_path: false, username: email, input_pass: password, api_key: nil)
       upload_part = use_asset_path ? "-assetFile /tmp/#{random_uuid}.ipa" : "-f /tmp/my.app.id.itmsp"
 
-      escaped_password = password.shellescape
-      unless FastlaneCore::Helper.windows?
-        escaped_password = escaped_password.gsub("\\'") do
-          "'\"\\'\"'"
+      username = username if username != email
+      escaped_password = input_pass != password ? input_pass : password
+      unless escaped_password.nil?
+        escaped_password = escaped_password.shellescape
+        unless FastlaneCore::Helper.windows?
+          escaped_password = escaped_password.gsub("\\'") do
+            "'\"\\'\"'"
+          end
+          escaped_password = "'" + escaped_password + "'"
         end
-        escaped_password = "'" + escaped_password + "'"
       end
       [
         '"' + FastlaneCore::Helper.transporter_path + '"',
         "-m upload",
-        ("-u #{email.shellescape}" if jwt.nil?),
-        ("-p #{escaped_password}" if jwt.nil?),
-        ("-jwt #{jwt}" unless jwt.nil?),
+        (if jwt.nil?
+           if api_key.nil?
+             if username.nil? || escaped_password.nil?
+               nil
+             else
+               "-u #{username.shellescape} -p #{escaped_password}"
+             end
+           else
+             "-apiIssuer #{api_key[:issuer_id]} -apiKey #{api_key[:key_id]}"
+           end
+         else
+           "-jwt #{jwt}"
+         end),
         upload_part,
         (transporter.to_s if transporter),
         "-k 100000",
@@ -1219,9 +1233,17 @@ describe FastlaneCore do
       end
 
       describe "upload command generation" do
-        it 'generates a call to the shell script' do
+        let(:keys_parent_dir) { File.join(Dir.home, ".appstoreconnect") }
+
+        it 'generates a call to the shell script with user and password' do
           transporter = FastlaneCore::ItunesTransporter.new(email, password, false)
           expect(transporter.upload('my.app.id', '/tmp')).to eq(shell_upload_command)
+        end
+
+        it 'generates a call to the shell script with api key' do
+          transporter = FastlaneCore::ItunesTransporter.new(api_key: api_key)
+          expect(transporter.upload('my.app.id', '/tmp')).to eq(shell_upload_command(username: nil, input_pass: nil, api_key: api_key))
+          expect(Dir.empty?(keys_parent_dir)).to be_truthy if Dir.exist?(keys_parent_dir)
         end
       end
 

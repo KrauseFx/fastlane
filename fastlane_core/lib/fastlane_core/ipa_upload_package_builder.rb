@@ -12,7 +12,7 @@ module FastlaneCore
 
     attr_accessor :package_path
 
-    def generate(app_id: nil, ipa_path: nil, package_path: nil, platform: nil)
+    def generate(app_id: nil, ipa_path: nil, package_path: nil, platform: nil, app_identifier: nil, short_version: nil, bundle_version: nil)
       self.package_path = File.join(package_path, "#{app_id}-#{SecureRandom.uuid}.itmsp")
       FileUtils.rm_rf(self.package_path) if File.directory?(self.package_path)
       FileUtils.mkdir_p(self.package_path)
@@ -24,7 +24,10 @@ module FastlaneCore
         ipa_path: File.basename(ipa_path), # this is only the base name as the ipa is inside the package
         md5: Digest::MD5.file(ipa_path).hexdigest,
         archive_type: "bundle",
-        platform: (platform || "ios") # pass "appletvos" for Apple TV's IPA
+        platform: (platform || "ios"), # pass "appletvos" for Apple TV's IPA
+        app_identifier: app_identifier,
+        short_version: short_version,
+        bundle_version: bundle_version
       }
 
       xml_path = File.join(FastlaneCore::ROOT, "lib/assets/XMLTemplate.xml.erb")

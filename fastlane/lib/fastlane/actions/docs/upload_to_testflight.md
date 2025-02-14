@@ -77,7 +77,15 @@ _pilot_ does all kinds of magic for you:
 - Automatically detects the bundle identifier from your `ipa` file
 - Automatically fetch the AppID of your app based on the bundle identifier
 
-_pilot_ uses [_spaceship_](https://spaceship.airforce) to submit the build metadata and the iTunes Transporter to upload the binary. Because iTunes Transporter's upload capability is only supported on OS X, `pilot upload` does not work on Linux, as described [in this issue](https://github.com/fastlane/fastlane/issues/5789)
+_pilot_ uses [_spaceship_](https://spaceship.airforce) to submit the build metadata and the iTunes Transporter to upload the binary.
+
+### Upload from Linux
+
+To upload binaries from Linux:
+- make sure you have [Transporter on Linux](https://help.apple.com/itc/transporteruserguide/en.lproj/static.html) installed
+- set the following environment variables:
+    - `FASTLANE_ITUNES_TRANSPORTER_USE_SHELL_SCRIPT=true`
+    - `FASTLANE_ITUNES_TRANSPORTER_PATH=/usr/local/itms` (_or the path where Transporter is installed_)
 
 ## List builds
 

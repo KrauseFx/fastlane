@@ -1,4 +1,5 @@
 require 'open3'
+require 'stringio'
 require 'zip'
 
 require_relative 'core_ext/cfpropertylist'
@@ -46,21 +47,10 @@ module FastlaneCore
       end
       return nil if plist_data.nil?
 
-      # Creates a temporary directory with a unique name tagged with 'fastlane'
-      # The directory is deleted automatically at the end of the block
-      Dir.mktmpdir("fastlane") do |tmp|
-        # The XML file has to be properly unpacked first
-        tmp_path = File.join(tmp, "Info.plist")
-        File.open(tmp_path, 'wb') do |output|
-          output.write(plist_data)
-        end
-        result = CFPropertyList.native_types(CFPropertyList::List.new(file: tmp_path).value)
-
-        if result['CFBundleIdentifier'] || result['CFBundleVersion']
-          return result
-        end
+      result = CFPropertyList.native_types(CFPropertyList::List.new(data: plist_data).value)
+      if result['CFBundleIdentifier'] || result['CFBundleVersion']
+        return result
       end
-
       return nil
     end
 

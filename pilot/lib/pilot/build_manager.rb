@@ -33,10 +33,16 @@ module Pilot
       ipa_path = options[:ipa]
       if ipa_path && platform != 'osx'
         asset_path = ipa_path
+        app_identifier = config[:app_identifier] || fetch_app_identifier
+        short_version = config[:app_version] || FastlaneCore::IpaFileAnalyser.fetch_app_version(ipa_path)
+        bundle_version = config[:build_number] || FastlaneCore::IpaFileAnalyser.fetch_app_build(ipa_path)
         package_path = FastlaneCore::IpaUploadPackageBuilder.new.generate(app_id: fetch_app_id,
                                                                       ipa_path: ipa_path,
                                                                   package_path: dir,
-                                                                      platform: platform)
+                                                                      platform: platform,
+                                                                app_identifier: app_identifier,
+                                                                 short_version: short_version,
+                                                                bundle_version: bundle_version)
       else
         pkg_path = options[:pkg]
         asset_path = pkg_path

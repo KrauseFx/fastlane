@@ -51,6 +51,33 @@ module FastlaneCore
       not_implemented(__method__)
     end
 
+    # Runs preparations before executing any command from the executor.
+    #
+    # @param [Hash] api key containing the issuer id and private key
+    # @return [Hash] copy of `api_key` which includes an extra `key_dir` with the location of the .p8 file on disk
+    def prepare(original_api_key)
+      return if original_api_key.nil?
+      # Create .p8 file from api_key and provide api key info which contains .p8 file path
+      api_key = original_api_key.dup
+      if self.kind_of?(ShellScriptTransporterExecutor)
+        # as of Transporter v3.3.0, the app is unable to detect the private keys under the 'private_keys' folder in current directory
+        # so we must rely on the other search paths in the Home dir:
+        # https://help.apple.com/itc/transporteruserguide/en.lproj/static.html#itc803b7be80
+        private_keys_dir = File.join(Dir.home, ".appstoreconnect/private_keys")
+        unless Dir.exist?(private_keys_dir)
+          FileUtils.mkdir_p(private_keys_dir)
+        end
+        api_key[:key_dir] = private_keys_dir
+      else
+        api_key[:key_dir] = Dir.mktmpdir("deliver-")
+      end
+      # Specified p8 needs to be generated to call altool or iTMSTransporter
+      File.open(File.join(api_key[:key_dir], "AuthKey_#{api_key[:key_id]}.p8"), "wb") do |p8|
+        p8.write(api_key[:key])
+      end
+      api_key
+    end
+
     def execute(command, hide_output)
       if Helper.test?
         yield(nil) if block_given?
@@ -386,13 +413,22 @@ module FastlaneCore
   # Generates commands and executes the iTMSTransporter through the shell script it provides by the same name
   class ShellScriptTransporterExecutor < TransporterExecutor
     def build_upload_command(username, password, source = "/tmp", provider_short_name = "", jwt = nil, platform = nil, api_key = nil)
-      use_jwt = !jwt.to_s.empty?
       [
         '"' + Helper.transporter_path + '"',
         "-m upload",
-        ("-u #{username.shellescape}" unless use_jwt),
-        ("-p #{shell_escaped_password(password)}" unless use_jwt),
-        ("-jwt #{jwt}" if use_jwt),
+        (if jwt.nil?
+           if username.nil? || password.nil?
+             if api_key.nil?
+               nil
+             else
+               "-apiIssuer #{api_key[:issuer_id]} -apiKey #{api_key[:key_id]}"
+             end
+           else
+             "-u #{username.shellescape} -p #{shell_escaped_password(password)}"
+           end
+         else
+           "-jwt #{jwt}"
+         end),
         file_upload_option(source),
         additional_upload_parameters, # that's here, because the user might overwrite the -t option
         "-k 100000",
@@ -686,7 +722,7 @@ module FastlaneCore
       use_shell_script ||= Helper.windows?
       use_shell_script ||= Feature.enabled?('FASTLANE_ITUNES_TRANSPORTER_USE_SHELL_SCRIPT')
 
-      if jwt.to_s.empty?
+      if jwt.to_s.empty? && api_key.nil?
         @user = user
         @password = password || load_password_for_transporter
       end
@@ -783,9 +819,7 @@ module FastlaneCore
       # Handle AppStore Connect API
       use_api_key = !@api_key.nil?
       api_key_placeholder = use_api_key ? { key_id: "YourKeyID", issuer_id: "YourIssuerID", key_dir: "YourTmpP8KeyDir" } : nil
-
-      api_key = nil
-      api_key = api_key_with_p8_file_path(@api_key) if use_api_key
+      api_key = @transporter_executor.prepare(@api_key)
 
       command = @transporter_executor.build_upload_command(@user, @password, actual_dir, @provider_short_name, @jwt, platform, api_key)
       UI.verbose(@transporter_executor.build_upload_command(@user, password_placeholder, actual_dir, @provider_short_name, jwt_placeholder, platform, api_key_placeholder))
@@ -846,8 +880,7 @@ module FastlaneCore
 
       # Masking credentials for verbose outputs
       api_key_placeholder = use_api_key ? { key_id: "YourKeyID", issuer_id: "YourIssuerID", key_dir: "YourTmpP8KeyDir" } : nil
-
-      api_key = api_key_with_p8_file_path(@api_key) if use_api_key
+      api_key = @transporter_executor.prepare(@api_key)
 
       command = @transporter_executor.build_verify_command(@user, @password, actual_dir, @provider_short_name, jwt: @jwt, platform: platform, api_key: api_key)
       UI.verbose(@transporter_executor.build_verify_command(@user, password_placeholder, actual_dir, @provider_short_name, jwt: jwt_placeholder, platform: platform, api_key: api_key_placeholder))
@@ -882,8 +915,7 @@ module FastlaneCore
       use_api_key = !@api_key.nil?
       api_key_placeholder = use_api_key ? { key_id: "YourKeyID", issuer_id: "YourIssuerID", key_dir: "YourTmpP8KeyDir" } : nil
 
-      api_key = nil
-      api_key = api_key_with_p8_file_path(@api_key) if use_api_key
+      api_key = @transporter_executor.prepare(@api_key)
 
       command = @transporter_executor.build_provider_ids_command(@user, @password, @jwt, api_key)
       UI.verbose(@transporter_executor.build_provider_ids_command(@user, password_placeholder, jwt_placeholder, api_key_placeholder))
@@ -907,17 +939,6 @@ module FastlaneCore
     private
 
     TWO_FACTOR_ENV_VARIABLE = "FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD"
-
-    # Create .p8 file from api_key and provide api key info which contains .p8 file path
-    def api_key_with_p8_file_path(original_api_key)
-      api_key = original_api_key.dup
-      api_key[:key_dir] = Dir.mktmpdir("deliver-")
-      # Specified p8 needs to be generated to call altool
-      File.open(File.join(api_key[:key_dir], "AuthKey_#{api_key[:key_id]}.p8"), "wb") do |p8|
-        p8.write(api_key[:key])
-      end
-      api_key
-    end
 
     # Returns whether altool should be used or ItunesTransporter should be used
     def should_use_altool?(altool_compatible_command, use_shell_script)
