@@ -301,6 +301,11 @@ module Supply
 
     def latest_version(track)
       latest_version = tracks.select { |t| t.track == Supply::Tracks::DEFAULT }.map(&:releases).flatten.reject { |r| r.name.nil? }.max_by(&:name)
+      latest_version = tracks.select { |t| t.track == Supply::Tracks::DEFAULT }
+                       .map(&:releases)
+                       .flatten
+                       .reject { |r| r.nil? || r.name.nil? }
+                       .max_by(&:name)
 
       # Check if user specified '--track' option if version information from 'production' track is nil
       if latest_version.nil? && track == Supply::Tracks::DEFAULT
