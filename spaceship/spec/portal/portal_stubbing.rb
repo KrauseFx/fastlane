@@ -239,6 +239,11 @@ class PortalStubbing
     end
 
     def adp_stub_persons
+      # Describe all Apple Developer teams
+      stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/getTeams").
+        with(body: "{\"includeInMigrationTeams\":1}").
+        to_return(status: 200, body: adp_read_fixture_file("getTeams.json"), headers: { 'Content-Type' => 'application/json' })
+
       # get all members
       stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/getTeamMembers").
         with(body: "{\"teamId\":\"XXXXXXXXXX\"}").

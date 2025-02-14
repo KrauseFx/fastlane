@@ -435,6 +435,18 @@ module Spaceship
     #####################################################
     # @!group Team
     #####################################################
+
+    def describe_teams
+      response = request(:post) do |req|
+        req.url("/services-account/#{PROTOCOL_VERSION}/account/getTeams")
+        req.body = {
+          includeInMigrationTeams: 1
+        }.to_json
+        req.headers['Content-Type'] = 'application/json'
+      end
+      parse_response(response)
+    end
+
     def team_members
       response = request(:post) do |req|
         req.url("/services-account/#{PROTOCOL_VERSION}/account/getTeamMembers")

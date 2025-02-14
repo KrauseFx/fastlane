@@ -343,6 +343,20 @@ the developer website<a/>.<br />"
         expect(response.first).to eq(expected_first_message)
       end
     end
+
+    describe '#describe_teams' do
+      it 'returns the description of the available teams' do
+        response = subject.describe_teams
+        teams = response['teams']
+        expect(teams).to be_instance_of(Array)
+        teams.each do |team|
+          program = team['program']
+          expect(program['dateExpires']).to be_instance_of(Integer)
+          expect(['active', 'expired']).to include(program['status'])
+        end
+      end
+    end
+
   end
 
   describe 'keys api' do

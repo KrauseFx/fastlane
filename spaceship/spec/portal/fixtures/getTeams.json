@@ -1,0 +1,80 @@
+{
+  "creationTimestamp": "2023-02-02T20:38:44Z",
+  "resultCode": 0,
+  "userLocale": "en_US",
+  "devices": [],
+  "teamAddresses": [],
+  "teams": [
+    {
+      "teamId": "E3XWH3A9EA",
+      "name": "bFAN Sports",
+      "status": "active",
+      "phone": "1-800-000-0000",
+      "address": {
+        "city": "Paris",
+        "state": "Paris",
+        "country": "France",
+        "countryCode": "FR",
+        "postalCode": "75016",
+        "team": {
+          "extendedTeamAttributes": {},
+          "xcodeFreeOnly": false,
+          "score": 0
+        },
+        "streetAddress1": "6 Rue Claude Farrère"
+      },
+      "entityType": "c",
+      "paymentPlatform": 1,
+      "agent": {
+        "personId": 11479239097,
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "info@bfansports.com",
+        "developerStatus": "active",
+        "cipsAccess": true,
+        "satoriBypass": false,
+        "eligibleForSatori": false,
+        "enrollmentOnApp": false,
+        "paymentPlatform": null,
+        "fssRecommendation": null,
+        "fssDate": null,
+        "fssNameProcessed": null,
+        "fssConvKitStatus": null,
+        "fssConvKitScore": null,
+        "fssRiskingHonorFlag": false,
+        "fssRiskingOverrideAction": null,
+        "fssRiskingOverrideDate": null,
+        "showFssRiskingOverrideApprove": false,
+        "showFssRiskingOverrideReject": false,
+        "showFssRiskingOverrideReset": false,
+        "fssRiskingErrors": null,
+        "isIDVerificationRequired": false,
+        "isCountryUpdateRequired": false,
+        "hcmStatus": null,
+        "hcmStatusModifiedDate": null,
+        "teamMemberId": "7UH2ND2MMQ"
+      },
+      "program": {
+        "type": "ad19",
+        "name": "Apple Developer Program",
+        "autoRenew": true,
+        "dateExpires": 1698364799000,
+        "status": "active",
+        "autoRenewPrice": "99&euro;"
+      },
+      "userRoles": [
+        "Admin"
+      ],
+      "teamMemberId": "W7KVBW875V",
+      "adminCount": 3,
+      "memberCount": 0,
+      "serverCount": 0,
+      "nextDeviceResetDate": 1698364799000,
+      "isFeeWaiverApproved": false,
+      "isMDMVendor": false,
+      "acceptedLatestAgreement": true,
+      "appRenewalEligibility": "eligible"
+    }
+  ],
+  "developers": []
+}
