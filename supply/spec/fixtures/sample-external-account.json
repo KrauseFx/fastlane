@@ -1,0 +1,10 @@
+{
+  "type": "external_account",
+  "audience": "//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID/providers/PROVIDER_ID",
+  "subject_token_type": "urn:ietf:params:oauth:token-type:id_token",
+  "token_url": "https://sts.googleapis.com/v1/token",
+  "workforce_pool_user_project": "WORKFORCE_POOL_USER_PROJECT",
+  "credential_source": {
+    "file": "PATH_TO_OIDC_CREDENTIALS_FILE"
+  }
+}

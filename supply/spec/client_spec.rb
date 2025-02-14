@@ -85,5 +85,40 @@ describe Supply do
         expect(subject.class.method_defined?(:uploadbundle_internalappsharingartifact)).to eq(true)
       end
     end
+
+    describe 'uses external account' do
+      let(:service_account_json) { File.open(fixture_file('sample-external-account.json')) }
+      let(:fake_credential) { double("tester credential") }
+      before do
+        allow(Google::Auth::ExternalAccount::Credentials).to receive(:make_creds).and_return(fake_credential)
+        allow(fake_credential).to receive(:fetch_access_token!)
+      end
+
+      context 'json_key is used' do
+        it 'should use Google::Auth::ExternalAccount::Credentials' do
+          client = Supply::Client.new(service_account_json: service_account_json, params: { timeout: 1 })
+
+          expect(Google::Auth::ExternalAccount::Credentials).to have_received(:make_creds) do |arg|
+            expect(arg[:json_key_io].string).to eq(File.read(fixture_file('sample-external-account.json')))
+            expect(arg[:scope]).to eq('https://www.googleapis.com/auth/androidpublisher')
+          end
+
+          expect(fake_credential).to have_received(:fetch_access_token!).once
+        end
+      end
+
+      context 'json_key_data is used' do
+        it 'should use Google::Auth::ExternalAccount::Credentials' do
+          client = Supply::Client.new(service_account_json: StringIO.new(File.read(fixture_file('sample-external-account.json'))), params: { timeout: 1 })
+
+          expect(Google::Auth::ExternalAccount::Credentials).to have_received(:make_creds) do |arg|
+            expect(arg[:json_key_io].string).to eq(File.read(fixture_file('sample-external-account.json')))
+            expect(arg[:scope]).to eq('https://www.googleapis.com/auth/androidpublisher')
+          end
+
+          expect(fake_credential).to have_received(:fetch_access_token!).once
+        end
+      end
+    end
   end
 end

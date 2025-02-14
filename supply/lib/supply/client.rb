@@ -3,6 +3,7 @@ require 'google/apis/androidpublisher_v3'
 AndroidPublisher = Google::Apis::AndroidpublisherV3
 
 require 'net/http'
+require 'json'
 
 # rubocop:disable Metrics/ClassLength
 module Supply
@@ -46,8 +47,17 @@ module Supply
     # Initializes the service and its auth_client using the specified information
     # @param service_account_json: The raw service account Json data
     def initialize(service_account_json: nil, params: nil)
-      auth_client = Google::Auth::ServiceAccountCredentials.make_creds(json_key_io: service_account_json, scope: self.class::SCOPE)
-
+      service_account_json_data = if service_account_json.kind_of?(StringIO)
+                                    service_account_json.string
+                                  else
+                                    service_account_json.read
+                                  end
+      credentials = if JSON.parse(service_account_json_data)['type'] == 'external_account'
+                      Google::Auth::ExternalAccount::Credentials
+                    else
+                      Google::Auth::ServiceAccountCredentials
+                    end
+      auth_client = credentials.make_creds(json_key_io: StringIO.new(service_account_json_data), scope: self.class::SCOPE)
       UI.verbose("Fetching a new access token from Google...")
 
       auth_client.fetch_access_token!
