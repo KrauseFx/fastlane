@@ -132,6 +132,14 @@ module CredentialsManager
       setter(:json_key_data_raw, *args, &block)
     end
 
+    def refresh_token_file(*args, &block)
+      setter(:refresh_token_file, *args, &block)
+    end
+
+    def refresh_token_data_raw(*args, &block)
+      setter(:refresh_token_data_raw, *args, &block)
+    end
+
     def issuer(*args, &block)
       puts("Appfile: DEPRECATED issuer: use json_key_file instead".red)
       setter(:issuer, *args, &block)

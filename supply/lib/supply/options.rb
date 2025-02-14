@@ -4,6 +4,7 @@ require 'fastlane_core/configuration/config_item'
 require 'credentials_manager/appfile_config'
 
 module Supply
+  # rubocop:disable Metrics/ClassLength
   class Options
     # rubocop:disable Metrics/PerceivedComplexity
     def self.available_options
@@ -92,7 +93,7 @@ module Supply
         FastlaneCore::ConfigItem.new(key: :json_key,
                                      env_name: "SUPPLY_JSON_KEY",
                                      short_option: "-j",
-                                     conflicting_options: [:issuer, :key, :json_key_data],
+                                     conflicting_options: [:issuer, :key, :json_key_data, :refresh_token, :refresh_token_data],
                                      optional: true, # this shouldn't be optional but is until --key and --issuer are completely removed
                                      description: "The path to a file containing service account JSON, used to authenticate with Google",
                                      code_gen_sensitive: true,
@@ -105,7 +106,7 @@ module Supply
         FastlaneCore::ConfigItem.new(key: :json_key_data,
                                      env_name: "SUPPLY_JSON_KEY_DATA",
                                      short_option: "-c",
-                                     conflicting_options: [:issuer, :key, :json_key],
+                                     conflicting_options: [:issuer, :key, :json_key, :refresh_token, :refresh_token_data],
                                      optional: true,
                                      description: "The raw service account JSON data used to authenticate with Google",
                                      code_gen_sensitive: true,
@@ -116,6 +117,35 @@ module Supply
                                          JSON.parse(value)
                                        rescue JSON::ParserError
                                          UI.user_error!("Could not parse service account json  JSON::ParseError")
+                                       end
+                                     end),
+        FastlaneCore::ConfigItem.new(key: :refresh_token,
+                                     env_name: "SUPPLY_REFRESH_TOKEN",
+                                     short_option: "-o",
+                                     conflicting_options: [:issuer, :key, :json_key, :json_key_data, :refresh_token_data],
+                                     optional: true,
+                                     description: "The path to a file containing refresh token JSON, used to authenticate with Google",
+                                     code_gen_sensitive: true,
+                                     default_value: CredentialsManager::AppfileConfig.try_fetch_value(:refresh_token_file),
+                                     default_value_dynamic: true,
+                                     verify_block: proc do |value|
+                                       UI.user_error!("Could not find refresh token json file at path '#{File.expand_path(value)}'") unless File.exist?(File.expand_path(value))
+                                       UI.user_error!("'#{value}' doesn't seem to be a JSON file") unless FastlaneCore::Helper.json_file?(File.expand_path(value))
+                                     end),
+        FastlaneCore::ConfigItem.new(key: :refresh_token_data,
+                                     env_name: "SUPPLY_REFRESH_TOKEN_DATA",
+                                     short_option: "-g",
+                                     conflicting_options: [:issuer, :key, :json_key, :json_key_data, :refresh_token],
+                                     optional: true,
+                                     description: "The raw refresh token JSON data used to authenticate with Google",
+                                     code_gen_sensitive: true,
+                                     default_value: CredentialsManager::AppfileConfig.try_fetch_value(:refresh_token_data_raw),
+                                     default_value_dynamic: true,
+                                     verify_block: proc do |value|
+                                       begin
+                                         JSON.parse(value)
+                                       rescue JSON::ParserError
+                                         UI.user_error!("Could not parse refresh token json  JSON::ParseError")
                                        end
                                      end),
         FastlaneCore::ConfigItem.new(key: :apk,
@@ -346,4 +376,5 @@ module Supply
     end
     # rubocop:enable Metrics/PerceivedComplexity
   end
+  # rubocop:enable Metrics/ClassLength
 end
