@@ -11,7 +11,7 @@ module Fastlane
         UI.user_error!("Could not find path to project config '#{path}'. Pass the path to your project (not workspace)!") unless File.exist?(path)
         UI.message("Updating the Automatic Codesigning flag to #{params[:use_automatic_signing] ? 'enabled' : 'disabled'} for the given project '#{path}'")
 
-        unless project.root_object.attributes["TargetAttributes"]
+        if project.isTooOldForFastlaneCodesigning?
           UI.user_error!("Seems to be a very old project file format - please open your project file in a more recent version of Xcode")
           return false
         end
@@ -218,6 +218,16 @@ module Fastlane
       def self.is_supported?(platform)
         [:ios, :mac].include?(platform)
       end
+    end
+  end
+end
+
+module Xcodeproj
+  class Project
+    # we have to have the helper function here
+    # otherwise rubocop checking shows too complex function Fastlane.Actions.UpdateCodeSigningSettingsAction.run()
+    def isTooOldForFastlaneCodesigning?
+      return root_object.attributes["TargetAttributes"].nil? && object_version.to_i < 55
     end
   end
 end
