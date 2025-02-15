@@ -247,7 +247,12 @@ module Spaceship
           @logger = Logger.new(STDOUT)
         else
           # Log to file by default
-          path = "/tmp/spaceship#{Time.now.to_i}_#{Process.pid}_#{Thread.current.object_id}.log"
+          case RbConfig::CONFIG['host_os']
+          when /mswin|mingw32|windows/
+            path = "tmp/spaceship#{Time.now.to_i}_#{Process.pid}_#{Thread.current.object_id}.log"
+          else
+            path = "/tmp/spaceship#{Time.now.to_i}_#{Process.pid}_#{Thread.current.object_id}.log"
+          end
           @logger = Logger.new(path)
         end
 

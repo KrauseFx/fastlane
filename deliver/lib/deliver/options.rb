@@ -50,6 +50,10 @@ module Deliver
                                      description: "The version that should be edited or created",
                                      optional: true),
 
+        FastlaneCore::ConfigItem.new(key: :app_version_build,
+                                     description: "The build version number (CFBundleVersion)",
+                                     optional: true),
+
         # binary / build
         FastlaneCore::ConfigItem.new(key: :ipa,
                                      short_option: "-i",

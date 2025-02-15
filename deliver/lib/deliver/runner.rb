@@ -204,18 +204,34 @@ module Deliver
 
       ipa_path = options[:ipa]
       pkg_path = options[:pkg]
+      app_version = options[:app_version]
+      app_identifier = options[:app_identifier]
+      app_version_build = options[:app_version_build]
 
       platform = options[:platform]
       transporter = transporter_for_selected_team
 
       case platform
       when "ios", "appletvos", "xros"
-        package_path = FastlaneCore::IpaUploadPackageBuilder.new.generate(
-          app_id: Deliver.cache[:app].id,
-          ipa_path: ipa_path,
-          package_path: "/tmp",
-          platform: platform
-        )
+        case RbConfig::CONFIG['host_os']
+        when /mswin|mingw32|windows/
+          package_path = FastlaneCore::IpaUploadPackageBuilder.new.generate(
+            app_id: Deliver.cache[:app].id,
+            ipa_path: ipa_path,
+            package_path: "tmp",
+            platform: platform,
+            app_version: app_version,
+            app_identifier: app_identifier,
+            app_version_build: app_version_build
+          )
+        else
+          package_path = FastlaneCore::IpaUploadPackageBuilder.new.generate(
+            app_id: Deliver.cache[:app].id,
+            ipa_path: ipa_path,
+            package_path: "/tmp",
+            platform: platform
+          )
+        end
         result = transporter.upload(package_path: package_path, asset_path: ipa_path, platform: platform)
       when "osx"
         package_path = FastlaneCore::PkgUploadPackageBuilder.new.generate(

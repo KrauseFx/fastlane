@@ -12,13 +12,16 @@ module FastlaneCore
 
     attr_accessor :package_path
 
-    def generate(app_id: nil, ipa_path: nil, package_path: nil, platform: nil)
+    def generate(app_id: nil, ipa_path: nil, package_path: nil, platform: nil, app_version: nil, app_identifier: nil, app_version_build: nil)
       self.package_path = File.join(package_path, "#{app_id}-#{SecureRandom.uuid}.itmsp")
       FileUtils.rm_rf(self.package_path) if File.directory?(self.package_path)
       FileUtils.mkdir_p(self.package_path)
 
       ipa_path = copy_ipa(ipa_path)
       @data = {
+        bundle_short_version_string: app_version,
+        bundle_version: app_version_build,
+        bundle_identifier: app_identifier,
         apple_id: app_id,
         file_size: File.size(ipa_path),
         ipa_path: File.basename(ipa_path), # this is only the base name as the ipa is inside the package
