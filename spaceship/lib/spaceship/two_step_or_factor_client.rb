@@ -120,6 +120,10 @@ module Spaceship
         puts("check out #{two_factor_url}")
       end
 
+      if depth >= 3
+        raise Tunes::Error.new, "Unable to verify 2FA code after 3 attempts.  Exiting to avoid lockout."
+      end
+
       # "verification code" has already be pushed to devices
 
       security_code = response.body["securityCode"]
