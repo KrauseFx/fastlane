@@ -69,13 +69,9 @@ module Fastlane
         end
         command << "-p #{params[:platform] == 'appletvos' ? 'tvos' : params[:platform]}"
         command << File.expand_path(path).shellescape
-        begin
-          command_to_execute = command.join(" ")
-          UI.verbose("upload_dsym using command: #{command_to_execute}")
-          Actions.sh(command_to_execute, log: params[:debug])
-        rescue => ex
-          UI.error(ex.to_s) # it fails, however we don't want to fail everything just for this
-        end
+        command_to_execute = command.join(" ")
+        UI.verbose("upload_dsym using command: #{command_to_execute}")
+        Actions.sh(command_to_execute, log: params[:debug])
       end
 
       def self.find_api_token(params)
