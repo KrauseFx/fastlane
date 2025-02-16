@@ -249,6 +249,28 @@ describe Fastlane do
       context "when command is package related" do
         let(:command) { 'update' }
 
+        it "adds skip_update flag to package command if skip_update is set to true" do
+          result = Fastlane::FastFile.new.parse("lane :test do
+              spm(
+                command: '#{command}',
+                skip_update: true
+              )
+            end").runner.execute(:test)
+
+          expect(result).to eq("swift package --skip-update #{command}")
+        end
+
+        it "doesn't add a skip_update flag to package command if skip_update is set to false" do
+          result = Fastlane::FastFile.new.parse("lane :test do
+              spm(
+                command: '#{command}',
+                verbose: false
+              )
+            end").runner.execute(:test)
+
+          expect(result).to eq("swift package #{command}")
+        end
+
         it "adds verbose flag to package command if verbose is set to true" do
           result = Fastlane::FastFile.new.parse("lane :test do
               spm(
