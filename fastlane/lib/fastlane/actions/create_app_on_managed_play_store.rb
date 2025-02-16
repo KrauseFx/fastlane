@@ -81,6 +81,12 @@ module Fastlane
                                            UI.user_error!("Could not parse service account json: JSON::ParseError")
                                          end
                                        end),
+          FastlaneCore::ConfigItem.new(key: :access_token,
+                                       env_name: "SUPPLY_ACCESS_TOKEN",
+                                       conflicting_options: [:issuer, :key, :json_key_data, :json_key],
+                                       optional: true, # alternative for :json_key
+                                       description: "The access token, used to authenticate with Google",
+                                       code_gen_sensitive: true),
           FastlaneCore::ConfigItem.new(key: :developer_account_id,
                                        short_option: "-k",
                                        env_name: "SUPPLY_DEVELOPER_ACCOUNT_ID",

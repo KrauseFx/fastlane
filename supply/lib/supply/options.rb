@@ -92,7 +92,7 @@ module Supply
         FastlaneCore::ConfigItem.new(key: :json_key,
                                      env_name: "SUPPLY_JSON_KEY",
                                      short_option: "-j",
-                                     conflicting_options: [:issuer, :key, :json_key_data],
+                                     conflicting_options: [:issuer, :key, :json_key_data, :access_token],
                                      optional: true, # this shouldn't be optional but is until --key and --issuer are completely removed
                                      description: "The path to a file containing service account JSON, used to authenticate with Google",
                                      code_gen_sensitive: true,
@@ -118,6 +118,12 @@ module Supply
                                          UI.user_error!("Could not parse service account json  JSON::ParseError")
                                        end
                                      end),
+        FastlaneCore::ConfigItem.new(key: :access_token,
+                                     env_name: "SUPPLY_ACCESS_TOKEN",
+                                     conflicting_options: [:issuer, :key, :json_key_data, :json_key],
+                                     optional: true, # alternative for :json_key
+                                     description: "The access token, used to authenticate with Google",
+                                     code_gen_sensitive: true),
         FastlaneCore::ConfigItem.new(key: :apk,
                                      env_name: "SUPPLY_APK",
                                      description: "Path to the APK file to upload",
