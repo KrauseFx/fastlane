@@ -11,7 +11,7 @@ module Precheck
     end
 
     def self.friendly_name
-      "Incorrect, or missing copyright date"
+      "No incorrect or missing copyright date"
     end
 
     def self.description
