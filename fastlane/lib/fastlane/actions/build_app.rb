@@ -5,6 +5,7 @@ module Fastlane
       PKG_OUTPUT_PATH ||= :PKG_OUTPUT_PATH
       DSYM_OUTPUT_PATH ||= :DSYM_OUTPUT_PATH
       XCODEBUILD_ARCHIVE ||= :XCODEBUILD_ARCHIVE # originally defined in XcodebuildAction
+      GYM_BUILD_TIME = :GYM_BUILD_TIME
     end
 
     class BuildAppAction < Action
@@ -65,7 +66,8 @@ module Fastlane
           end
         end
 
-        gym_output_path = Gym::Manager.new.work(values)
+        manager = Gym::Manager.new
+        gym_output_path = manager.work(values)
         if gym_output_path.nil?
           UI.important("No output path received from gym")
           return nil
@@ -95,6 +97,10 @@ module Fastlane
           ENV[SharedValues::DSYM_OUTPUT_PATH.to_s] = absolute_dsym_path
         end
 
+        # build time spent for `xcodebuild build/archive`
+        # If you give true to skip_build_archive, this is going to be `nil`.
+        Actions.lane_context[SharedValues::GYM_BUILD_TIME] = manager.build_time
+
         return absolute_output_path
       end
       # rubocop:enable Metrics/PerceivedComplexity
@@ -112,7 +118,8 @@ module Fastlane
           ['IPA_OUTPUT_PATH', 'The path to the newly generated ipa file'],
           ['PKG_OUTPUT_PATH', 'The path to the newly generated pkg file'],
           ['DSYM_OUTPUT_PATH', 'The path to the dSYM files'],
-          ['XCODEBUILD_ARCHIVE', 'The path to the xcodebuild archive']
+          ['XCODEBUILD_ARCHIVE', 'The path to the xcodebuild archive'],
+          ['GYM_BUILD_TIME', 'The build time spent for xcodebuild archive/build']
         ]
       end
 

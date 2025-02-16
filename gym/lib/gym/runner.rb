@@ -12,6 +12,9 @@ require_relative 'error_handler'
 
 module Gym
   class Runner
+    # @return (Float) Elapsed time for `xcodebuild archive` or `build`
+    attr_reader :build_time
+
     # @return (String) The path to the resulting ipa
     def run
       unless Gym.config[:skip_build_archive]
@@ -107,13 +110,14 @@ module Gym
     def build_app
       command = BuildCommandGenerator.generate
       print_command(command, "Generated Build Command") if FastlaneCore::Globals.verbose?
+      start = Time.now
       FastlaneCore::CommandExecutor.execute(command: command,
                                           print_all: true,
                                       print_command: !Gym.config[:silent],
                                               error: proc do |output|
                                                 ErrorHandler.handle_build_error(output)
                                               end)
-
+      @build_time = Time.now - start
       unless Gym.config[:skip_archive]
         mark_archive_as_built_by_gym(BuildCommandGenerator.archive_path)
         UI.success("Successfully stored the archive. You can find it in the Xcode Organizer.") unless Gym.config[:archive_path].nil?

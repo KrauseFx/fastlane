@@ -4,6 +4,10 @@ require_relative 'runner'
 
 module Gym
   class Manager
+    def initialize
+      @runner = Runner.new
+    end
+
     def work(options)
       Gym.config = options
 
@@ -16,7 +20,11 @@ module Gym
                                          hide_keys: [],
                                              title: "Summary for gym #{Fastlane::VERSION}")
 
-      return Runner.new.run
+      return @runner.run
+    end
+
+    def build_time
+      @runner.build_time
     end
   end
 end
