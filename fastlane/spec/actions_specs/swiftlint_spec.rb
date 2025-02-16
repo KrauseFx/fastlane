@@ -503,6 +503,45 @@ describe Fastlane do
           end.to raise_error(/Couldn't find compiler_log_path '.*#{path}'/)
         end
       end
+
+      context "when specifying progress option" do
+        it "adds progress option" do
+          allow(Fastlane::Actions::SwiftlintAction).to receive(:swiftlint_version).and_return(Gem::Version.new('0.49.1'))
+
+          result = Fastlane::FastFile.new.parse("lane :test do
+            swiftlint(
+              progress: true
+            )
+          end").runner.execute(:test)
+
+          expect(result).to eq("swiftlint lint --progress")
+        end
+
+        it "omits progress option if swiftlint does not support it" do
+          allow(Fastlane::Actions::SwiftlintAction).to receive(:swiftlint_version).and_return(Gem::Version.new('0.49.0'))
+          expect(FastlaneCore::UI).to receive(:important).with(/Your version of swiftlint \(0.49.0\) does not support/)
+
+          result = Fastlane::FastFile.new.parse("lane :test do
+            swiftlint(
+              progress: true
+            )
+          end").runner.execute(:test)
+
+          expect(result).to eq("swiftlint lint")
+        end
+      end
+
+      context "when specify false for progress option" do
+        it "doesn't add progress option" do
+          result = Fastlane::FastFile.new.parse("lane :test do
+            swiftlint(
+              progress: false
+            )
+          end").runner.execute(:test)
+
+          expect(result).to eq("swiftlint lint")
+        end
+      end
     end
   end
 end
