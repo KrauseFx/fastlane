@@ -28,6 +28,7 @@ module Snapshot
 
       FastlaneCore::SimulatorTV.delete_all
       FastlaneCore::SimulatorWatch.delete_all
+      FastlaneCore::SimulatorVision.delete_all
 
       all_runtime_type = runtimes
       # == Runtimes ==

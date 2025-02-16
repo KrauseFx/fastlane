@@ -203,6 +203,29 @@ describe FastlaneCore do
       )
     end
 
+    it "properly parses the simctl output and generates Device objects for visionOS simulator" do
+      response = "response"
+      simctl_output = File.read('./fastlane_core/spec/fixtures/DeviceManagerSimctlOutputXcode15')
+      expect(response).to receive(:read).and_return(simctl_output)
+      expect(Open3).to receive(:popen3).with("xcrun simctl list devices").and_yield(nil, response, nil, nil)
+
+      devices = FastlaneCore::SimulatorVision.all
+      expect(devices.count).to eq(2)
+
+      expect(devices[0]).to have_attributes(
+        name: "Apple Vision Pro", os_type: "visionOS", os_version: "1.2",
+        udid: "DEC49069-537B-4766-8D30-3B50E27A9A2C",
+        state: "Shutdown",
+        is_simulator: true
+      )
+      expect(devices[1]).to have_attributes(
+        name: "Apple Vision Pro", os_type: "visionOS", os_version: "1.2",
+        udid: "D006BACD-AC30-47B2-8257-39F20D1502D0",
+        state: "Shutdown",
+        is_simulator: true
+      )
+    end
+
     it "properly parses the simctl output and generates Device objects for all simulators" do
       response = "response"
       expect(response).to receive(:read).and_return(@simctl_output)

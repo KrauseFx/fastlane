@@ -30,13 +30,19 @@ module Scan
       if Scan.devices
         if Scan.config[:reset_simulator]
           Scan.devices.each do |device|
-            FastlaneCore::Simulator.reset(udid: device.udid)
+            if device.os_type == "iOS"
+              FastlaneCore::Simulator.reset(udid: device.udid)
+            elsif device.os_type == "visionOS"
+              FastlaneCore::SimulatorVision.reset(udid: device.udid)
+            end
           end
         end
 
         if Scan.config[:disable_slide_to_type]
           Scan.devices.each do |device|
-            FastlaneCore::Simulator.disable_slide_to_type(udid: device.udid)
+            if device.os_type == "iOS"
+              FastlaneCore::Simulator.disable_slide_to_type(udid: device.udid)
+            end
           end
         end
       end
@@ -48,7 +54,11 @@ module Scan
         app_identifier ||= UI.input("App Identifier: ")
 
         Scan.devices.each do |device|
-          FastlaneCore::Simulator.uninstall_app(app_identifier, device.name, device.udid)
+          if device.os_type == "iOS"
+            FastlaneCore::Simulator.uninstall_app(app_identifier, device.name, device.udid)
+          elsif device.os_type == "visionOS"
+            FastlaneCore::SimulatorVision.uninstall_app(app_identifier, device.name, device.udid)
+          end
         end
       end
 
@@ -77,11 +87,8 @@ module Scan
       ]
       exit_status = 0
 
-      FastlaneCore::CommandExecutor.execute(command: command,
-                                          print_all: true,
-                                      print_command: true,
-                                             prefix: prefix_hash,
-                                            loading: "Loading...",
+      FastlaneCore::CommandExecutor.execute(command: command, print_all: true, print_command: true,
+                                             prefix: prefix_hash, loading: "Loading...",
                                     suppress_output: Scan.config[:suppress_xcode_output],
                                               error: proc do |error_output|
                                                 begin
@@ -124,8 +131,7 @@ module Scan
 
       retryable_tests = []
 
-      failing_tests = input.split("Failing tests:\n").fetch(1, [])
-                           .split("\n\n").first
+      failing_tests = input.split("Failing tests:\n").fetch(1, []).split("\n\n").first
 
       suites = failing_tests.split(/(?=\n\s+[\w\s]+:\n)/)
 
@@ -416,7 +422,11 @@ module Scan
       UI.header("Collecting system logs")
       Scan.devices.each do |device|
         log_identity = "#{device.name}_#{device.os_type}_#{device.os_version}"
-        FastlaneCore::Simulator.copy_logs(device, log_identity, Scan.config[:output_directory], @device_boot_datetime)
+        if device.os_type == "iOS"
+          FastlaneCore::Simulator.copy_logs(device, log_identity, Scan.config[:output_directory], @device_boot_datetime)
+        elsif device.os_type == "visionOS"
+          FastlaneCore::SimulatorVision.copy_logs(device, log_identity, Scan.config[:output_directory], @device_boot_datetime)
+        end
       end
     end
 

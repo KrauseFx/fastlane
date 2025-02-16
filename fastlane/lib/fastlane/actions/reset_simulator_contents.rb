@@ -25,12 +25,14 @@ module Fastlane
         FastlaneCore::Simulator.reset_all_by_version(os_version: os_version)
         FastlaneCore::SimulatorTV.reset_all_by_version(os_version: os_version)
         FastlaneCore::SimulatorWatch.reset_all_by_version(os_version: os_version)
+        FastlaneCore::SimulatorVision.reset_all_by_version(os_version: os_version)
       end
 
       def self.reset_all
         FastlaneCore::Simulator.reset_all
         FastlaneCore::SimulatorTV.reset_all
         FastlaneCore::SimulatorWatch.reset_all
+        FastlaneCore::SimulatorVision.reset_all
       end
 
       def self.description

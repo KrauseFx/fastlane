@@ -73,6 +73,8 @@ module FastlaneCore
                          ["AppleTV"]
                        elsif requested_os_type == "iOS"
                          ["iPhone", "iPad", "iPod"]
+                       elsif requested_os_type == "visionOS"
+                         ["Apple Vision"]
                        else
                          []
                        end
@@ -202,7 +204,6 @@ module FastlaneCore
 
       def boot
         return unless is_simulator
-        return unless os_type == "iOS"
         return if self.state == 'Booted'
 
         # Boot the simulator and wait for it to finish booting
@@ -213,7 +214,6 @@ module FastlaneCore
 
       def shutdown
         return unless is_simulator
-        return unless os_type == "iOS"
         return if self.state != 'Booted'
 
         UI.message("Shutting down #{self.udid}")
@@ -374,6 +374,14 @@ module FastlaneCore
     class << self
       def all
         return DeviceManager.simulators('watchOS')
+      end
+    end
+  end
+
+  class SimulatorVision < Simulator
+    class << self
+      def all
+        return DeviceManager.simulators('visionOS')
       end
     end
   end
