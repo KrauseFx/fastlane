@@ -15,6 +15,8 @@ module Fastlane
           cmd << ["cd '#{podfile_folder}' &&"]
         end
 
+        cmd << params[:environment_variables] if params[:environment_variables]
+
         cmd << ['bundle exec'] if use_bundle_exec?(params)
         cmd << ['pod install']
 
@@ -128,6 +130,12 @@ module Fastlane
                                        optional: true,
                                        default_value: false,
                                        type: Boolean),
+          FastlaneCore::ConfigItem.new(key: :environment_variables,
+                                       env_name: "FL_COCOAPODS_ENVIRONMENT_VARIABLES",
+                                       description: "Environment variables when running pod install command",
+                                       optional: true,
+                                       default_value: nil,
+                                       type: Array),
 
           # Deprecated
           FastlaneCore::ConfigItem.new(key: :clean,
