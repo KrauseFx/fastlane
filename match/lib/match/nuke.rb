@@ -105,7 +105,7 @@ module Match
         Spaceship::ConnectAPI.login(params[:username], use_portal: true, use_tunes: false, portal_team_id: params[:team_id], team_name: params[:team_name])
       end
 
-      if Spaceship::ConnectAPI.client.in_house? && (type == "distribution" || type == "enterprise")
+      if Spaceship::ConnectAPI.client.in_house? && (type == "distribution" || type == "enterprise") && !params[:force_nuke_dist_certs]
         UI.error("---")
         UI.error("⚠️ Warning: This seems to be an Enterprise account!")
         unless self.safe_remove_certs
