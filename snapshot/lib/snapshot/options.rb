@@ -297,6 +297,11 @@ module Snapshot
                                      verify_block: proc do |value|
                                        verify_type('skip_testing', [Array, String], value)
                                      end),
+        FastlaneCore::ConfigItem.new(key: :run_rosetta_simulator,
+                                     env_name: "SNAPSHOT_RUN_ROSETTA_SIMULATOR",
+                                     description: "Run simulator in a Rosetta mode",
+                                     type: Boolean,
+                                     default_value: false),
 
         FastlaneCore::ConfigItem.new(key: :xcodebuild_formatter,
                                      env_names: ["SNAPSHOT_XCODEBUILD_FORMATTER", "FASTLANE_XCODEBUILD_FORMATTER"],

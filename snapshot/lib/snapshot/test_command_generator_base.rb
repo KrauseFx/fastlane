@@ -37,6 +37,10 @@ module Snapshot
         # they are present at all
         options += config[:only_testing].map { |test_id| "-only-testing:#{test_id.shellescape}" } if config[:only_testing]
         options += config[:skip_testing].map { |test_id| "-skip-testing:#{test_id.shellescape}" } if config[:skip_testing]
+
+        # Explicitly run simulator in Rosetta (needed for Xcode 14.3 and up)
+        options << "ARCHS=x86_64" if config[:run_rosetta_simulator]
+
         return options
       end
 

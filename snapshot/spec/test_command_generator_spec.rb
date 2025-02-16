@@ -413,6 +413,15 @@ describe Snapshot do
             expect(command.join('')).to_not(include("> /dev/null"))
           end
         end
+
+        context "run_rosetta_simulator" do
+          it "adds ARCHS=x86_64 when true", requires_xcodebuild: true do
+            configure(options.merge(run_rosetta_simulator: true))
+
+            command = Snapshot::TestCommandGenerator.generate(devices: ["iPhone 8"], language: "en", locale: nil)
+            expect(command).to include("ARCHS=x86_64")
+          end
+        end
       end
 
       describe "Valid macOS Configuration" do
