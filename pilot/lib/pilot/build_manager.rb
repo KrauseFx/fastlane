@@ -166,7 +166,7 @@ module Pilot
       # Verify the build has all the includes that we need
       # and fetch a new build if not
       if build && (!build.app || !build.build_beta_detail || !build.pre_release_version)
-        UI.important("Build did include information for app, build beta detail and pre release version")
+        UI.important("Build did not include information for app, build beta detail and pre release version")
         UI.important("Fetching a new build with all the information needed")
         build = Spaceship::ConnectAPI::Build.get(build_id: build.id)
       end
