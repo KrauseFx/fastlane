@@ -62,6 +62,11 @@ module Spaceship
         client ||= Spaceship::ConnectAPI
         client.delete_sandbox_tester(sandbox_tester_id: id)
       end
+
+      def clear_purchase_history(client: nil)
+        client ||= Spaceship::ConnectAPI
+        client.clear_sandbox_tester_purchase_history(sandbox_tester_id: id)
+      end
     end
   end
 end
