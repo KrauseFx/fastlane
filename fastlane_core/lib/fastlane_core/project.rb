@@ -188,7 +188,7 @@ module FastlaneCore
       @configurations ||= if workspace?
                             workspace
                               .file_references
-                              .map(&:path)
+                              .map { |fr| fr.absolute_path(File.expand_path("..", self.path)) }
                               .reject { |p| p.include?("Pods/Pods.xcodeproj") }
                               .map do |p|
                                 # To maintain backwards compatibility, we

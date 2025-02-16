@@ -232,7 +232,7 @@ describe FastlaneCore do
       end
 
       it "#schemes returns all configurations" do
-        expect(@workspace.configurations).to eq([])
+        expect(@workspace.configurations).to eq(["Debug", "Release"])
       end
     end
 
@@ -335,7 +335,7 @@ describe FastlaneCore do
       end
 
       it "#schemes returns all configurations" do
-        expect(@workspace.configurations).to eq([])
+        expect(@workspace.configurations).to eq(["Debug", "Release", "Debug", "Release"])
       end
     end
 
