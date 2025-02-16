@@ -102,8 +102,12 @@ module Sigh
       now = DateTime.now
 
       profiles = load_profiles.select { |profile| (expired && profile["ExpirationDate"] < now) || (!pattern.nil? && profile["Name"] =~ pattern) }
+      if profiles.empty?
+        UI.important("No provisioning profiles that are either expired or match your pattern found")
+        return
+      end
 
-      UI.message("The following provisioning profiles are either expired or matches your pattern:")
+      UI.message("The following provisioning profiles are either expired or match your pattern:")
       profiles.each do |profile|
         UI.message(profile["Name"].red)
       end
