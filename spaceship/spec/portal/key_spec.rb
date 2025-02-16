@@ -53,7 +53,8 @@ describe Spaceship::Portal::Key do
       expected_service_configs = {
         "U27F4V844T" => [],
         "DQ8HTZ7739" => [],
-        "6A7HVUVQ3M" => ["some-music-id"]
+        "6A7HVUVQ3M" => ["some-music-id"],
+        "APPLE_ID_AUTH_KEY_CONFIGURATION" => ["some-app-id"]
       }
       mock_client_response(:create_key!, with: { name: 'New Key', service_configs: expected_service_configs }) do
         {
@@ -61,7 +62,7 @@ describe Spaceship::Portal::Key do
         }
       end
 
-      key = Spaceship::Portal::Key.create(name: 'New Key', apns: true, device_check: true, music_id: 'some-music-id')
+      key = Spaceship::Portal::Key.create(name: 'New Key', apns: true, device_check: true, music_id: 'some-music-id', app_id: 'some-app-id')
       expect(key).to be_instance_of(Spaceship::Portal::Key)
       expect(key.id).to eq('a-new-key-id')
     end
@@ -98,6 +99,18 @@ describe Spaceship::Portal::Key do
             'name' => 'DeviceCheck',
             'id' => 'DQ8HTZ7739',
             'configurations' => []
+          },
+          {
+            'name' => 'Sign In with Apple',
+            'id' => 'APPLE_ID_AUTH_KEY_CONFIGURATION',
+            'configurations' => [
+              {
+                'name' => 'Sign In with Apple test',
+                'identifier' => 'sign.in.with.apple.test',
+                'type' => 'bundle',
+                'id' => 'some-auth-key-id'
+              }
+            ]
           }
         ]
       }
@@ -114,6 +127,7 @@ describe Spaceship::Portal::Key do
       expect(key).to have_apns
       expect(key).to have_music_kit
       expect(key).to have_device_check
+      expect(key).to have_apple_id_auth_key
     end
 
     it 'should have a way of getting the service configurations' do
@@ -121,6 +135,11 @@ describe Spaceship::Portal::Key do
       expect(configs).to be_instance_of(Array)
       expect(configs.sample).to be_instance_of(Hash)
       expect(configs.first['identifier']).to eq('music.com.snatchev.test')
+
+      configs = key.service_configs_for(Spaceship::Portal::Key::APPLE_ID_AUTH_KEY)
+      expect(configs).to be_instance_of(Array)
+      expect(configs.sample).to be_instance_of(Hash)
+      expect(configs.first['identifier']).to eq('sign.in.with.apple.test')
     end
 
     describe '#download' do
