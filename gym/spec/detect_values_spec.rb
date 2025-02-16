@@ -122,7 +122,7 @@ eos
       end
 
       describe "using export_team_id" do
-        let(:options) { { project: "./gym/examples/multipleSchemes/Example.xcodeproj", export_team_id: team_id, export_method: "app-store" } }
+        let(:options) { { project: "./gym/examples/multipleSchemes/Example.xcodeproj", export_team_id: team_id, export_method: "app-store-connect" } }
 
         it "finds installer cert from list with 2 matching and 1 non-matching" do
           expect(FastlaneCore::Helper).to receive(:backticks).with("security find-certificate -a -c \"3rd Party Mac Developer Installer: \"", print: false).and_return(output_2_matching_1_nonmatching)
@@ -150,7 +150,7 @@ eos
       end
 
       describe "using DEVELOPMENT_TEAM builds setting" do
-        let(:options) { { project: "./gym/examples/multipleSchemes/Example.xcodeproj", export_method: "app-store" } }
+        let(:options) { { project: "./gym/examples/multipleSchemes/Example.xcodeproj", export_method: "app-store-connect" } }
 
         before do
           allow_any_instance_of(FastlaneCore::Project).to receive(:build_settings).with(anything).and_call_original

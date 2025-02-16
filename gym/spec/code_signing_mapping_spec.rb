@@ -71,7 +71,7 @@ describe Gym::CodeSigningMapping, requires_xcodebuild: true do
     it "only mapping from Xcode Project is available" do
       result = csm.merge_profile_mapping(primary_mapping: {},
                                        secondary_mapping: { "identifier.1" => "value.1" },
-                                           export_method: "app-store")
+                                           export_method: "app-store-connect")
 
       expect(result).to eq({ "identifier.1": "value.1" })
     end
@@ -79,7 +79,7 @@ describe Gym::CodeSigningMapping, requires_xcodebuild: true do
     it "only mapping from match (user) is available" do
       result = csm.merge_profile_mapping(primary_mapping: { "identifier.1" => "value.1" },
                                        secondary_mapping: {},
-                                           export_method: "app-store")
+                                           export_method: "app-store-connect")
 
       expect(result).to eq({ "identifier.1": "value.1" })
     end
@@ -87,7 +87,7 @@ describe Gym::CodeSigningMapping, requires_xcodebuild: true do
     it "keeps both profiles if they don't conflict" do
       result = csm.merge_profile_mapping(primary_mapping: { "identifier.1" => "value.1" },
                                        secondary_mapping: { "identifier.2" => "value.2" },
-                                           export_method: "app-store")
+                                           export_method: "app-store-connect")
 
       expect(result).to eq({ "identifier.1": "value.1", "identifier.2": "value.2" })
     end
@@ -95,13 +95,13 @@ describe Gym::CodeSigningMapping, requires_xcodebuild: true do
     it "doesn't crash if nil is provided" do
       result = csm.merge_profile_mapping(primary_mapping: nil,
                                        secondary_mapping: {},
-                                           export_method: "app-store")
+                                           export_method: "app-store-connect")
       expect(result).to eq({})
     end
 
     it "accesses the Xcode profile mapping, if nothing else is given" do
       expect(csm).to receive(:detect_project_profile_mapping).and_return({ "identifier.1" => "value.1" })
-      result = csm.merge_profile_mapping(primary_mapping: {}, export_method: "app-store")
+      result = csm.merge_profile_mapping(primary_mapping: {}, export_method: "app-store-connect")
 
       expect(result).to eq({ "identifier.1": "value.1" })
     end
@@ -111,7 +111,7 @@ describe Gym::CodeSigningMapping, requires_xcodebuild: true do
         it "should prefer the primary mapping" do
           result = csm.merge_profile_mapping(primary_mapping: { "identifier.1" => "Ap-pStoreValue2" },
                                          secondary_mapping: { "identifier.1" => "Ap-pStoreValue1" },
-                                             export_method: "app-store")
+                                             export_method: "app-store-connect")
 
           expect(result).to eq({ "identifier.1": "Ap-pStoreValue2" })
         end
@@ -121,7 +121,7 @@ describe Gym::CodeSigningMapping, requires_xcodebuild: true do
         it "should prefer the primary mapping" do
           result = csm.merge_profile_mapping(primary_mapping: { "identifier.1" => "Ap-p StoreValue1" },
                                          secondary_mapping: { "identifier.1" => "Ad-HocValue" },
-                                             export_method: "app-store")
+                                             export_method: "app-store-connect")
 
           expect(result).to eq({ "identifier.1": "Ap-p StoreValue1" })
         end

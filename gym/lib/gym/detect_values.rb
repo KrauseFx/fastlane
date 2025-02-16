@@ -2,6 +2,7 @@ require 'fastlane_core/core_ext/cfpropertylist'
 require 'fastlane_core/project'
 require_relative 'module'
 require_relative 'code_signing_mapping'
+require_relative 'export_method'
 
 module Gym
   # This class detects all kinds of default values
@@ -109,7 +110,7 @@ module Gym
       return if team_id.nil?
 
       case Gym.config[:export_method]
-      when "app-store"
+      when ExportMethod::APP_STORE
         prefix = "3rd Party Mac Developer Installer: "
       when "developer-id"
         prefix = "Developer ID Installer: "

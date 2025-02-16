@@ -2,6 +2,7 @@ require 'fastlane_core/configuration/config_item'
 require 'fastlane/helper/xcodebuild_formatter_helper'
 require 'credentials_manager/appfile_config'
 require_relative 'module'
+require_relative 'export_method'
 
 module Gym
   class Options
@@ -106,12 +107,12 @@ module Gym
         FastlaneCore::ConfigItem.new(key: :export_method,
                                      short_option: "-j",
                                      env_name: "GYM_EXPORT_METHOD",
-                                     description: "Method used to export the archive. Valid values are: app-store, validation, ad-hoc, package, enterprise, development, developer-id and mac-application",
+                                     description: "Method used to export the archive. Valid values are: #{ExportMethod.available_methods.join(', ')}",
                                      type: String,
                                      optional: true,
                                      verify_block: proc do |value|
-                                       av = %w(app-store validation ad-hoc package enterprise development developer-id mac-application)
-                                       UI.user_error!("Unsupported export_method '#{value}', must be: #{av}") unless av.include?(value)
+                                       av = ExportMethod.available_methods
+                                       UI.user_error!("Unsupported export_method '#{value}', must be: #{av}. #{ExportMethod.deprecated_methods_notice}") unless av.include?(value)
                                      end),
         FastlaneCore::ConfigItem.new(key: :export_options,
                                      env_name: "GYM_EXPORT_OPTIONS",

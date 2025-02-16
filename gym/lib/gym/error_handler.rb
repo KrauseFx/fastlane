@@ -2,6 +2,7 @@
 
 require 'fastlane_core/print_table'
 require_relative 'module'
+require_relative 'export_method'
 
 module Gym
   # This classes methods are called when something goes wrong in the building process
@@ -226,9 +227,10 @@ module Gym
       end
 
       def print_environment_information
-        if Gym.config[:export_method].to_s == "development"
+        export_method = Gym.config[:export_method].to_s
+        if [ExportMethod::DEBUGGING, ExportMethod::DEBUGGING_DEPRECATED].include?(export_method)
           UI.message("")
-          UI.error("Your `export_method` in gym is defined as `development`")
+          UI.error("Your `export_method` in gym is defined as `#{export_method}`")
           UI.error("which might cause problems when signing your application")
           UI.error("Are you sure want to build and export for development?")
           UI.error("Please make sure to define the correct export methods when calling")
@@ -249,17 +251,17 @@ module Gym
           # the provisioning profile might be called anything below
           # There is no 100% good way to detect the profile type based on the name
           available_export_types = {
-            "app-store" => "app-store",
-            "app store" => "app-store",
-            "appstore" => "app-store",
-            "enterprise" => "enterprise",
-            "in-house" => "enterprise",
-            "in house" => "enterprise",
-            "inhouse" => "enterprise",
-            "ad-hoc" => "ad-hoc",
-            "adhoc" => "ad-hoc",
-            "ad hoc" => "ad-hoc",
-            "development" => "development"
+            "app-store" => ExportMethod::APP_STORE,
+            "app store" => ExportMethod::APP_STORE,
+            "appstore" => ExportMethod::APP_STORE,
+            "enterprise" => ExportMethod::ENTERPRISE,
+            "in-house" => ExportMethod::ENTERPRISE,
+            "in house" => ExportMethod::ENTERPRISE,
+            "inhouse" => ExportMethod::ENTERPRISE,
+            "ad-hoc" => ExportMethod::RELEASE_TESTING,
+            "adhoc" => ExportMethod::RELEASE_TESTING,
+            "ad hoc" => ExportMethod::RELEASE_TESTING,
+            "development" => ExportMethod::DEBUGGING
           }
 
           selected_provisioning_profiles.each do |current_bundle_identifier, current_profile_name|

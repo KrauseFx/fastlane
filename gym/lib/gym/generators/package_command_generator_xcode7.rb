@@ -12,12 +12,13 @@ require 'fastlane_core/core_ext/cfpropertylist'
 require_relative '../module'
 require_relative '../error_handler'
 require_relative 'build_command_generator'
+require_relative '../export_method'
 
 module Gym
   # Responsible for building the fully working xcodebuild command
   class PackageCommandGeneratorXcode7
     class << self
-      DEFAULT_EXPORT_METHOD = "app-store"
+      DEFAULT_EXPORT_METHOD = ExportMethod::APP_STORE
 
       def generate
         parts = ["/usr/bin/xcrun #{wrap_xcodebuild.shellescape} -exportArchive"]
@@ -190,7 +191,7 @@ module Gym
 
         # Overrides export options if needed
         hash[:method] = Gym.config[:export_method]
-        if Gym.config[:export_method] == 'app-store'
+        if Gym.config[:export_method] == ExportMethod::APP_STORE
           hash[:uploadSymbols] = (Gym.config[:include_symbols] ? true : false) unless Gym.config[:include_symbols].nil?
           hash[:uploadBitcode] = (Gym.config[:include_bitcode] ? true : false) unless Gym.config[:include_bitcode].nil?
         end

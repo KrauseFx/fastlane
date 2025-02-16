@@ -1,6 +1,7 @@
 require 'xcodeproj'
 
 require_relative 'module'
+require_relative 'export_method'
 
 module Gym
   class CodeSigningMapping
@@ -69,6 +70,12 @@ module Gym
     # We do some `gsub`bing, because we can't really know the profile type, so we'll just look at the name and see if it includes
     # the export method (which it usually does, but with different notations)
     def app_identifier_contains?(str, contains)
+      # Account for differences in export method and expected identifier names.
+      case contains
+      when ExportMethod::APP_STORE
+        contains = 'app-store'
+      end
+
       return str.to_s.gsub("-", "").gsub(" ", "").gsub("InHouse", "enterprise").downcase.include?(contains.to_s.gsub("-", "").gsub(" ", "").downcase)
     end
 
