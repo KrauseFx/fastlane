@@ -63,6 +63,11 @@ module Sigh
                                      code_gen_sensitive: true,
                                      default_value: CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier),
                                      default_value_dynamic: true),
+        FastlaneCore::ConfigItem.new(key: :offline_profile,
+                                     env_name: "SIGH_OFFLINE_PROFILE",
+                                     description: "Enable profile with 'Offline Support' (7 day validity)",
+                                     is_string: false,
+                                     default_value: false),
 
         # App Store Connect API
         FastlaneCore::ConfigItem.new(key: :api_key_path,

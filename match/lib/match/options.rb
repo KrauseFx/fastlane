@@ -358,6 +358,9 @@ module Match
         FastlaneCore::ConfigItem.new(key: :force_legacy_encryption,
                                      env_name: "MATCH_FORCE_LEGACY_ENCRYPTION",
                                      description: "Force encryption to use legacy cbc algorithm for backwards compatibility with older match versions",
+        FastlaneCore::ConfigItem.new(key: :offline_profile,
+                                     env_name: "MATCH_OFFLINE_PROFILE",
+                                     description: "Enable profile with 'Offline Support' (7 day validity)",
                                      type: Boolean,
                                      default_value: false),
 

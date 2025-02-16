@@ -180,7 +180,8 @@ module Sigh
         bundle_id_id: bundle_id.id,
         certificate_ids: certificates_to_use.map(&:id),
         device_ids: devices_to_use.map(&:id),
-        template_name: Sigh.config[:template_name]
+        template_name: Sigh.config[:template_name],
+        is_offline_profile: Sigh.config[:offline_profile]
       )
 
       profile

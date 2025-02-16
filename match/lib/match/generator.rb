@@ -92,6 +92,7 @@ module Match
         fail_on_name_taken: params[:fail_on_name_taken],
         include_all_certificates: params[:include_all_certificates],
         include_mac_in_profiles: params[:include_mac_in_profiles],
+        offline_profile: params[:offline_profile],
       }
 
       values[:platform] = params[:platform]

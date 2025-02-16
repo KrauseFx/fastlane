@@ -406,6 +406,10 @@ If you're not using `Fastfile`, you can also use the `force_for_new_devices` opt
 fastlane match adhoc --force_for_new_devices
 ```
 
+##### Offline profile use
+
+If your profile requires the 'Offline support (7 day validity)' setting for use without Internet, use `offline_profile: true` to add this permission to generated profiles.
+
 ##### Templates (aka: custom entitlements)
 
 _match_ can generate profiles that contain custom entitlements by passing in the entitlement's name with the `template_name` parameter.
