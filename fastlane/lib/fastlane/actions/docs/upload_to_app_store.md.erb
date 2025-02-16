@@ -366,9 +366,9 @@ apple_watch_app_icon('./AppleWatchAppIcon.png')
 
 The platform of your application (a.e. ios, osx).
 
-This option is optional. The default value is "ios" and deliver should be able to figure out the platform from your binary.
+This option is optional. The default value is "ios" and deliver will ignore this option and figure out the platform from your binary if exactly one binary is present.
 
-However, in the case if multiple binaries present, you can specify a platform which you want to deliver explicitly.
+However, in the cases of no binaries or multiple binaries being present, you can specify a platform which you want to deliver explicitly.
 
 The available options:
 
