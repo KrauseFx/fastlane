@@ -8,18 +8,18 @@ module Sigh
   class Resign
     def run(options, args)
       # get the command line inputs and parse those into the vars we need...
-      ipa, signing_identity, provisioning_profiles, entitlements, version, display_name, short_version, bundle_version, new_bundle_id, use_app_entitlements, keychain_path = get_inputs(options, args)
+      ipa, signing_identity, provisioning_profiles, entitlements, version, display_name, short_version, bundle_version, new_bundle_id, new_appclip_bundle_id, use_app_entitlements, keychain_path = get_inputs(options, args)
       # ... then invoke our programmatic interface with these vars
-      unless resign(ipa, signing_identity, provisioning_profiles, entitlements, version, display_name, short_version, bundle_version, new_bundle_id, use_app_entitlements, keychain_path)
+      unless resign(ipa, signing_identity, provisioning_profiles, entitlements, version, display_name, short_version, bundle_version, new_bundle_id, new_appclip_bundle_id, use_app_entitlements, keychain_path)
         UI.user_error!("Failed to re-sign .ipa")
       end
     end
 
-    def self.resign(ipa, signing_identity, provisioning_profiles, entitlements, version, display_name, short_version, bundle_version, new_bundle_id, use_app_entitlements, keychain_path)
-      self.new.resign(ipa, signing_identity, provisioning_profiles, entitlements, version, display_name, short_version, bundle_version, new_bundle_id, use_app_entitlements, keychain_path)
+    def self.resign(ipa, signing_identity, provisioning_profiles, entitlements, version, display_name, short_version, bundle_version, new_bundle_id, new_appclip_bundle_id, use_app_entitlements, keychain_path)
+      self.new.resign(ipa, signing_identity, provisioning_profiles, entitlements, version, display_name, short_version, bundle_version, new_bundle_id, new_appclip_bundle_id, use_app_entitlements, keychain_path)
     end
 
-    def resign(ipa, signing_identity, provisioning_profiles, entitlements, version, display_name, short_version, bundle_version, new_bundle_id, use_app_entitlements, keychain_path)
+    def resign(ipa, signing_identity, provisioning_profiles, entitlements, version, display_name, short_version, bundle_version, new_bundle_id, new_appclip_bundle_id, use_app_entitlements, keychain_path)
       resign_path = find_resign_path
 
       if keychain_path
@@ -51,6 +51,7 @@ module Sigh
       bundle_version = "--bundle-version #{bundle_version}" if bundle_version
       verbose = "-v" if FastlaneCore::Globals.verbose?
       bundle_id = "-b '#{new_bundle_id}'" if new_bundle_id
+      appclip_bundle_id = "--app-clip-bundle-id '#{new_appclip_bundle_id}'" if new_appclip_bundle_id
       use_app_entitlements_flag = "--use-app-entitlements" if use_app_entitlements
       specific_keychain = "--keychain-path #{keychain_path.shellescape}" if keychain_path
 
@@ -67,6 +68,7 @@ module Sigh
         use_app_entitlements_flag,
         verbose,
         bundle_id,
+        appclip_bundle_id,
         specific_keychain,
         ipa.shellescape # Output path must always be last argument
       ].join(' ')
@@ -95,6 +97,7 @@ module Sigh
       short_version = options.short_version || nil
       bundle_version = options.bundle_version || nil
       new_bundle_id = options.new_bundle_id || nil
+      new_appclip_bundle_id = options.new_appclip_bundle_id || nil
       use_app_entitlements = options.use_app_entitlements || nil
       keychain_path = options.keychain_path || nil
 
@@ -102,7 +105,7 @@ module Sigh
         UI.important("The provisioning_name (-n) option is not applicable to resign. You should use provisioning_profile (-p) instead")
       end
 
-      return ipa, signing_identity, provisioning_profiles, entitlements, version, display_name, short_version, bundle_version, new_bundle_id, use_app_entitlements, keychain_path
+      return ipa, signing_identity, provisioning_profiles, entitlements, version, display_name, short_version, bundle_version, new_bundle_id, new_appclip_bundle_id, use_app_entitlements, keychain_path
     end
 
     def find_resign_path

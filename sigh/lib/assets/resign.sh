@@ -165,6 +165,7 @@ ORIGINAL_FILE="$1"
 CERTIFICATE="$2"
 ENTITLEMENTS=
 BUNDLE_IDENTIFIER=""
+APPCLIP_BUNDLE_IDENTIFIER=""
 DISPLAY_NAME=""
 KEYCHAIN=""
 VERSION_NUMBER=""
@@ -202,6 +203,10 @@ while [ "$1" != "" ]; do
         -b | --bundle-id )
             shift
             BUNDLE_IDENTIFIER="$1"
+            ;;
+        --app-clip-bundle-id )
+            shift
+            APPCLIP_BUNDLE_IDENTIFIER="$1"
             ;;
         -k | --keychain )
             shift
@@ -261,6 +266,7 @@ log "Certificate: '$CERTIFICATE'"
 [[ -n "${DISPLAY_NAME}" ]] && log "Specified display name: '$DISPLAY_NAME'"
 [[ -n "${ENTITLEMENTS}" ]] && log "Specified signing entitlements: '$ENTITLEMENTS'"
 [[ -n "${BUNDLE_IDENTIFIER}" ]] && log "Specified bundle identifier: '$BUNDLE_IDENTIFIER'"
+[[ -n "${APPCLIP_BUNDLE_IDENTIFIER}" ]] && log "Specified AppClip bundle identifier: '$APPCLIP_BUNDLE_IDENTIFIER'"
 [[ -n "${KEYCHAIN}" ]] && log "Specified keychain to use: '$KEYCHAIN'"
 [[ -n "${VERSION_NUMBER}" ]] && log "Specified version number to use: '$VERSION_NUMBER'"
 [[ -n "${SHORT_VERSION}" ]] && log "Specified short version to use: '$SHORT_VERSION'"
@@ -406,14 +412,26 @@ function resign {
 
     local APP_PATH="$1"
     local NESTED="$2"
+    local IS_APPCLIP="$3"
     local BUNDLE_IDENTIFIER="$BUNDLE_IDENTIFIER"
+    local APPCLIP_BUNDLE_IDENTIFIER="$APPCLIP_BUNDLE_IDENTIFIER"
     local NEW_PROVISION="$NEW_PROVISION"
     local APP_IDENTIFIER_PREFIX=""
     local TEAM_IDENTIFIER=""
 
     if [[ "$NESTED" == NESTED ]]; then
-        # Ignore bundle identifier for nested applications
-        BUNDLE_IDENTIFIER=""
+        if [[ "$IS_APPCLIP" == IS_APPCLIP ]]; then
+            # Update bundle identifier for AppClips
+            if [[ "$APPCLIP_BUNDLE_IDENTIFIER" == "" ]]; then
+                # Supports appending `.Clip` to end of main bundle identifier as presented in Apple's documentation if explicit value is not provided.
+                BUNDLE_IDENTIFIER="${BUNDLE_IDENTIFIER}.Clip"
+            else
+                BUNDLE_IDENTIFIER="$APPCLIP_BUNDLE_IDENTIFIER"
+            fi
+        else
+            # Ignore bundle identifier for nested applications
+            BUNDLE_IDENTIFIER=""
+        fi        
     fi
 
     # Make sure that the Info.plist file is where we expect it
@@ -904,7 +922,12 @@ function resign {
 while IFS= read -d '' -r app;
 do
     log "Resigning nested application: '$app'"
-    resign "$app" NESTED
+    if [[ $app == *"AppClips"* ]]; then
+        log "Nested application is an AppClip: '$app'"
+        resign "$app" NESTED IS_APPCLIP 
+    else
+        resign "$app" NESTED
+    fi    
 done < <(find "$TEMP_DIR/Payload/$APP_NAME" -d -mindepth 1 \( -name "*.app" -or -name "*.appex" \) -print0)
 
 # Resign the application

@@ -6,7 +6,7 @@ module Fastlane
         require 'sigh'
 
         # try to resign the ipa
-        if Sigh::Resign.resign(params[:ipa], params[:signing_identity], params[:provisioning_profile], params[:entitlements], params[:version], params[:display_name], params[:short_version], params[:bundle_version], params[:bundle_id], params[:use_app_entitlements], params[:keychain_path])
+        if Sigh::Resign.resign(params[:ipa], params[:signing_identity], params[:provisioning_profile], params[:entitlements], params[:version], params[:display_name], params[:short_version], params[:bundle_version], params[:bundle_id], params[:appclip_bundle_id], params[:use_app_entitlements], params[:keychain_path])
           UI.success('Successfully re-signed .ipa 🔏.')
         else
           UI.user_error!("Failed to re-sign .ipa")
@@ -99,6 +99,10 @@ module Fastlane
           FastlaneCore::ConfigItem.new(key: :bundle_id,
                                        env_name: "FL_RESIGN_BUNDLE_ID",
                                        description: "Set new bundle ID during resign (`CFBundleIdentifier`)",
+                                       optional: true),
+          FastlaneCore::ConfigItem.new(key: :appclip_bundle_id,
+                                       env_name: "FL_RESIGN_APPCLIP_BUNDLE_ID",
+                                       description: "Set new AppClip bundle ID during resign (`CFBundleIdentifier`)",
                                        optional: true),
           FastlaneCore::ConfigItem.new(key: :use_app_entitlements,
                                        env_name: "FL_USE_APP_ENTITLEMENTS",
