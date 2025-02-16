@@ -230,6 +230,7 @@ module Fastlane
           UI.error("Could not get Xcode Version")
         end
         table_content["Swift Version"] = Helper.swift_version || "N/A"
+        table_content["Architecture"] = Helper.architecture_type
       end
 
       table = ["| Key | Value |"]
