@@ -763,8 +763,8 @@ module FastlaneCore
 
       actual_dir = if can_use_asset_path && !force_itmsp
                      # The asset gets deleted upon completion so copying to a temp directory
-                     # (with randomized filename, for multibyte-mixed filename upload fails)
-                     new_file_name = "#{SecureRandom.uuid}#{File.extname(asset_path)}"
+                     # (with sanitized filename and randomized prefix, for multibyte-mixed filename upload fails)
+                     new_file_name = SecureRandom.uuid + '.' + File.basename(asset_path).gsub(/[^0-9A-Za-z_\.-]+/, '')
                      tmp_asset_path = File.join(Dir.tmpdir, new_file_name)
                      FileUtils.cp(asset_path, tmp_asset_path)
                      tmp_asset_path
