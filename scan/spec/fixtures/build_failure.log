@@ -1,0 +1,16 @@
+2022-10-13 10:27:55.968 xcodebuild[12711:5204153] Requested but did not find extension point with identifier Xcode.IDEKit.ExtensionSentinelHostApplications for extension Xcode.DebuggerFoundation.AppExtensionHosts.watchOS of plug-in com.apple.dt.IDEWatchSupportCore
+2022-10-13 10:27:55.968 xcodebuild[12711:5204153] Requested but did not find extension point with identifier Xcode.IDEKit.ExtensionPointIdentifierToBundleIdentifier for extension Xcode.DebuggerFoundation.AppExtensionToBundleIdentifierMap.watchOS of plug-in com.apple.dt.IDEWatchSupportCore
+[32;1mClean Succeeded[0m
+[[36mDemo[0m] [1mCompiling[0m ContentView.swift
+[[36mDemo[0m] [1mCompiling[0m Executed.swift
+[[36mDemo[0m] [1mCompiling[0m DemoApp.swift
+❌ Demo/DemoApp.swift:17:9: [31mcannot find 'nonExistentVariable' in scope[0m
+        nonExistentVariable.call()
+[36m        ^~~~~~~~~~~~~~~~~~~[0m
+** TEST BUILD FAILED **
+
+
+The following build commands failed:
+	CompileSwift normal arm64 Demo/DemoApp.swift (in target 'Demo' from project 'Demo')
+	CompileSwiftSources normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Demo' from project 'Demo')
+(2 failures)

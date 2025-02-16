@@ -25,6 +25,23 @@ describe Scan do
         end
       end
 
+      describe "when parsing build failure output", requires_xcode: true do
+        before(:each) do
+          Scan.config = FastlaneCore::Configuration.create(Scan::Options.available_options, {
+            project: './scan/examples/standard/app.xcodeproj'
+          })
+        end
+
+        it "reports a build failure" do
+          expect(FastlaneCore::UI).to receive(:build_failure!).with("Error building the application. See the log above.")
+
+          output = File.open('./scan/spec/fixtures/build_failure.log', &:read)
+          expect do
+            Scan::ErrorHandler.handle_build_error(output, log_path)
+          end.to(raise_error)
+        end
+      end
+
       describe "when parsing early failure output" do
         let(:output_path) { './scan/spec/fixtures/early_testing_failure.log' }
 
