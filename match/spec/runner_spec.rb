@@ -146,12 +146,12 @@ describe Match do
           expect(Match::Encryption::OpenSSL).to receive(:new).with(keychain_name: fake_storage.git_url, working_directory: fake_storage.working_directory, force_legacy_encryption: false).and_return(fake_encryption)
           expect(fake_encryption).to receive(:decrypt_files).and_return(nil)
 
-          expect(Match::Utils).to receive(:import).with(key_path, keychain, password: nil).and_return(nil)
+          expect(Match::Utils).to receive(:import).with(key_path, keychain, password: nil, skip_set_partition_list: false).and_return(nil)
           expect(fake_storage).to_not(receive(:save_changes!))
 
           # To also install the certificate, fake that
           expect(FastlaneCore::CertChecker).to receive(:installed?).with(cert_path, in_keychain: nil).and_return(false)
-          expect(Match::Utils).to receive(:import).with(cert_path, keychain, password: nil).and_return(nil)
+          expect(Match::Utils).to receive(:import).with(cert_path, keychain, password: nil, skip_set_partition_list: false).and_return(nil)
 
           spaceship = "spaceship"
           allow(spaceship).to receive(:team_id).and_return("")
