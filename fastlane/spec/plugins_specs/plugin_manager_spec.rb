@@ -26,6 +26,7 @@ describe Fastlane do
 
       it "returns all fastlane plugins with no fastlane_core" do
         allow(Bundler::SharedHelpers).to receive(:default_gemfile).and_return("./fastlane/spec/fixtures/plugins/Pluginfile1")
+        allow(Bundler::SharedHelpers).to receive(:default_lockfile).and_return(nil)
         expect(plugin_manager.available_gems).to eq(["fastlane-plugin-xcversion", "fastlane_core", "hemal"])
       end
     end
@@ -38,13 +39,32 @@ describe Fastlane do
 
       it "returns all fastlane plugins with no fastlane_core" do
         allow(Bundler::SharedHelpers).to receive(:default_gemfile).and_return("./fastlane/spec/fixtures/plugins/Pluginfile1")
+        allow(Bundler::SharedHelpers).to receive(:default_lockfile).and_return(nil)
         expect(plugin_manager.available_plugins).to eq(["fastlane-plugin-xcversion"])
+      end
+
+      it "returns all fastlane plugins with no fastlane_core and a gemfile lock" do
+        allow(Bundler::SharedHelpers).to receive(:default_gemfile).and_return("./fastlane/spec/fixtures/plugins/GemfileWithLock")
+        allow(Bundler::SharedHelpers).to receive(:default_lockfile).and_return("./fastlane/spec/fixtures/plugins/GemfileWithLock.lock")
+        expect(plugin_manager.available_plugins).to eq(["fastlane-plugin-appcenter"])
+      end
+
+      # full integration test
+      it "returns all fastlane plugins found in transitive dependencies" do
+        Bundler.with_unbundled_env do
+          Dir.chdir("fastlane/spec/fixtures/plugins/GemfileWithDeps") do
+            `bundle install`
+            output = `bundle exec fastlane lanes`
+            expect(output.include?("fastlane-plugin-appcenter")).to be true
+          end
+        end
       end
     end
 
     describe "#plugin_is_added_as_dependency?" do
       before do
         allow(Bundler::SharedHelpers).to receive(:default_gemfile).and_return("./fastlane/spec/fixtures/plugins/Pluginfile1")
+        allow(Bundler::SharedHelpers).to receive(:default_lockfile).and_return(nil)
       end
 
       it "returns true if a plugin is available" do
@@ -65,11 +85,13 @@ describe Fastlane do
     describe "#plugins_attached?" do
       it "returns true if plugins are attached" do
         allow(Bundler::SharedHelpers).to receive(:default_gemfile).and_return("./fastlane/spec/fixtures/plugins/GemfileWithAttached")
+        allow(Bundler::SharedHelpers).to receive(:default_lockfile).and_return(nil)
         expect(plugin_manager.plugins_attached?).to eq(true)
       end
 
       it "returns false if plugins are not attached" do
         allow(Bundler::SharedHelpers).to receive(:default_gemfile).and_return("./fastlane/spec/fixtures/plugins/GemfileWithoutAttached")
+        allow(Bundler::SharedHelpers).to receive(:default_lockfile).and_return(nil)
         expect(plugin_manager.plugins_attached?).to eq(false)
       end
     end
@@ -85,6 +107,7 @@ describe Fastlane do
     describe "#update_dependencies!" do
       before do
         allow(Bundler::SharedHelpers).to receive(:default_gemfile).and_return("./fastlane/spec/fixtures/plugins/Pluginfile1")
+        allow(Bundler::SharedHelpers).to receive(:default_lockfile).and_return(nil)
       end
 
       it "execs out the correct command" do

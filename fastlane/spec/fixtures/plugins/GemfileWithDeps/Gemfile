@@ -1,0 +1,4 @@
+source("https://rubygems.org")
+
+gem "dependency_with_plugins", path: "dependency_with_plugins/"
+gem "fastlane", path: "../../../../.."

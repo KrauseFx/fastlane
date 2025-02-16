@@ -1,0 +1,47 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    colored (1.2)
+    commander (4.6.0)
+      highline (~> 2.0.0)
+    credentials_manager (0.16.4)
+      colored
+      commander (>= 4.3.5)
+      highline (>= 1.7.1)
+      security
+    excon (0.92.3)
+    fastlane-plugin-appcenter (2.0.0)
+    fastlane_core (0.59.0)
+      colored
+      commander (>= 4.4.0, <= 5.0.0)
+      credentials_manager (>= 0.16.2, < 1.0.0)
+      excon (>= 0.45.0, < 1.0)
+      gh_inspector (>= 1.0.1, < 2.0.0)
+      highline (>= 1.7.2)
+      json
+      multi_json
+      plist (>= 3.1.0, < 4.0.0)
+      rubyzip (~> 1.1.6)
+      terminal-table (>= 1.4.5, < 2.0.0)
+    gh_inspector (1.1.3)
+    hemal (0.0.1)
+    highline (2.0.3)
+    json (2.6.2)
+    multi_json (1.15.0)
+    plist (3.6.0)
+    rubyzip (1.1.7)
+    security (0.1.5)
+    terminal-table (1.8.0)
+      unicode-display_width (~> 1.1, >= 1.1.1)
+    unicode-display_width (1.8.0)
+
+PLATFORMS
+  arm64-darwin-21
+
+DEPENDENCIES
+  fastlane-plugin-appcenter
+  fastlane_core
+  hemal
+
+BUNDLED WITH
+   2.3.13
