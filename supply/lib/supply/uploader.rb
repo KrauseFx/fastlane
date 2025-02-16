@@ -31,6 +31,9 @@ module Supply
         if Supply.config[:track_promote_to]
           track_to_update = Supply.config[:track_promote_to]
           promote_track
+        elsif Supply.config[:track_promote_release_status] == Supply::ReleaseStatus::HALTED
+          # If HALTED is specified, the current track type is not changed and the operation is performed on the current track
+          halt_track
         elsif !Supply.config[:rollout].nil? && Supply.config[:track].to_s != ""
           update_rollout
         end
@@ -225,6 +228,35 @@ module Supply
       end
 
       client.update_track(Supply.config[:track_promote_to], track_to)
+    end
+
+    def halt_track
+      track_from = client.tracks(Supply.config[:track]).first
+      unless track_from
+        UI.user_error!("Cannot halt track '#{Supply.config[:track]}' - track doesn't exist")
+      end
+
+      releases = track_from.releases
+      if Supply.config[:version_code].to_s != ""
+        releases = releases.select do |release|
+          release.version_codes.include?(Supply.config[:version_code].to_s)
+        end
+      else
+        releases = releases.select do |release|
+          release.status == Supply::ReleaseStatus::IN_PROGRESS
+        end
+      end
+
+      if releases.size == 0
+        UI.user_error!("Track '#{Supply.config[:track]}' doesn't have any releases")
+      elsif releases.size > 1
+        UI.user_error!("Track '#{Supply.config[:track]}' has more than one release - use :version_code to filter the release to halt")
+      end
+
+      release = releases.first
+      release.status = Supply::ReleaseStatus::HALTED
+
+      client.update_track(Supply.config[:track], track_from)
     end
 
     def upload_changelog(language, version_code)

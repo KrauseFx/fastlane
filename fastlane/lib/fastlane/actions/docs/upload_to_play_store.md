@@ -174,6 +174,32 @@ A common Play publishing scenario might involve uploading an APK version to a te
 
 This can be done using the `--track_promote_to` parameter. The `--track_promote_to` parameter works with the `--track` parameter to command the Play API to promote existing Play track APK version(s) (those active on the track identified by the `--track` param value) to a new track (`--track_promote_to` value).
 
+## Halting staged rollouts
+
+You can halt a staged rollout by specifying `track_promote_release_status: 'halted` and target track.
+
+```ruby
+lane :halt_internal_track do
+  upload_to_play_store(
+    # Target track to halt
+    track: 'internal',
+    # It's no problem not to specify version_code if track doesn't have multiple releases. 
+    # version_code: 1, # to identify the track to be halted
+
+    # No need to specify `track_remote_to` because stage will not change
+
+    track_promote_release_status: 'halted',
+    # Skip uploading binary and metadata processing because just want to halt
+    skip_upload_apk: true,
+    skip_upload_aab: true,
+    skip_upload_metadata: true,
+    skip_upload_changelogs: true,
+    skip_upload_images: true,
+    skip_upload_screenshots: true,
+  )
+end
+```
+
 ## Retrieve Track Release Names & Version Codes
 
 Before performing a new APK upload you may want to check existing track version codes or release names, or you may simply want to provide an informational lane that displays the currently promoted version codes or release name for the production track. You can use the `google_play_track_version_codes` action to retrieve existing version codes for a package and track. You can use the `google_play_track_release_names` action to retrieve existing release names for a package and track.

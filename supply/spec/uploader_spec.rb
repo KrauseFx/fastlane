@@ -203,6 +203,124 @@ describe Supply do
       end
     end
 
+    describe 'halt_track' do
+      subject { Supply::Uploader.new.halt_track }
+
+      let(:track_stage) { 'alpha' }
+      let(:client) { double('client') }
+      let(:version_codes) { ['1', '2', '3'] }
+      let(:config) {
+        {
+          release_status: Supply::ReleaseStatus::IN_PROGRESS,
+          track_promote_release_status: Supply::ReleaseStatus::HALTED,
+          track: track_stage,
+        }
+      }
+      let(:track) { double('alpha') }
+      let(:release) { double('release1') }
+
+      before do
+        Supply.config = config
+        allow(Supply::Client).to receive(:make_from_config).and_return(client)
+        allow(client).to receive(:tracks).and_return([track])
+        allow(track).to receive(:releases).and_return([release])
+        allow(track).to receive(:releases=)
+        allow(release).to receive(:status=)
+
+        allow(client).to receive(:update_track).with(config[:track], track)
+      end
+
+      context 'when version_code is specified' do
+        let(:config) {
+          {
+            version_code: version_codes.first,
+            track_promote_release_status: Supply::ReleaseStatus::HALTED,
+            track: 'alpha',
+          }
+        }
+
+        before do
+          allow(release).to receive(:version_codes).and_return(version_codes)
+        end
+
+        it 'should call update_track with track_from' do
+          expect(release).to receive(:status=).with(Supply::ReleaseStatus::HALTED)
+
+          expect(client).to receive(:update_track).with(config[:track], track).once
+          subject
+        end
+      end
+
+      context 'when release_status is specified' do
+        let(:config) {
+          {
+            release_status: Supply::ReleaseStatus::IN_PROGRESS,
+            track_promote_release_status: Supply::ReleaseStatus::HALTED,
+            track: 'alpha',
+          }
+        }
+
+        before do
+          allow(release).to receive(:status).and_return(Supply::ReleaseStatus::IN_PROGRESS)
+        end
+
+        it 'should call update_track with track_from' do
+          expect(release).to receive(:status=).with(Supply::ReleaseStatus::HALTED)
+
+          expect(client).to receive(:update_track).with(config[:track], track).once
+          subject
+        end
+      end
+
+      context 'when there is no tracks' do
+        before do
+          allow(client).to receive(:tracks).and_return([])
+        end
+
+        it 'should only print no track error' do
+          expect(track).not_to receive(:releases)
+          expect(client).not_to receive(:update_track)
+
+          expect { subject }.to raise_error(FastlaneCore::Interface::FastlaneError, /Cannot halt track '#{track_stage}' - track doesn't exist/)
+        end
+      end
+
+      context 'when there is no releases on the track' do
+        before do
+          allow(track).to receive(:releases).and_return([])
+        end
+
+        it 'should only print no releases error' do
+          expect(client).not_to receive(:update_track)
+
+          expect { subject }.to raise_error(FastlaneCore::Interface::FastlaneError, /Track '#{track_stage}' doesn't have any releases/)
+        end
+      end
+
+      context 'when there is more than one list' do
+        let(:release2) { double('release2') }
+        let(:config) {
+          {
+            release_status: Supply::ReleaseStatus::IN_PROGRESS,
+            track_promote_release_status: Supply::ReleaseStatus::HALTED,
+            track: track_stage,
+          }
+        }
+
+        before do
+          allow(release).to receive(:status).and_return(Supply::ReleaseStatus::IN_PROGRESS)
+          allow(release2).to receive(:status).and_return(Supply::ReleaseStatus::IN_PROGRESS)
+          allow(track).to receive(:releases).and_return([release, release2])
+        end
+
+        it 'should only print an error indicating there is more than one release' do
+          expect(client).not_to receive(:update_track)
+
+          expect { subject }.to raise_error(FastlaneCore::Interface::FastlaneError, /Track '#{track_stage}' has more than one release - use :version_code to filter the release to halt/)
+        end
+      end
+    end
+
     # add basic == functionality to LocalizedText class for testing purpose
     class AndroidPublisher::LocalizedText
       def ==(other)
