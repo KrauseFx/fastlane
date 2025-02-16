@@ -339,6 +339,11 @@ class PortalStubbing
         to_return(status: 404, body: adp_read_fixture_file('download_certificate_failure.html'))
     end
 
+    def adp_stub_fetch_teams
+      stub_request(:post, 'https://developer.apple.com/services-account/QH65B2/account/getTeams').
+        to_return(status: 200, body: adp_read_fixture_file('fetch_teams.json'), headers: { 'Content-Type' => 'application/json', 'Accept' => 'application/json, text/javascript' })
+    end
+
     def adp_stub_fetch_program_license_agreement_messages
       stub_request(:get, 'https://appstoreconnect.apple.com/olympus/v1/contractMessages').
         to_return(status: 200, body: adp_read_fixture_file('program_license_agreement_messages.json'), headers: { 'Content-Type' => 'application/json' })

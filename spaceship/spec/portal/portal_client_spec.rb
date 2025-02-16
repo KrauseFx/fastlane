@@ -316,6 +316,27 @@ describe Spaceship::Client do
       end
     end
 
+    describe '#fetch_teams' do
+      it 'should make a request to fetch the teams associated with the authenticated Apple ID' do
+        PortalStubbing.adp_stub_fetch_teams
+
+        response = subject.fetch_teams
+
+        expect(
+          a_request(:post, 'https://developer.apple.com/services-account/QH65B2/account/getTeams')
+          .with(
+            headers: {
+              'Content-Type' => 'application/json',
+              'Accept' => 'application/json, text/javascript'
+            }
+          )
+        ).to have_been_made
+
+        expect(response.body["teams"].length).to eq(2)
+
+      end
+    end
+
     describe '#fetch_program_license_agreement_messages' do
       it 'makes a request to fetch all Program License Agreement warnings from Olympus' do
         # Stub the GET request that the method will make

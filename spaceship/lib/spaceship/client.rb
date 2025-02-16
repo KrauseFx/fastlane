@@ -764,6 +764,37 @@ module Spaceship
       ENV["FASTLANE_SESSION"] || ENV["SPACESHIP_SESSION"]
     end
 
+    # Fetches Apple Developer Teams
+    #
+    # This method sends a POST request to Apple's Developer Portal API to retrieve the list
+    # of teams associated with the authenticated Apple ID. The response includes details about
+    # each team, such as team ID, team name, and team role. This can be useful for accounts
+    # with access to multiple teams or organizations.
+    #
+    # @return [Faraday::Response] Returns the response object containing the team information,
+    #   which can be accessed via `teams_response.body`.
+    #
+    # @example Fetching and printing team names
+    #   teams_response = fetch_teams
+    #   teams = teams_response.body["teams"]
+    #   team_names = teams.map { |team| team["name"] }
+    #
+    # @raise [Faraday::Error] Raises an error if the request fails or if there's an issue with
+    #   the connection to Apple's servers.
+    #
+    # @note Ensure that you are authenticated with the API before calling this method to avoid
+    #   authentication errors.
+    #
+    def fetch_teams
+      teams_response = request(:post) do |req|
+        req.url("https://developer.apple.com/services-account/QH65B2/account/getTeams")
+        req.headers['Content-Type'] = 'application/json'
+        req.headers['Accept'] = 'application/json, text/javascript'
+      end
+
+      return teams_response
+    end
+
     # Get contract messages from App Store Connect's "olympus" endpoint
     def fetch_program_license_agreement_messages
       all_messages = []

@@ -1,0 +1,152 @@
+{
+    "creationTimestamp": "2024-11-06T16:41:47Z",
+    "resultCode": 0,
+    "userLocale": "en_US",
+    "devices": [],
+    "teamAddresses": [],
+    "teams": [
+        {
+            "teamId": "ABC1234",
+            "name": "Team name",
+            "status": "active",
+            "phone": "800-555-5555",
+            "address": {
+                "city": "Tulsa",
+                "state": "Oklahoma",
+                "country": "United States",
+                "countryCode": "US",
+                "postalCode": "74135-2905",
+                "team": {
+                    "extendedTeamAttributes": {},
+                    "xcodeFreeOnly": false,
+                    "id": 12345,
+                    "score": 0
+                },
+                "streetAddress1": "12345 S Mocked Ave"
+            },
+            "entityType": "c",
+            "paymentPlatform": 1,
+            "agent": {
+                "personId": 12345,
+                "firstName": "firstName",
+                "lastName": "lastName",
+                "email": "example@example.com",
+                "developerStatus": "active",
+                "cipsAccess": true,
+                "satoriBypass": false,
+                "eligibleForSatori": false,
+                "enrollmentOnApp": false,
+                "paymentPlatform": null,
+                "fssRecommendation": null,
+                "fssDate": null,
+                "fssNameProcessed": null,
+                "fssConvKitStatus": null,
+                "fssConvKitScore": null,
+                "fssRiskingHonorFlag": false,
+                "fssRiskingOverrideAction": null,
+                "fssRiskingOverrideDate": null,
+                "showFssRiskingOverrideApprove": false,
+                "showFssRiskingOverrideReject": false,
+                "showFssRiskingOverrideReset": false,
+                "fssRiskingErrors": null,
+                "isIDVerificationRequired": false,
+                "isCountryUpdateRequired": false,
+                "hcmStatus": null,
+                "hcmStatusModifiedDate": null,
+                "teamMemberId": "XXXX"
+            },
+            "program": {
+                "type": "ad19",
+                "name": "Apple Developer Program",
+                "autoRenew": true,
+                "dateExpires": 1749513599000,
+                "status": "active",
+                "autoRenewPrice": "US$99"
+            },
+            "userRoles": [
+                "Admin"
+            ],
+            "teamMemberId": "ABCD1234",
+            "adminCount": 1,
+            "memberCount": 0,
+            "serverCount": 0,
+            "nextDeviceResetDate": 1749513599000,
+            "isFeeWaiverApproved": false,
+            "isMDMVendor": false,
+            "acceptedLatestAgreement": false,
+            "appRenewalEligibility": "eligible"
+        },
+        {
+            "teamId": "ABC1234",
+            "name": "Another Team Name",
+            "status": "active",
+            "phone": "800-555-5555",
+            "address": {
+                "city": "Bloomington",
+                "state": "Indiana",
+                "country": "United States",
+                "countryCode": "US",
+                "postalCode": "47404-3947",
+                "team": {
+                    "extendedTeamAttributes": {},
+                    "xcodeFreeOnly": false,
+                    "id": 12345,
+                    "score": 0
+                },
+                "streetAddress1": "12345 S Mocked Ave"
+            },
+            "entityType": "c",
+            "paymentPlatform": 2,
+            "agent": {
+                "personId": 12345,
+                "firstName": "firstName",
+                "lastName": "lastName",
+                "email": "example@example.com",
+                "developerStatus": "active",
+                "cipsAccess": true,
+                "satoriBypass": false,
+                "eligibleForSatori": false,
+                "enrollmentOnApp": false,
+                "paymentPlatform": null,
+                "fssRecommendation": null,
+                "fssDate": null,
+                "fssNameProcessed": null,
+                "fssConvKitStatus": null,
+                "fssConvKitScore": null,
+                "fssRiskingHonorFlag": false,
+                "fssRiskingOverrideAction": null,
+                "fssRiskingOverrideDate": null,
+                "showFssRiskingOverrideApprove": false,
+                "showFssRiskingOverrideReject": false,
+                "showFssRiskingOverrideReset": false,
+                "fssRiskingErrors": null,
+                "isIDVerificationRequired": false,
+                "isCountryUpdateRequired": false,
+                "hcmStatus": null,
+                "hcmStatusModifiedDate": null,
+                "teamMemberId": "XXXX"
+            },
+            "program": {
+                "type": "ad19",
+                "name": "Apple Developer Program",
+                "autoRenew": false,
+                "dateExpires": 1741075199000,
+                "status": "active",
+                "autoRenewPrice": "US$99"
+            },
+            "userRoles": [
+                "Admin"
+            ],
+            "teamMemberId": "ABCD1234",
+            "adminCount": 2,
+            "memberCount": 0,
+            "serverCount": 0,
+            "nextDeviceResetDate": 1741075199000,
+            "isFeeWaiverApproved": false,
+            "isMDMVendor": false,
+            "acceptedLatestAgreement": true,
+            "appRenewalEligibility": "eligible"
+        }
+    ],
+    "developers": []
+}
