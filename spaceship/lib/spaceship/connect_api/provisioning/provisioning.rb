@@ -204,7 +204,8 @@ module Spaceship
 
           attributes = {
             name: new_name,
-            status: status
+            status: status,
+            teamId: provisioning_request_client.team_id
           }
 
           body = {
