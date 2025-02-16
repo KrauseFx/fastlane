@@ -36,6 +36,28 @@ describe Fastlane do
         end.to raise_error("Unresolved conflict between options: 'username' and 'api_key'")
       end
 
+      it "forbids to provide both :username and :keychain_profile" do
+        expect do
+          Fastlane::FastFile.new.parse("lane :test do
+            notarize(
+              username: 'myusername@example.com',
+              keychain_profile: 'keychain profile name'
+            )
+          end").runner.execute(:test)
+        end.to raise_error("Unresolved conflict between options: 'username' and 'keychain_profile'")
+      end
+
+      it "forbids to provide both :api_key and :keychain_profile" do
+        expect do
+          Fastlane::FastFile.new.parse("lane :test do
+            notarize(
+              api_key: {'anykey' => 'anyvalue'},
+              keychain_profile: 'keychain profile name'
+            )
+          end").runner.execute(:test)
+        end.to raise_error("Unresolved conflict between options: 'api_key' and 'keychain_profile'")
+      end
+
       it "forbids to provide both :skip_stapling and :try_early_stapling" do
         expect do
           Fastlane::FastFile.new.parse("lane :test do
@@ -111,6 +133,60 @@ describe Fastlane do
             end.to raise_error(FastlaneCore::Interface::FastlaneError, "Could not notarize package. To see the error, please set 'print_log' to true.")
           end
         end
+
+        context "with :keychain_profile" do
+          let(:keychain_profile) { 'Keychain profile name' }
+          let(:keychain_path) { '~/Library/My Keychains/name' }
+
+          it "successful with specified :keychain" do
+            expect(Fastlane::Actions).to receive(:sh).with("xcrun notarytool submit #{package.path} --output-format json --wait --keychain-profile #{keychain_profile.shellescape} --keychain #{keychain_path.shellescape}", { error_callback: anything, log: false }).and_return(success_submit_response)
+
+            expect(Fastlane::Actions).to receive(:sh).with("xcrun stapler staple #{package.path}", { log: false })
+
+            Fastlane::FastFile.new.parse("lane :test do
+              notarize(
+                use_notarytool: true,
+                package: '#{package.path}',
+                bundle_id: '#{bundle_id}',
+                keychain: '#{keychain_path}',
+                keychain_profile: '#{keychain_profile}'
+              )
+            end").runner.execute(:test)
+          end
+
+          it "successful w/o specified :keychain" do
+            expect(Fastlane::Actions).to receive(:sh).with("xcrun notarytool submit #{package.path} --output-format json --wait --keychain-profile #{keychain_profile.shellescape}", { error_callback: anything, log: false }).and_return(success_submit_response)
+
+            expect(Fastlane::Actions).to receive(:sh).with("xcrun stapler staple #{package.path}", { log: false })
+
+            Fastlane::FastFile.new.parse("lane :test do
+              notarize(
+                use_notarytool: true,
+                package: '#{package.path}',
+                bundle_id: '#{bundle_id}',
+                keychain_profile: '#{keychain_profile}'
+              )
+            end").runner.execute(:test)
+          end
+
+          it "uses :keychain_profile even if there is API key in a lane context" do
+            allow(Spaceship::ConnectAPI::Token).to receive(:from).and_return('token')
+
+            expect(Fastlane::Actions).to receive(:sh).with("xcrun notarytool submit #{package.path} --output-format json --wait --keychain-profile #{keychain_profile.shellescape}", { error_callback: anything, log: false }).and_return(success_submit_response)
+
+            expect(Fastlane::Actions).to receive(:sh).with("xcrun stapler staple #{package.path}", { log: false })
+
+            Fastlane::FastFile.new.parse("lane :test do
+              notarize(
+                use_notarytool: true,
+                package: '#{package.path}',
+                bundle_id: '#{bundle_id}',
+                keychain_profile: '#{keychain_profile}'
+              )
+            end").runner.execute(:test)
+          end
+        end
+
       end
     end
   end

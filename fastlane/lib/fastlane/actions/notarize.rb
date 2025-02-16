@@ -48,9 +48,25 @@ module Fastlane
       def self.notarytool(params, package_path, bundle_id, skip_stapling, print_log, verbose, api_key, compressed_package_path)
         temp_file = nil
 
+        # Auth methods precedence:
+        # 1. Keychain or User/app specific password.
+        # 2. API Key.
+        #
+        # All three options are conflicting, but even if api_key is not specified
+        # as paramerer, it can be retrieved from the lane context.
+        # We must eliminate situation when user provides username or keychain
+        # aurhentication and api_key auth is used.
+
         # Create authorization part of command with either API Key or Apple ID
         auth_parts = []
-        if api_key
+        if params[:keychain_profile]
+          auth_parts << "--keychain-profile #{params[:keychain_profile].shellescape}"
+          auth_parts << "--keychain #{params[:keychain].shellescape}" if params[:keychain]
+        elsif params[:username]
+          auth_parts << "--apple-id #{params[:username]}"
+          auth_parts << "--password #{ENV['FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD']}"
+          auth_parts << "--team-id #{params[:asc_provider]}"
+        elsif api_key
           # Writes key contents to temporary file for command
           require 'tempfile'
           temp_file = Tempfile.new
@@ -59,10 +75,6 @@ module Fastlane
           auth_parts << "--key #{temp_file.path}"
           auth_parts << "--key-id #{api_key.key_id}"
           auth_parts << "--issuer #{api_key.issuer_id}"
-        else
-          auth_parts << "--apple-id #{params[:username]}"
-          auth_parts << "--password #{ENV['FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD']}"
-          auth_parts << "--team-id #{params[:asc_provider]}"
         end
 
         # Submits package and waits for processing using `xcrun notarytool submit --wait`
@@ -72,6 +84,10 @@ module Fastlane
           "--output-format json",
           "--wait"
         ] + auth_parts
+
+        if verbose
+          submit_parts << "--verbose"
+        end
 
         submit_command = submit_parts.join(' ')
         submit_response = Actions.sh(
@@ -306,7 +322,7 @@ module Fastlane
                                        description: 'Apple ID username',
                                        default_value: username,
                                        optional: true,
-                                       conflicting_options: [:api_key_path, :api_key],
+                                       conflicting_options: [:api_key_path, :api_key, :keychain_profile],
                                        default_value_dynamic: true),
           FastlaneCore::ConfigItem.new(key: :asc_provider,
                                        env_name: 'FL_NOTARIZE_ASC_PROVIDER',
@@ -329,7 +345,7 @@ module Fastlane
                                        env_names: ['FL_NOTARIZE_API_KEY_PATH', "APP_STORE_CONNECT_API_KEY_PATH"],
                                        description: "Path to your App Store Connect API Key JSON file (https://docs.fastlane.tools/app-store-connect-api/#using-fastlane-api-key-json-file)",
                                        optional: true,
-                                       conflicting_options: [:username, :api_key],
+                                       conflicting_options: [:username, :api_key, :keychain_profile],
                                        verify_block: proc do |value|
                                          UI.user_error!("API Key not found at '#{value}'") unless File.exist?(value)
                                        end),
@@ -337,9 +353,21 @@ module Fastlane
                                        env_names: ['FL_NOTARIZE_API_KEY', "APP_STORE_CONNECT_API_KEY"],
                                        description: "Your App Store Connect API Key information (https://docs.fastlane.tools/app-store-connect-api/#using-fastlane-api-key-hash-option)",
                                        optional: true,
-                                       conflicting_options: [:username, :api_key_path],
+                                       conflicting_options: [:username, :api_key_path, :keychain_profile],
                                        sensitive: true,
-                                       type: Hash)
+                                       type: Hash),
+          FastlaneCore::ConfigItem.new(key: :keychain,
+                                       env_name: 'FL_NOTARIZE_KEYCHAIN',
+                                       description: "The path to a keychain file to use for reading the keychain item. If not specified, the default user keychain is used",
+                                       optional: true,
+                                       conflicting_options: [:username, :api_key_path, :api_key],
+                                       type: String),
+          FastlaneCore::ConfigItem.new(key: :keychain_profile,
+                                       env_name: 'FL_NOTARIZE_KEYCHAIN_PROFILE',
+                                       description: "Authenticate with credentials stored in the Keychain. Use the profile name you provided in the \"xcrun notarytool store-credentials\" command",
+                                       optional: true,
+                                       conflicting_options: [:username, :api_key_path, :api_key],
+                                       type: String)
         ]
       end
 
