@@ -264,7 +264,7 @@ If it is, please open an issue at https://github.com/fastlane/fastlane/issues/ne
     end
 
     def match_phone_to_masked_phone(phone_number, masked_number)
-      characters_to_remove_from_phone_numbers = ' \-()"'
+      characters_to_remove_from_phone_numbers = '  \-()"'
 
       # start with e.g. +49 162 1234585 or +1-123-456-7866
       phone_number = phone_number.tr(characters_to_remove_from_phone_numbers, '')
