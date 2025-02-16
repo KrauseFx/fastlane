@@ -1,0 +1,73 @@
+{
+  "data": {
+    "type": "appAvailabilities",
+    "id": "123456789",
+    "attributes": {
+      "availableInNewTerritories": false
+    },
+    "relationships": {
+      "territoryAvailabilities": {
+        "meta": {
+          "paging": {
+            "total": 175,
+            "limit": 200
+          }
+        },
+        "data": [
+          {
+            "type": "territoryAvailabilities",
+            "id": "abcdefg"
+          },
+          {
+            "type": "territoryAvailabilities",
+            "id": "hijklmn"
+          }
+        ],
+        "links": {
+          "self": "https://appstoreconnect.apple.com/iris/v2/appAvailabilities/123456789/relationships/territoryAvailabilities",
+          "related": "https://appstoreconnect.apple.com/iris/v2/appAvailabilities/123456789/territoryAvailabilities"
+        }
+      }
+    },
+    "links": {
+      "self": "https://appstoreconnect.apple.com/iris/v2/appAvailabilities/123456789"
+    }
+  },
+  "included": [
+    {
+      "type": "territoryAvailabilities",
+      "id": "abcdefg",
+      "attributes": {
+        "available": true,
+        "availableInPast": true,
+        "preOrderAvailableInPast": false,
+        "releaseDate": "2024-02-26",
+        "preOrderEnabled": false,
+        "preOrderPublishDate": null,
+        "contentStatuses": ["AVAILABLE"]
+      },
+      "links": {
+        "self": "https://appstoreconnect.apple.com/iris/v1/territoryAvailabilities/abcdefg"
+      }
+    },
+    {
+      "type": "territoryAvailabilities",
+      "id": "hijklmn",
+      "attributes": {
+        "available": false,
+        "availableInPast": true,
+        "preOrderAvailableInPast": false,
+        "releaseDate": "2024-02-26",
+        "preOrderEnabled": false,
+        "preOrderPublishDate": null,
+        "contentStatuses": ["AVAILABLE"]
+      },
+      "links": {
+        "self": "https://appstoreconnect.apple.com/iris/v1/territoryAvailabilities/hijklmn"
+      }
+    }
+  ],
+  "links": {
+    "self": "https://appstoreconnect.apple.com/iris/v2/appAvailabilities/123456789?include=territoryAvailabilities"
+  }
+}

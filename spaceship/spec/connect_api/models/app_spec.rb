@@ -187,4 +187,68 @@ describe Spaceship::ConnectAPI::App do
       expect(availabilities.territory_availabilities[1].contentStatuses).to eq(["CANNOT_SELL"])
     end
   end
+
+  describe("Checks if app removed_from_sale?") do
+    it('gets true when app has not been released (no READY_FOR_DISTRIBUTION app store versions)') do
+      ConnectAPIStubbing::Tunes.stub_get_app_availabilities_removed_from_sale
+      ConnectAPIStubbing::Tunes.stub_get_app_store_version_not_ready_for_distribution
+
+      app = Spaceship::ConnectAPI::App.new("123456789", [])
+      app_store_version = app.get_ready_for_distribution_app_store_version(includes: nil)
+
+      expect(app_store_version).to be(nil)
+      expect(app.removed_from_sale?).to be(true)
+    end
+
+    it('gets true when app is removed from sale') do
+      ConnectAPIStubbing::Tunes.stub_get_app_availabilities_removed_from_sale
+      ConnectAPIStubbing::Tunes.stub_get_app_store_version_ready_for_distribution
+
+      app = Spaceship::ConnectAPI::App.new("123456789", [])
+      app_store_version = app.get_ready_for_distribution_app_store_version(includes: nil)
+      availabilities = app.get_app_availabilities
+
+      expect(app_store_version.app_version_state).to eq("READY_FOR_DISTRIBUTION")
+
+      expect(availabilities.territory_availabilities.count).to eq(2)
+      expect(availabilities.territory_availabilities[0].available).to be(false)
+      expect(availabilities.territory_availabilities[1].available).to be(false)
+
+      expect(app.removed_from_sale?).to be(true)
+    end
+
+    it('gets false when app is ready for distribution in one territory') do
+      ConnectAPIStubbing::Tunes.stub_get_app_availabilities_ready_for_distribution_one_territory
+      ConnectAPIStubbing::Tunes.stub_get_app_store_version_ready_for_distribution
+
+      app = Spaceship::ConnectAPI::App.new("123456789", [])
+      app_store_version = app.get_ready_for_distribution_app_store_version(includes: nil)
+      availabilities = app.get_app_availabilities
+
+      expect(app_store_version.app_version_state).to eq("READY_FOR_DISTRIBUTION")
+
+      expect(availabilities.territory_availabilities.count).to eq(2)
+      expect(availabilities.territory_availabilities[0].available).to be(true)
+      expect(availabilities.territory_availabilities[1].available).to be(false)
+
+      expect(app.removed_from_sale?).to be(false)
+    end
+
+    it('gets false when app is ready for distribution in many territories') do
+      ConnectAPIStubbing::Tunes.stub_get_app_availabilities_ready_for_distribution
+      ConnectAPIStubbing::Tunes.stub_get_app_store_version_ready_for_distribution
+
+      app = Spaceship::ConnectAPI::App.new("123456789", [])
+      app_store_version = app.get_ready_for_distribution_app_store_version(includes: nil)
+      availabilities = app.get_app_availabilities
+
+      expect(app_store_version.app_version_state).to eq("READY_FOR_DISTRIBUTION")
+
+      expect(availabilities.territory_availabilities.count).to eq(2)
+      expect(availabilities.territory_availabilities[0].available).to be(true)
+      expect(availabilities.territory_availabilities[1].available).to be(true)
+
+      expect(app.removed_from_sale?).to be(false)
+    end
+  end
 end

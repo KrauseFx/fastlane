@@ -1,0 +1,7 @@
+{
+  "data": [],
+  "included": [],
+  "links": {
+    "self": "https://appstoreconnect.apple.com/iris/v1/apps/123456789/appStoreVersions?filter%5BappVersionState%5D=READY_FOR_DISTRIBUTION&filter%5Bplatform%5D=IOS"
+  }
+}

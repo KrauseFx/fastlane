@@ -66,6 +66,14 @@ module Spaceship
         return "apps"
       end
 
+      def removed_from_sale?
+        ready_for_distribution = get_ready_for_distribution_app_store_version(includes: nil)
+        return true if ready_for_distribution.nil?
+        territoryAvailabilities = get_app_availabilities.territory_availabilities
+        availabilities = territoryAvailabilities.map(&:available)
+        return availabilities.all?(false)
+      end
+
       #
       # Apps
       #
@@ -292,6 +300,18 @@ module Spaceship
           appVersionState: [
             Spaceship::ConnectAPI::AppStoreVersion::AppVersionState::PENDING_APPLE_RELEASE,
             Spaceship::ConnectAPI::AppStoreVersion::AppVersionState::PENDING_DEVELOPER_RELEASE
+          ].join(','),
+          platform: platform
+        }
+        return get_app_store_versions(client: client, filter: filter, includes: includes).first
+      end
+
+      def get_ready_for_distribution_app_store_version(client: nil, platform: nil, includes: Spaceship::ConnectAPI::AppStoreVersion::ESSENTIAL_INCLUDES)
+        client ||= Spaceship::ConnectAPI
+        platform ||= Spaceship::ConnectAPI::Platform::IOS
+        filter = {
+          appVersionState: [
+            Spaceship::ConnectAPI::AppStoreVersion::AppVersionState::READY_FOR_DISTRIBUTION
           ].join(','),
           platform: platform
         }
