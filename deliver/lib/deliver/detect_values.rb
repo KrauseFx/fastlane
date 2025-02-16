@@ -68,6 +68,7 @@ module Deliver
 
     def find_version(options)
       return if options[:app_version]
+      return if options[:skip_auto_detecting_app_version]
 
       if options[:ipa]
         options[:app_version] ||= FastlaneCore::IpaFileAnalyser.fetch_app_version(options[:ipa])
