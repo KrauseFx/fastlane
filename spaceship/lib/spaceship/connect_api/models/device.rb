@@ -141,6 +141,13 @@ module Spaceship
         devices
       end
 
+      # @param udids [Array<String>] The set of UDIDs to restrict the devices lookup by
+      # @return (Device) List of devices matching the criteria
+      def self.devices_for_udids(udids)
+        filter = { "udid": udids.join(",") }
+        return Spaceship::ConnectAPI::Device.all(filter: filter)
+      end
+
       # @param client [ConnectAPI] ConnectAPI client.
       # @param platform [String] The platform of the device.
       # @param include_disabled [Bool] Whether to include disable devices. false by default.

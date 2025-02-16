@@ -88,6 +88,13 @@ module Sigh
         includes += ',certificates'
       end
 
+      # also include devices if specific device udids were specified
+      force_profile_device_udids = []
+      unless Sigh.config[:force_profile_device_udids].nil?
+        includes += ",devices"
+        force_profile_device_udids = Sigh.config[:force_profile_device_udids].split(',').map(&:strip)
+      end
+
       results = Sigh.config[:cached_profiles]
       results ||= Spaceship::ConnectAPI::Profile.all(filter: filter, includes: includes)
       results.select! do |profile|
@@ -95,12 +102,20 @@ module Sigh
       end
 
       results = results.find_all do |current_profile|
+        profile_qualifies = false
         if current_profile.valid? || Sigh.config[:force]
-          true
+          profile_qualifies = true
+          if force_profile_device_udids.length > 0
+            filtered_devices = current_profile.devices.select { |device| force_profile_device_udids.include?(device.udid) }
+            if force_profile_device_udids.length != filtered_devices.length
+              UI.message("Provisioning Profile '#{current_profile.name}' is valid but does not match force_profile_device_udids, skipping this one...")
+              profile_qualifies = false
+            end
+          end
         else
           UI.message("Provisioning Profile '#{current_profile.name}' is not valid, skipping this one...")
-          false
         end
+        profile_qualifies
       end
 
       # Take the provisioning profile name into account
@@ -218,10 +233,18 @@ module Sigh
       return [] if !Sigh.config[:development] && !Sigh.config[:adhoc]
 
       devices = Sigh.config[:cached_devices]
-      devices ||= Spaceship::ConnectAPI::Device.devices_for_platform(
-        platform: Sigh.config[:platform],
-        include_mac_in_profiles: Sigh.config[:include_mac_in_profiles]
-      )
+
+      if Sigh.config[:force_profile_device_udids]
+        udids = Sigh.config[:force_profile_device_udids].split(',').map(&:strip)
+        UI.message("Getting profile devices based on udid=#{udids.join(',')}")
+        devices ||= Spaceship::ConnectAPI::Device.devices_for_udids(udids)
+      else
+        UI.message("Getting profile devices based on platform=#{Sigh.config[:platform]} include_mac_in_profiles=#{Sigh.config[:include_mac_in_profiles]}")
+        devices ||= Spaceship::ConnectAPI::Device.devices_for_platform(
+          platform: Sigh.config[:platform],
+          include_mac_in_profiles: Sigh.config[:include_mac_in_profiles]
+        )
+      end
 
       return devices
     end

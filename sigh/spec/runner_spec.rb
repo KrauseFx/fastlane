@@ -1,3 +1,5 @@
+require_relative 'spec_helper'
+
 describe Sigh do
   describe Sigh::Runner do
     before do
@@ -169,6 +171,67 @@ describe Sigh do
 
         devices = fake_runner.devices_to_use
         expect(devices.size).to eq(1)
+      end
+
+      it "devices for specific udid" do
+        options = { development: true, force_profile_device_udids: "device2" }
+        Sigh.config = FastlaneCore::Configuration.create(Sigh::Options.available_options, options)
+
+        devices = generate_devices_list(5)
+        filter = { udid: "device2" }
+        allow(Spaceship::ConnectAPI::Device).to receive(:all).with(filter: filter).and_return([devices[1]])
+
+        devices = fake_runner.devices_to_use
+        expect(devices.size).to eq(1)
+        expect(devices[0].udid).to eq("device2")
+      end
+
+      it "devices for multiple specific udids" do
+        options = { development: true, force_profile_device_udids: "device2,device3" }
+        Sigh.config = FastlaneCore::Configuration.create(Sigh::Options.available_options, options)
+
+        devices = generate_devices_list(5)
+        filter = { udid: "device2,device3" }
+        allow(Spaceship::ConnectAPI::Device).to receive(:all).with(filter: filter).and_return([devices[1], devices[2]])
+
+        devices = fake_runner.devices_to_use
+        expect(devices.size).to eq(2)
+        expect(devices[0].udid).to eq("device2")
+        expect(devices[1].udid).to eq("device3")
+      end
+
+      it "devices for multiple specific udids with spaces" do
+        options = { development: true, force_profile_device_udids: "device2 , device3" }
+        Sigh.config = FastlaneCore::Configuration.create(Sigh::Options.available_options, options)
+
+        devices = generate_devices_list(5)
+        filter = { udid: "device2,device3" }
+        allow(Spaceship::ConnectAPI::Device).to receive(:all).with(filter: filter).and_return([devices[1], devices[2]])
+
+        devices = fake_runner.devices_to_use
+        expect(devices.size).to eq(2)
+        expect(devices[0].udid).to eq("device2")
+        expect(devices[1].udid).to eq("device3")
+      end
+
+      it "devices for multiple specific udids (invalid value variant 1)" do
+        options = { development: true, force_profile_device_udids: ", " }
+        Sigh.config = FastlaneCore::Configuration.create(Sigh::Options.available_options, options)
+
+        allow(Spaceship::ConnectAPI::Device).to receive(:all).and_return([])
+
+        devices = fake_runner.devices_to_use
+        expect(devices.size).to eq(0)
+      end
+
+      it "devices for multiple specific udids (invalid value variant 2)" do
+        options = { development: true, force_profile_device_udids: " " }
+        Sigh.config = FastlaneCore::Configuration.create(Sigh::Options.available_options, options)
+
+        allow(Spaceship::ConnectAPI::Device).to receive(:all).and_return([])
+
+        devices = fake_runner.devices_to_use
+        expect(devices.size).to eq(0)
       end
     end
 

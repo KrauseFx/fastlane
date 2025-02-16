@@ -197,6 +197,13 @@ module Sigh
                                      optional: true,
                                      is_string: false,
                                      default_value: false),
+        FastlaneCore::ConfigItem.new(key: :force_profile_device_udids,
+                                     env_name: "SIGH_FORCE_PROFILE_DEVICE_UDIDS",
+                                     description: "Comma delimited list of specific device udids to include in the provisioning profile. If this option is specified it will override the default behavior of leveraging SIGH_PLATFORM (and optionally SIGH_INCLUDE_MAC_IN_PROFILES) when determining the devices to include in the profile based on deviceClass",
+                                     optional: true,
+                                     is_string: true,
+                                     code_gen_sensitive: true,
+                                     default_value: nil),
 
         # Cache
         FastlaneCore::ConfigItem.new(key: :cached_certificates,
