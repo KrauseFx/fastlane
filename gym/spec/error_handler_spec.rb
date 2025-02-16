@@ -84,5 +84,22 @@ Code signing is required for product type 'Application' in SDK 'iOS 11.0'
 
       Gym::ErrorHandler.handle_build_error(@output)
     end
+
+    ["com.app.enterprise", "com.enterprise.app", "enterprise.app"].each do |appid|
+      it "does not print mismatch for adhoc export type when profile contains string enterprise inside app id - #{appid}" do
+        mock_gym_path(@output)
+        expect(UI).to receive(:build_failure!).with("Error building the application - see the log above", error_info: @output)
+
+        Gym.config[:export_method] = 'ad-hoc'
+        Gym.config[:export_options][:provisioningProfiles] = {
+          appid => 'match AdHoc ' + appid
+        }
+
+        expect(UI).to receive(:error).with(/There seems to be a mismatch between/).never
+        allow(UI).to receive(:error)
+
+        Gym::ErrorHandler.handle_build_error(@output)
+      end
+    end
   end
 end

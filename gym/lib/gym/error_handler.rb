@@ -264,7 +264,10 @@ module Gym
 
           selected_provisioning_profiles.each do |current_bundle_identifier, current_profile_name|
             available_export_types.each do |current_to_try, matching_type|
-              next unless current_profile_name.to_s.downcase.include?(current_to_try.to_s.downcase)
+              profile_name = current_profile_name.to_s.downcase
+              app_id_starts_at = profile_name.index(/[a-z0-9-]+\.[a-z0-9.-]*[a-z0-9-]+/)
+              profile_name_without_app_id = app_id_starts_at == -1 ? profile_name : profile_name[0..app_id_starts_at]
+              next unless profile_name_without_app_id.include?(current_to_try.to_s.downcase)
 
               # Check if there is a mismatch between the name and the selected export method
               # Example
@@ -278,6 +281,7 @@ module Gym
               # profile, but the export method that's being passed to Xcode is "enterprise"
 
               break if matching_type.to_s == selected_export_method
+
               UI.message("")
               UI.error("There seems to be a mismatch between your provided `export_method` in gym")
               UI.error("and the selected provisioning profiles. You passed the following options:")
