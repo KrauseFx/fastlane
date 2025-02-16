@@ -481,7 +481,13 @@ module Supply
           current_edit.id,
           track
         )
-        return result.releases.flat_map(&:version_codes) || []
+        return result.releases.flat_map{|i| 
+          if i.user_fraction.nil?
+            "#{i.version_codes[0]} (100%)"
+          else
+            "#{i.version_codes[0]} (#{i.user_fraction.to_f * 100}%)"
+          end
+        } || []
       rescue Google::Apis::ClientError => e
         return [] if e.status_code == 404 && (e.to_s.include?("trackEmpty") || e.to_s.include?("Track not found"))
         raise
