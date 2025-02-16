@@ -70,7 +70,7 @@ module Fastlane
                     else
                       "Shell command exited with exit status #{exit_status.exitstatus} instead of 0."
                     end
-          message += "\n#{result}" if print_command_output
+          message += "\n#{result[-500..-1]}" if print_command_output
 
           if error_callback || block_given?
             UI.error(message)
