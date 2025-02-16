@@ -107,6 +107,7 @@ module Spaceship
 
         if include_mac_in_profiles
           device_classes << Spaceship::ConnectAPI::Device::DeviceClass::APPLE_SILICON_MAC
+          device_classes << Spaceship::ConnectAPI::Device::DeviceClass::MAC
           device_platforms << Spaceship::ConnectAPI::Platform::MAC_OS
         end
 
