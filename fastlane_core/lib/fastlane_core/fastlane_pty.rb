@@ -36,7 +36,16 @@ module FastlaneCore
           # https://stackoverflow.com/questions/10238298/ruby-on-linux-pty-goes-away-without-eof-raises-errnoeio
           # This is expected on some linux systems, that indicates that the subcommand finished
           # and we kept trying to read, ignore it
+        rescue => ex
+          failed = true
+          raise
         ensure
+          # When an exception is thrown from the block command, we let the ecosystem a bit of time to complete
+          # nicely, flush buffers and terminate processes so that we don't abruptly stop the process
+          # and the process status ends in -1. This is far from a perfect solution.
+          sleep 0.05 if failed
+          command_stdin.close
+          command_stdout.close
           begin
             Process.wait(pid)
           rescue Errno::ECHILD, PTY::ChildExited
