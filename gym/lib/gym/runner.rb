@@ -226,7 +226,8 @@ module Gym
       Helper.backticks(command, print: !Gym.config[:silent])
       puts("") # new line
 
-      UI.success("Successfully exported and compressed dSYM file")
+      UI.success("Successfully exported and compressed dSYM file:")
+      UI.message(output_path)
     end
 
     # Moves over the binary and dsym file to the output directory
