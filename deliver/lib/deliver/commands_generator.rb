@@ -170,7 +170,11 @@ module Deliver
           require 'deliver/setup'
           app = Deliver.cache[:app]
           platform = Spaceship::ConnectAPI::Platform.map(options[:platform])
-          v = app.get_latest_app_store_version(platform: platform)
+          if options[:use_live_version]
+            v = app.get_live_app_store_version(platform: platform)
+          else
+            v = app.get_latest_app_store_version(platform: platform)
+          end
           if options[:app_version].to_s.length > 0
             v = app.get_live_app_store_version(platform: platform) if v.version_string != options[:app_version]
             if v.nil? || v.version_string != options[:app_version]
