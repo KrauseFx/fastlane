@@ -27,6 +27,7 @@ module Fastlane
         command << "--skip-import-validation" if params[:skip_import_validation]
         command << "--skip-tests" if params[:skip_tests]
         command << "--analyze" if params[:analyze]
+        command << "--configuration=#{params[:configuration]}" if params[:configuration]
 
         result = Actions.sh(command.join(' '))
         UI.success("Pod lib lint successful ⬆️ ")
@@ -150,7 +151,12 @@ module Fastlane
                                        description: "Validate with the Xcode Static Analysis tool (available since cocoapods >= 1.6.1)",
                                        type: Boolean,
                                        default_value: false,
-                                       env_name: "FL_POD_LIB_LINT_ANALYZE")
+                                       env_name: "FL_POD_LIB_LINT_ANALYZE"),
+          FastlaneCore::ConfigItem.new(key: :configuration,
+                                       description: "Build using the given configuration (if not provided, configuration defaults to Release)",
+                                       type: String,
+                                       optional: true,
+                                       env_name: "FL_POD_LIB_LINT_CONFIGURATION")
         ]
       end
 
