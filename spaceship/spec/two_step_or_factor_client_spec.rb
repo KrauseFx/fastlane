@@ -35,7 +35,8 @@ describe Spaceship::Client do
         { "id" : 3, "numberWithDialCode" : "+1 (•••) •••-••66", "obfuscatedNumber" : "(•••) •••-••66", "pushMode" : "sms" },
         { "id" : 4, "numberWithDialCode" : "+39 ••• ••• ••71", "obfuscatedNumber" : "••• ••• ••71", "pushMode" : "sms" },
         { "id" : 5, "numberWithDialCode" : "+353 •• ••• ••43", "obfuscatedNumber" : "••• ••• •43", "pushMode" : "sms" },
-        { "id" : 6, "numberWithDialCode" : "+375 • ••• •••-••-59", "obfuscatedNumber" : "• ••• •••-••-59", "pushMode" : "sms" }
+        { "id" : 6, "numberWithDialCode" : "+375 • ••• •••-••-59", "obfuscatedNumber" : "• ••• •••-••-59", "pushMode" : "sms" },
+        { "id" : 7, "numberWithDialCode" : "+91 •••••• •••60", "obfuscatedNumber" : "•••••• •••60", "pushMode" : "sms" }
       ]
     '
   end
@@ -48,7 +49,8 @@ describe Spaceship::Client do
       "+1-123-456-7866" => 3,
       "+39 123 456 7871" => 4,
       "+353123456743" => 5,
-      "+375 00 000-00-59" => 6
+      "+375 00 000-00-59" => 6,
+      "+91 7654321060" => 7
     }.each do |number_to_test, expected_phone_id|
       it "selects correct phone id #{expected_phone_id} for provided phone number #{number_to_test}" do
         phone_id = subject.phone_id_from_number(phone_numbers, number_to_test)
