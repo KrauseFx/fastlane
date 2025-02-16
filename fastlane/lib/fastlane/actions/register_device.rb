@@ -4,7 +4,7 @@ module Fastlane
   module Actions
     class RegisterDeviceAction < Action
       def self.is_supported?(platform)
-        platform == :ios
+        [:ios, :mac].include?(platform)
       end
 
       def self.run(params)
