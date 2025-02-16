@@ -73,6 +73,10 @@ module Fastlane
           "--wait"
         ] + auth_parts
 
+        if verbose
+          submit_command << "--verbose"
+        end
+
         submit_command = submit_parts.join(' ')
         submit_response = Actions.sh(
           submit_command,
