@@ -292,19 +292,17 @@ module Trainer
           end
           info[:retry_count] = retry_count
 
-          # Set failure message if failure found
-          failure = test.find_failure(failures)
-          if failure
+          case test.test_status
+          when "Failure"
             test_row[:failures] = [{
               file_name: "",
               line_number: 0,
               message: "",
               performance_failure: {},
-              failure_message: failure.failure_message
+              failure_message: test.failure_message(failures)
             }]
-
             info[:failure_count] += 1
-          elsif test.test_status == "Skipped"
+          when "Skipped"
             test_row[:skipped] = true
             info[:skip_count] += 1
           else

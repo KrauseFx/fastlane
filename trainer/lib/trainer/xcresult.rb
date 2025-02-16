@@ -172,29 +172,11 @@ module Trainer
         return [self]
       end
 
-      def find_failure(failures)
-        sanitizer = proc { |name| name.gsub(/\W/, "_") }
-        sanitized_identifier = sanitizer.call(self.identifier)
-        if self.test_status == "Failure"
-          # Tries to match failure on test case name
-          # Example TestFailureIssueSummary:
-          #   producingTarget: "TestThisDude"
-          #   test_case_name: "TestThisDude.testFailureJosh2()" (when Swift)
-          #     or "-[TestThisDudeTests testFailureJosh2]" (when Objective-C)
-          # Example ActionTestMetadata
-          #   identifier: "TestThisDude/testFailureJosh2()" (when Swift)
-          #     or identifier: "TestThisDude/testFailureJosh2" (when Objective-C)
-
-          found_failure = failures.find do |failure|
-            # Sanitize both test case name and identifier in a consistent fashion, then replace all non-word
-            # chars with underscore, and compare them
-            sanitized_test_case_name = sanitizer.call(failure.test_case_name)
-            sanitized_identifier == sanitized_test_case_name
-          end
-          return found_failure
-        else
-          return nil
+      def failure_message(failures)
+        found = failures.find do |failure|
+          self.identifier == failure.normalized_name
         end
+        return found ? found.failure_message : "unknown failure message"
       end
     end
 
@@ -383,6 +365,21 @@ module Trainer
       def initialize(data)
         self.test_case_name = fetch_value(data, "testCaseName")
         super
+      end
+
+      def normalized_name
+        # Return test_case_name normalized to match the identifier from ActionTestMetadata
+        # Example TestFailureIssueSummary:
+        #   producingTarget: "TestThisDude"
+        #   test_case_name: "TestThisDude.testFailureJosh2()" (when Swift)
+        #     or "-[TestThisDudeTests testFailureJosh2]" (when Objective-C)
+        # Example ActionTestMetadata
+        #   identifier: "TestThisDude/testFailureJosh2()" (when Swift)
+        #     or identifier: "TestThisDude/testFailureJosh2" (when Objective-C)
+        if self.test_case_name.start_with?("-[") && self.test_case_name.end_with?("]")
+          return self.test_case_name[2...-1].tr(" ", "/")
+        end
+        return self.test_case_name.tr(".", "/")
       end
 
       def failure_message

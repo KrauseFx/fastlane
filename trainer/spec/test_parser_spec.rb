@@ -274,6 +274,53 @@ describe Trainer do
                                 }
                               ])
       end
+
+      it "works as expected with Objective C xcresult", requires_xcode: true do
+        tp = Trainer::TestParser.new("./trainer/spec/fixtures/Test.objc.xcresult")
+        expect(tp.data).to eq([
+                                {
+                                  project_path: "HelloWorldTest.xcodeproj",
+                                  target_name: "HelloWorldTestTests",
+                                  test_name: "HelloWorldTestTests",
+                                  configuration_name: "Test Scheme Action",
+                                  duration: 0.04512190818786621,
+                                  tests: [
+                                    {
+                                      identifier: "HelloWorldTestTests.testExample",
+                                      name: "testExample",
+                                      duration: 0.0011409521102905273,
+                                      status: "Success",
+                                      test_group: "HelloWorldTestTests",
+                                      guid: "",
+                                    },
+                                    {
+                                      identifier: "HelloWorldTestTests.testFailure",
+                                      name: "testFailure",
+                                      duration: 0.043980956077575684,
+                                      status: "Failure",
+                                      test_group: "HelloWorldTestTests",
+                                      guid: "",
+                                      failures: [
+                                        {
+                                          failure_message: "((NO) is true) failed - Fail (/Users/jsoffian/HelloWorldTest/HelloWorldTestTests/HelloWorldTestTests.m#CharacterRangeLen=0&EndingLineNumber=39&StartingLineNumber=39)",
+                                          file_name: "",
+                                          line_number: 0,
+                                          message: "",
+                                          performance_failure: {}
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  number_of_tests: 2,
+                                  number_of_failures: 1,
+                                  number_of_skipped: 0,
+                                  number_of_tests_excluding_retries: 2,
+                                  number_of_failures_excluding_retries: 1,
+                                  number_of_retries: 0
+                                }
+                              ])
+      end
+
     end
   end
 end
