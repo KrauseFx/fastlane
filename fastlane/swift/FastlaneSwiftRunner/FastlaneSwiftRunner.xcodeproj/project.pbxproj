@@ -12,6 +12,7 @@
 		1257253924B7992C00E04FA3 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1257253824B7992B00E04FA3 /* main.swift */; };
 		1267C3F42773A43E004DE48A /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1267C3F32773A43E004DE48A /* Atomic.swift */; };
 		12D2EB8D2620D83C00844013 /* OptionalConfigValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D2EB8C2620D83B00844013 /* OptionalConfigValue.swift */; };
+		4E69AE4216E4342BA2023AE9 /* FastlaneRunner in FastlaneRunnerCopySigned */ = {isa = PBXBuildFile; fileRef = D556D6A91F6A08F5003108E3 /* FastlaneRunner */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		B302067B1F5E3E9000DE6EBD /* SnapshotfileProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30206741F5E3E9000DE6EBD /* SnapshotfileProtocol.swift */; };
 		B302067C1F5E3E9000DE6EBD /* GymfileProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30206751F5E3E9000DE6EBD /* GymfileProtocol.swift */; };
 		B302067D1F5E3E9000DE6EBD /* MatchfileProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30206761F5E3E9000DE6EBD /* MatchfileProtocol.swift */; };
@@ -43,10 +44,21 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		90F63F6C6AF8DC627690B70B /* FastlaneRunnerCopySigned */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$SRCROOT/../..";
+			dstSubfolderSpec = 0;
+			files = (
+				4E69AE4216E4342BA2023AE9 /* FastlaneRunner in FastlaneRunnerCopySigned */,
+			);
+			name = FastlaneRunnerCopySigned;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C0459CAB27261886002CDFB9 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = $SRCROOT/../..;
+			dstPath = "$SRCROOT/../..";
 			dstSubfolderSpec = 0;
 			files = (
 				C0459CAC27261897002CDFB9 /* FastlaneRunner in CopyFiles */,
@@ -199,6 +211,7 @@
 				B33BAF531F51F8D90001A751 /* Sources */,
 				B33BAF541F51F8D90001A751 /* Frameworks */,
 				C0459CAB27261886002CDFB9 /* CopyFiles */,
+				90F63F6C6AF8DC627690B70B /* FastlaneRunnerCopySigned */,
 			);
 			buildRules = (
 			);
@@ -404,6 +417,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
@@ -416,6 +430,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 			};
