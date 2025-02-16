@@ -67,7 +67,7 @@ end
 app = Spaceship::ConnectAPI::App.create(name: "App Name",
                                         version_string: "1.0", # initial version
                                         sku: "123",
-                                        primary_locale: "English",
+                                        primary_locale: "en-us",
                                         bundle_id: "com.krausefx.app",
                                         platforms: ["IOS"],
                                         company_name: "krause inc")
