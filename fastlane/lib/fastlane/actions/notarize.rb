@@ -23,7 +23,7 @@ module Fastlane
         if File.extname(package_path) == '.app'
           compressed_package_path = "#{package_path}.zip"
           Actions.sh(
-            "ditto -c -k --rsrc --keepParent \"#{package_path}\" \"#{compressed_package_path}\"",
+            "ditto -c -k --rsrc --sequesterRsrc --keepParent \"#{package_path}\" \"#{compressed_package_path}\"",
             log: verbose
           )
 
