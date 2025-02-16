@@ -12,13 +12,13 @@ import Foundation
 
 let logger: Logger = .init()
 
-let runner: Runner = .init()
+public let runner: Runner = .init()
 
-func desc(_: String) {
+public func desc(_: String) {
     // no-op, this is handled in fastlane/lane_list.rb
 }
 
-class Runner {
+public class Runner {
     private var thread: Thread!
     private var socketClient: SocketClient!
     private let dispatchGroup = DispatchGroup()
@@ -33,7 +33,7 @@ class Runner {
         }
     }()
 
-    func executeCommand(_ command: RubyCommandable) -> String {
+    public func executeCommand(_ command: RubyCommandable) -> String {
         dispatchGroup.enter()
         currentlyExecutingCommand = command
         socketClient.send(rubyCommand: command)

@@ -10,7 +10,7 @@
 
 import Foundation
 
-enum CommandType {
+public enum CommandType {
     case action
     case control
 
@@ -24,7 +24,7 @@ enum CommandType {
     }
 }
 
-protocol RubyCommandable {
+public protocol RubyCommandable {
     var type: CommandType { get }
     var commandJson: String { get }
     var id: String { get }

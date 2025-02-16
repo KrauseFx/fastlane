@@ -15,7 +15,7 @@ public enum OptionalConfigValue<T> {
     case userDefined(T)
     case `nil`
 
-    func asRubyArgument(name: String, type: RubyCommand.Argument.ArgType? = nil) -> RubyCommand.Argument? {
+    public func asRubyArgument(name: String, type: RubyCommand.Argument.ArgType? = nil) -> RubyCommand.Argument? {
         if case let .userDefined(value) = self {
             return RubyCommand.Argument(name: name, value: value, type: type)
         }
