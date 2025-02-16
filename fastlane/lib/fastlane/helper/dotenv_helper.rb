@@ -40,7 +40,16 @@ module Fastlane
 
         # Loads .env file for the environment(s) passed in through options
         envs.each do |env|
-          env_file = File.join(base_path, ".env.#{env}")
+          # Determine if `env` is a relative path and construct `env_file` accordingly
+          if env.include?('..') || env.start_with?('./') || env.start_with?('.\\')
+            # `env` appears to be a relative path
+            # Expand it from the current working directory
+            env_file = File.expand_path(env)
+          else
+            # `env` does not appear to be a relative path
+            # Use `File.join` to construct `env_file` with `base_path`
+            env_file = File.join(base_path, ".env.#{env}")
+          end
           UI.success("Loading from '#{env_file}'")
           Dotenv.overload(env_file)
         end
