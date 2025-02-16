@@ -55,23 +55,38 @@ module Fastlane
         existing_devices = Spaceship::ConnectAPI::Device.all
 
         device_objs = new_devices.map do |device|
-          if existing_devices.map(&:udid).map(&:downcase).include?(device[0].downcase)
-            UI.verbose("UDID #{device[0]} already exists - Skipping...")
+          new_device_udid = device[0]
+          new_device_name = device[1]
+          new_device_platform = device[2]
+          new_device_enabled = new_device_name.start_with?("#") === false
+          if existing_devices.map(&:udid).map(&:downcase).include?(new_device_udid.downcase)
+            UI.verbose("UDID #{new_device_udid} already exists - Skipping...")
+            existing_device = existing_devices.select { |device| device.udid == new_device_udid }[0]
+            if existing_device.name != new_device_name
+                UI.message("UDID #{new_device_udid} update device status")
+                try_set_device_status(udid: new_device_udid, name: new_device_name, enabled: new_device_enabled )
+            end
+            next
+          end
+
+          if !new_device_enabled
+            UI.message("UDID #{new_device_udid} disabled")
             next
           end
 
           device_platform = platform
 
-          device_platform_supported = !device[2].nil? && self.is_supported?(device[2].to_sym)
+          device_platform_supported = !new_device_platform.nil? && self.is_supported?(new_device_platform.to_sym)
           if device_platform_supported
-            if device[2] == "mac"
+            if new_device_platform == "mac"
               device_platform = Spaceship::ConnectAPI::BundleIdPlatform::MAC_OS
             else
               device_platform = Spaceship::ConnectAPI::BundleIdPlatform::IOS
             end
           end
 
-          try_create_device(name: device[1], platform: device_platform, udid: device[0])
+          try_create_device(name: new_device_name, platform: device_platform, udid: new_device_udid)
+
         end
 
         UI.success("Successfully registered new devices.")
@@ -83,6 +98,18 @@ module Fastlane
       rescue => ex
         UI.error(ex.to_s)
         UI.crash!("Failed to register new device (name: #{name}, UDID: #{udid})")
+      end
+
+      def self.try_set_device_status(udid: nil, name: nil, enabled: nil)
+        if enabled
+          Spaceship::ConnectAPI::Device.enable(udid)
+        else
+          Spaceship::ConnectAPI::Device.disable(udid)
+        end
+        Spaceship::ConnectAPI::Device.rename(udid, name)
+      rescue => ex
+        UI.error(ex.to_s)
+        UI.crash!("Failed to modify device (name: #{name}, UDID: #{udid})")
       end
 
       #####################################################
@@ -185,6 +212,11 @@ module Fastlane
               "Felix iPad Air 2" => "abcdefghijklmnopqrstvuwxyzabcdefghijklmn"
             }
           ) # Simply provide a list of devices as a Hash',
+          'register_devices(
+            devices: {
+              "#Felix iPad Air 2" => "abcdefghijklmnopqrstvuwxyzabcdefghijklmn"
+            }
+          ) # A hash at the beginning of the name means the device should be disabled',
           'register_devices(
             devices_file: "./devices.txt"
           ) # Alternatively provide a standard UDID export .txt file, see the Apple Sample (http://devimages.apple.com/downloads/devices/Multiple-Upload-Samples.zip)',
