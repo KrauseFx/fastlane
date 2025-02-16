@@ -285,7 +285,7 @@ module Gym
         app_path = Dir[File.join(BuildCommandGenerator.archive_path, "Products", "Applications", "*.app")].last
       end
 
-      UI.crash!("Couldn't find application in '#{BuildCommandGenerator.archive_path}'") unless File.exist?(app_path)
+      UI.crash!("Couldn't find application in '#{BuildCommandGenerator.archive_path}'") unless app_path && File.exist?(app_path)
 
       joined_app_path = File.join(Gym.config[:output_directory], File.basename(app_path))
       FileUtils.rm_rf(joined_app_path)
