@@ -11,11 +11,16 @@ module Fastlane
         begin
           result = Net::HTTP.get(URI(params[:url]))
           begin
-            result = JSON.parse(result) # try to parse and see if it's valid JSON data
+            result = JSON.parse(result) unless params[:plain_text] # try to parse and see if it's valid JSON data
           rescue
             # never mind, using standard text data instead
           end
-          Actions.lane_context[SharedValues::DOWNLOAD_CONTENT] = result
+          if params[:sensitive]
+            Actions.lane_context.set_sensitive(SharedValues::DOWNLOAD_CONTENT, result)
+          else
+            Actions.lane_context[SharedValues::DOWNLOAD_CONTENT] = result
+          end
+          result
         rescue => ex
           UI.user_error!("Error fetching remote file: #{ex}")
         end
@@ -44,7 +49,17 @@ module Fastlane
                                        description: "The URL that should be downloaded",
                                        verify_block: proc do |value|
                                          UI.important("The URL doesn't start with http or https") unless value.start_with?("http")
-                                       end)
+                                       end),
+          FastlaneCore::ConfigItem.new(key: :sensitive,
+                                       env_name: "FL_DOWNLOAD_SENSITIVE",
+                                       description: "Store the result in the lane context as sensitive so it isn't logged to the console by accident",
+                                       type: Boolean,
+                                       default_value: false),
+          FastlaneCore::ConfigItem.new(key: :plain_text,
+                                       env_name: "FL_DOWNLOAD_PLAIN_TEXT",
+                                       description: "Treat the download as plain text and don't automatically parse it as JSON",
+                                       type: Boolean,
+                                       default_value: false)
         ]
       end
 
@@ -56,7 +71,9 @@ module Fastlane
 
       def self.example_code
         [
-          'data = download(url: "https://host.com/api.json")'
+          'data = download(url: "https://host.com/api.json")',
+          'data = download(url: "https://host.com/api.json", sensitive: true)',
+          'data = download(url: "https://host.com/api.json", plain_text: true)'
         ]
       end
 
