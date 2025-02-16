@@ -46,5 +46,21 @@ describe Spaceship::ConnectAPI::Certificate do
         expect(certificate.valid?).to eq(true)
       end
     end
+
+    context 'when expiration_date is nil' do
+      before { certificate.expiration_date = nil }
+
+      it 'should be invalid' do
+        expect(certificate.valid?).to eq(false)
+      end
+    end
+
+    context 'when expiration_date is an empty string' do
+      before { certificate.expiration_date = "" }
+
+      it 'should be invalid' do
+        expect(certificate.valid?).to eq(false)
+      end
+    end
   end
 end

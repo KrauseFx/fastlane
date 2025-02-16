@@ -52,6 +52,7 @@ module Spaceship
       end
 
       def valid?
+        return false if expiration_date.nil? || expiration_date.empty?
         Time.parse(expiration_date) > Time.now
       end
 
