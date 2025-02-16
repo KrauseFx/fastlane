@@ -78,6 +78,8 @@ module Fastlane
             [key, value]
           when :ipa
             [key, value]
+          when :aab
+            [key, value]
           when :apk
             [key, value]
           when :symbols_file
@@ -111,8 +113,8 @@ module Fastlane
           end
         end]
 
-        path = params[:ipa] || params[:apk]
-        UI.user_error!("No ipa or apk were given") unless path
+        path = params[:ipa] || params[:aab] || params[:apk]
+        UI.user_error!("No ipa, aab or apk were given") unless path
 
         return path if Helper.test?
 
@@ -174,7 +176,7 @@ module Fastlane
                                        default_value: Actions.lane_context[SharedValues::IPA_OUTPUT_PATH],
                                        default_value_dynamic: true,
                                        optional: true,
-                                       conflicting_options: [:apk],
+                                       conflicting_options: [:aab, :apk],
                                        verify_block: proc do |value|
                                          UI.user_error!("Couldn't find ipa file at path '#{value}'") unless File.exist?(value)
                                        end),
@@ -184,9 +186,19 @@ module Fastlane
                                        default_value: Actions.lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH],
                                        default_value_dynamic: true,
                                        optional: true,
-                                       conflicting_options: [:ipa],
+                                       conflicting_options: [:aab, :ipa],
                                        verify_block: proc do |value|
                                          UI.user_error!("Couldn't find apk file at path '#{value}'") unless File.exist?(value)
+                                       end),
+          FastlaneCore::ConfigItem.new(key: :aab,
+                                       env_name: 'TESTFAIRY_AAB_PATH',
+                                       description: 'Path to your AAB file for Android',
+                                       default_value: Actions.lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
+                                       default_value_dynamic: true,
+                                       optional: true,
+                                       conflicting_options: [:apk, :ipa],
+                                       verify_block: proc do |value|
+                                         UI.user_error!("Couldn't find aab file at path '#{value}'") unless File.exist?(value)
                                        end),
           # optional
           FastlaneCore::ConfigItem.new(key: :symbols_file,
