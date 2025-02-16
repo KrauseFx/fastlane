@@ -54,8 +54,10 @@ module Fastlane
     # Returns an array of gems that are added to the Gemfile or Pluginfile
     def available_gems
       return [] unless gemfile_path
-      dsl = Bundler::Dsl.evaluate(gemfile_path, nil, true)
-      return dsl.dependencies.map(&:name)
+      # Bundler's `dependencies` method returns all gems included in Gemfile, ignoring enabled Bundler groups.
+      # To get only gems from enabled groups, we need to combine with `specs`, which does include only gems from enabled groups.
+      definition = Bundler.definition
+      return definition.specs.map(&:name).uniq & definition.dependencies.map(&:name)
     end
 
     # Returns an array of fastlane plugins that are added to the Gemfile or Pluginfile
