@@ -26,6 +26,7 @@ module Match
         s3_region = params[:s3_region]
         s3_access_key = params[:s3_access_key]
         s3_secret_access_key = params[:s3_secret_access_key]
+        s3_session_token = params[:s3_session_token]
         s3_bucket = params[:s3_bucket]
         s3_object_prefix = params[:s3_object_prefix]
 
@@ -40,6 +41,7 @@ module Match
           s3_region: s3_region,
           s3_access_key: s3_access_key,
           s3_secret_access_key: s3_secret_access_key,
+          s3_session_token: s3_session_token,
           s3_bucket: s3_bucket,
           s3_object_prefix: s3_object_prefix,
           readonly: params[:readonly],
@@ -54,6 +56,7 @@ module Match
       def initialize(s3_region: nil,
                      s3_access_key: nil,
                      s3_secret_access_key: nil,
+                     s3_session_token: nil,
                      s3_bucket: nil,
                      s3_object_prefix: nil,
                      readonly: nil,
@@ -64,7 +67,7 @@ module Match
                      api_key: nil)
         @s3_bucket = s3_bucket
         @s3_region = s3_region
-        @s3_client = Fastlane::Helper::S3ClientHelper.new(access_key: s3_access_key, secret_access_key: s3_secret_access_key, region: s3_region)
+        @s3_client = Fastlane::Helper::S3ClientHelper.new(access_key: s3_access_key, secret_access_key: s3_secret_access_key, session_token: s3_session_token, region: s3_region)
         @s3_object_prefix = s3_object_prefix.to_s
         @readonly = readonly
         @username = username

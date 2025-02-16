@@ -46,6 +46,7 @@ module Match
               s3_region: params[:s3_region],
               s3_access_key: params[:s3_access_key],
               s3_secret_access_key: params[:s3_secret_access_key],
+              s3_session_token: params[:s3_session_token],
               s3_bucket: params[:s3_bucket],
               s3_object_prefix: params[:s3_object_prefix],
               readonly: params[:readonly],
