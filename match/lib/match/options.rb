@@ -361,6 +361,41 @@ module Match
                                      type: Boolean,
                                      default_value: false),
 
+        # target updating
+        FastlaneCore::ConfigItem.new(key: :workspace,
+                                     env_name: "MATCH_WORKSPACE",
+                                     optional: true,
+                                     description: "Path to the workspace file that you would like match to update (see update_xcode_targets)",
+                                     verify_block: proc do |value|
+                                       v = File.expand_path(value.to_s)
+                                       UI.user_error!("Workspace file not found at path '#{v}'") unless File.exist?(v)
+                                       UI.user_error!("Workspace file invalid") unless File.directory?(v)
+                                       UI.user_error!("Workspace file is not a workspace, must end with .xcworkspace") unless v.include?(".xcworkspace")
+                                     end,
+                                     conflicting_options: [:project],
+                                     conflict_block: proc do |value|
+                                       UI.user_error!("You can only pass either a 'workspace' or a '#{value.key}', not both")
+                                     end),
+        FastlaneCore::ConfigItem.new(key: :project,
+                                     optional: true,
+                                     env_name: "MATCH_PROJECT",
+                                     description: "Path to the project file that you would like match to update (see update_xcode_targets)",
+                                     verify_block: proc do |value|
+                                       v = File.expand_path(value.to_s)
+                                       UI.user_error!("Project file not found at path '#{v}'") unless File.exist?(v)
+                                       UI.user_error!("Project file invalid") unless File.directory?(v)
+                                       UI.user_error!("Project file is not a project file, must end with .xcodeproj") unless v.include?(".xcodeproj")
+                                     end,
+                                     conflicting_options: [:workspace],
+                                     conflict_block: proc do |value|
+                                       UI.user_error!("You can only pass either a 'project' or a '#{value.key}', not both")
+                                     end),
+        FastlaneCore::ConfigItem.new(key: :update_xcode_targets,
+                                     env_name: "MATCH_UPDATE_XCODE_TARGETS",
+                                     description: "Should match attempt to automatically update codesigning in your xcodeproj files",
+                                     type: Boolean,
+                                     default_value: false),
+
         # other
         FastlaneCore::ConfigItem.new(key: :verbose,
                                      env_name: "MATCH_VERBOSE",

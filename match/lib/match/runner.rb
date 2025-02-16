@@ -9,6 +9,7 @@ require_relative 'module'
 require_relative 'table_printer'
 require_relative 'spaceship_ensure'
 require_relative 'utils'
+require_relative 'target_updater'
 
 require_relative 'storage'
 require_relative 'encryption'
@@ -82,6 +83,11 @@ module Match
         app_identifiers.each do |app_identifier|
           spaceship.bundle_identifier_exists(username: params[:username], app_identifier: app_identifier, cached_bundle_ids: self.cache.bundle_ids)
         end
+      end
+
+      if params[:update_xcode_targets]
+        FastlaneCore::Project.detect_projects(params)
+        Match.project = FastlaneCore::Project.new(params)
       end
 
       # Certificate
@@ -366,26 +372,33 @@ module Match
                              uuid)
 
       # TeamIdentifier is returned as an array, but we're not sure why there could be more than one
+      team_id = parsed["TeamIdentifier"].first
       Utils.fill_environment(Utils.environment_variable_name_team_id(app_identifier: app_identifier,
                                                                                type: prov_type,
                                                                            platform: params[:platform]),
-                             parsed["TeamIdentifier"].first)
+                             team_id)
 
       cert_info = Utils.get_cert_info(parsed["DeveloperCertificates"].first.string).to_h
+      cert_name = cert_info["Common Name"]
       Utils.fill_environment(Utils.environment_variable_name_certificate_name(app_identifier: app_identifier,
                                                                                         type: prov_type,
                                                                                     platform: params[:platform]),
-                             cert_info["Common Name"])
+                             cert_name)
 
+      profile_name = parsed["Name"]
       Utils.fill_environment(Utils.environment_variable_name_profile_name(app_identifier: app_identifier,
                                                                                     type: prov_type,
                                                                                 platform: params[:platform]),
-                             parsed["Name"])
+                             profile_name)
 
       Utils.fill_environment(Utils.environment_variable_name_profile_path(app_identifier: app_identifier,
                                                                                     type: prov_type,
                                                                                 platform: params[:platform]),
                              installed_profile)
+
+      if params[:update_xcode_targets]
+        TargetUpdater.update_signing(app_identifier, profile_name, team_id, cert_name)
+      end
 
       return uuid
     end
