@@ -12,6 +12,10 @@ require_relative 'package_command_generator_xcode7'
 module Gym
   class PackageCommandGenerator
     class << self
+      def default_export_method
+        generator.default_export_method
+      end
+
       def generate
         generator.generate
       end

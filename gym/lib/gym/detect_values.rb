@@ -2,6 +2,8 @@ require 'fastlane_core/core_ext/cfpropertylist'
 require 'fastlane_core/project'
 require_relative 'module'
 require_relative 'code_signing_mapping'
+require_relative 'export_method'
+require_relative 'generators/package_command_generator'
 
 module Gym
   # This class detects all kinds of default values
@@ -29,9 +31,10 @@ module Gym
       ensure_export_options_is_hash
 
       detect_scheme
-      detect_platform # we can only do that *after* we have the scheme
+      detect_export_method
+      detect_configuration # we can only do that *after* we have the export method
+      detect_platform # we can only do that *after* we have the configuration
       detect_selected_provisioning_profiles # we can only do that *after* we have the platform
-      detect_configuration
       detect_toolchain
       detect_third_party_installer
 
@@ -159,17 +162,53 @@ module Gym
       Gym.config[:destination] = "generic/platform=#{platform}"
     end
 
+    # Detects the export method to use if any
+    def self.detect_export_method
+      return if Gym.config[:export_method] || Gym.config[:skip_archive]
+      UI.message("Detecting the export method...")
+      Gym.config[:export_method] = Gym.config[:export_options][:method] if Gym.config[:export_options]
+      if Gym.config[:export_method]
+        UI.message("Found the '#{Gym.config[:export_method]}' method in the export options.")
+      else
+        Gym.config[:export_method] = PackageCommandGenerator.default_export_method
+        UI.message("Fallbacks to the '#{Gym.config[:export_method]}' as the default export method.")
+      end
+    end
+
     # Detects the available configurations (e.g. Debug, Release)
     def self.detect_configuration
       config = Gym.config
       configurations = Gym.project.configurations
-      return if configurations.count == 0 # this is an optional value anyway
 
       if config[:configuration]
-        # Verify the configuration is available
-        unless configurations.include?(config[:configuration])
-          UI.error("Couldn't find specified configuration '#{config[:configuration]}'.")
+        if configurations.count == 0
+          UI.important("Ignoring the specified '#{config[:configuration]}' configuration as there are no available configurations to choose from.")
           config[:configuration] = nil
+          return
+        elsif !configurations.include?(config[:configuration]) # Verify the configuration is available
+          UI.error("Couldn't find the specified configuration '#{config[:configuration]}'.")
+        else
+          return
+        end
+      end
+
+      UI.message("Detecting the configuration...")
+      if configurations.count == 1
+        UI.message("Only one configuration is available. Selecting the '#{configurations.first}' configuration to use.")
+        config[:configuration] = configurations.first
+      elsif config[:skip_archive]
+        UI.message("Cannot infer a configuration from an export method as the skip archive option is set. Fallbacks to the 'Debug' or the first available configuration.")
+        config[:configuration] = configurations.include?("Debug") ? "Debug" : configurations.first
+        UI.message("Selecting the '#{config[:configuration]}' configuration to use.")
+      else
+        UI.message("Inferring a configuration from the '#{config[:export_method]}' export method...")
+        case config[:export_method]
+        when Gym::ExportMethod::DEVELOPMENT
+          UI.message("Fallbacks to the 'Debug' or the first available configuration.")
+          config[:configuration] = configurations.include?("Debug") ? "Debug" : configurations.first
+        else
+          UI.message("Fallbacks to the 'Release' or the last available configuration.")
+          config[:configuration] = configurations.include?("Release") ? "Release" : configurations.last
         end
       end
     end

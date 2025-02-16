@@ -67,7 +67,7 @@ module Gym
         FastlaneCore::ConfigItem.new(key: :configuration,
                                      short_option: "-q",
                                      env_name: "GYM_CONFIGURATION",
-                                     description: "The configuration to use when building the app. Defaults to 'Release'",
+                                     description: "The configuration to use when building the app. When archiving it is inferred based on export method. If skip archive is set it fallbacks to 'Debug' or the first available configuraiton",
                                      default_value_dynamic: true,
                                      optional: true),
         FastlaneCore::ConfigItem.new(key: :silent,
@@ -106,7 +106,7 @@ module Gym
         FastlaneCore::ConfigItem.new(key: :export_method,
                                      short_option: "-j",
                                      env_name: "GYM_EXPORT_METHOD",
-                                     description: "Method used to export the archive. Valid values are: app-store, validation, ad-hoc, package, enterprise, development, developer-id and mac-application",
+                                     description: "Method used to export the archive. Overrides the method specified in export options. Valid values are: app-store, validation, ad-hoc, package, enterprise, development, developer-id and mac-application. When archiving it fallbacks to app-store unless export options specify a method",
                                      type: String,
                                      optional: true,
                                      verify_block: proc do |value|
