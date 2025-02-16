@@ -19,8 +19,10 @@ describe Fastlane do
         m['version']
       end
 
+      original_source_directory_path = nil
       source_directory_path = nil
 
+      original_cache_directory_path = nil
       cache_directory_path = nil
       missing_cache_directory_path = nil
 
@@ -28,9 +30,9 @@ describe Fastlane do
         # This is needed for tag searching that `import_from_git` needs.
         ENV["FORCE_SH_DURING_TESTS"] = "1"
 
-        source_directory_path = Dir.mktmpdir("fl_spec_import_from_git_source")
+        original_source_directory_path = Dir.mktmpdir("fl_spec_import_from_git_source")
 
-        Dir.chdir(source_directory_path) do
+        Dir.chdir(original_source_directory_path) do
           if Gem::Version.new(git_version) >= Gem::Version.new("2.28.0")
             `git init -b master`
           else
@@ -96,12 +98,21 @@ describe Fastlane do
           FASTFILE
           `git add .`
           `git commit --message "Version 2.1"`
+          `git tag "2.1" --message "Version 2.1"`
         end
 
-        cache_directory_path = Dir.mktmpdir("fl_spec_import_from_git_cache")
+        original_cache_directory_path = Dir.mktmpdir("fl_spec_import_from_git_cache")
 
         missing_cache_directory_path = Dir.mktmpdir("fl_spec_import_from_git_missing_cache")
         FileUtils.remove_dir(missing_cache_directory_path)
+      end
+
+      before :each do
+        source_directory_path = "#{original_source_directory_path}-#{Time.now.to_i}"
+        FileUtils.copy_entry(original_source_directory_path, source_directory_path)
+
+        cache_directory_path = "#{original_cache_directory_path}-#{Time.now.to_i}"
+        FileUtils.copy_entry(original_cache_directory_path, cache_directory_path)
       end
 
       let(:caching_message) { "Eligible for caching" }
@@ -174,6 +185,9 @@ describe Fastlane do
         # Meaning, a `git pull` is performed when the specified tag is not found
         # in the local clone.
         it "works with new tags" do
+          # Simulating a previous `import_from_git` execution
+          Fastlane::Actions.sh("git clone #{source_directory_path.shellescape} #{File.join(cache_directory_path, source_directory_path.split('/').last).shellescape}")
+
           Dir.chdir(source_directory_path) do
             `git checkout "master" 2>&1`
             File.write('fastlane/Fastfile', <<-FASTFILE)
@@ -209,6 +223,8 @@ describe Fastlane do
               works
             end").runner.execute(:test)
           end.not_to raise_error
+
+          FileUtils.remove_dir(missing_cache_directory_path)
         end
 
         it "works with branch" do
@@ -221,6 +237,18 @@ describe Fastlane do
 
             works
           end").runner.execute(:test)
+        end
+
+        it "works with initial checkout where the requested version is the last commit" do
+          allow(UI).to receive(:message)
+          expect(UI).to receive(:message).with(caching_message)
+          expect(UI).to receive(:important).with('Works since v2.1')
+
+          Fastlane::FastFile.new.parse("lane :test_wtf do
+            import_from_git(url: '#{source_directory_path}', version: '2.1', cache_path: '#{cache_directory_path}')
+
+            works
+          end").runner.execute(:test_wtf)
         end
 
         # Meaning, `git fetch` and `git rebase` are performed when caching is eligible
@@ -274,13 +302,16 @@ describe Fastlane do
         end
 
         it "doesn't superfluously execute checkout" do
+          # Simulating a previous `import_from_git` execution
+          Fastlane::Actions.sh("git clone #{source_directory_path.shellescape} #{File.join(cache_directory_path, source_directory_path.split('/').last).shellescape}")
+
           allow(UI).to receive(:message)
           expect(UI).to receive(:message).with(caching_message)
-          expect(UI).to receive(:important).with('Works until v6')
+          expect(UI).to receive(:important).with('Works since v2.1')
           allow(Fastlane::Actions).to receive(:sh).and_call_original
 
           Fastlane::FastFile.new.parse("lane :test do
-            import_from_git(url: '#{source_directory_path}', version: '6', cache_path: '#{cache_directory_path}')
+            import_from_git(url: '#{source_directory_path}', version: '2.1', cache_path: '#{cache_directory_path}')
 
             works
           end").runner.execute(:test)
@@ -294,7 +325,7 @@ describe Fastlane do
         it "works when no cache is provided" do
           allow(UI).to receive(:message)
           expect(UI).not_to receive(:message).with(caching_message)
-          expect(UI).to receive(:important).with('Works until v6')
+          expect(UI).to receive(:important).with('Works since v2.1')
           allow(Fastlane::Actions).to receive(:sh).and_call_original
 
           Fastlane::FastFile.new.parse("lane :test do
@@ -328,12 +359,16 @@ describe Fastlane do
         end").runner.execute(:test)
       end
 
+      after :each do
+        FileUtils.remove_dir(source_directory_path)
+        FileUtils.remove_dir(cache_directory_path)
+      end
+
       after :all do
         ENV.delete("FORCE_SH_DURING_TESTS")
 
-        FileUtils.remove_dir(source_directory_path)
-        FileUtils.remove_dir(missing_cache_directory_path)
-        FileUtils.remove_dir(cache_directory_path)
+        FileUtils.remove_dir(original_source_directory_path)
+        FileUtils.remove_dir(original_cache_directory_path)
       end
     end
   end

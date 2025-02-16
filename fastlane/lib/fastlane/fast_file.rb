@@ -356,13 +356,19 @@ module Fastlane
               end
             else
               begin
+                is_checked_out = Actions.sh("cd #{clone_folder.shellescape} && git diff --name-only #{version}").strip.empty?
+              rescue
+                is_checked_out = false
+              end
+
+              begin
                 # https://stackoverflow.com/a/1593574/865175
                 current_tag = Actions.sh("cd #{clone_folder.shellescape} && git describe --exact-match --tags HEAD").strip
               rescue
                 current_tag = nil
               end
 
-              if current_tag != version
+              if !is_checked_out || current_tag != version
                 Actions.sh("cd #{clone_folder.shellescape} && git checkout #{checkout_param.shellescape} #{checkout_path}")
               end
             end
