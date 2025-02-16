@@ -69,7 +69,7 @@ module Fastlane
 
           # Returns if only one non-test target
           if non_test_targets.count == 1
-            return targets.first
+            return non_test_targets.first
           end
 
           options = targets.map(&:name)
