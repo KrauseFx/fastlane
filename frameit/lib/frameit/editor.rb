@@ -268,12 +268,16 @@ module Frameit
       @title_below_image ||= @config['title_below_image']
     end
 
+    def force_resize_background
+      @force_resize_background ||= fetch_config['force_resize_background']
+    end
+
     # Returns a correctly sized background image
     def generate_background
       background = MiniMagick::Image.open(@config['background'])
 
-      if background.height != screenshot.size[1]
-        background.resize("#{screenshot.size[0]}x#{screenshot.size[1]}^") # `^` says it should fill area
+      if background.height != screenshot.size[1] || force_resize_background
+        background.resize("#{screenshot.size[0]}x#{screenshot.size[1]}" + (force_resize_background ? "!" : "^")) # `^` says it should fill area
         background.merge!(["-gravity", "center", "-crop", "#{screenshot.size[0]}x#{screenshot.size[1]}+0+0"]) # crop from center
       end
       background
