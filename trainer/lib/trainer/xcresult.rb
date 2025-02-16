@@ -173,7 +173,11 @@ module Trainer
       end
 
       def find_failure(failures)
-        sanitizer = proc { |name| name.gsub(/\W/, "_") }
+        sanitizer = proc { |name|
+          # Remove "-[" at the beginning and "]" at the end if they exist
+          trimmed_name = name.sub(/^\-\[/, '').sub(/\]$/, '')
+          trimmed_name.gsub(/\W/, "_")
+        }
         sanitized_identifier = sanitizer.call(self.identifier)
         if self.test_status == "Failure"
           # Tries to match failure on test case name
