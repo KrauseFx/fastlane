@@ -53,7 +53,7 @@ module Fastlane
         payload["organization_id"] = organization_id unless organization_id.nil?
 
         # here's the actual lifting - POST or PUT to OneSignal
-        json_headers = { 'Content-Type' => 'application/json', 'Authorization' => "Basic #{auth_token}" }
+        json_headers = { 'Content-Type' => 'application/json', 'Authorization' => "Key #{auth_token}" }
         url = +'https://api.onesignal.com/apps'
         url << '/' + app_id if is_update
         uri = URI.parse(url)
