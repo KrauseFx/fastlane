@@ -59,7 +59,7 @@ module Gym
     end
 
     def building_multiplatform_for_ios?
-      Gym.project.multiplatform? && Gym.project.ios? && (Gym.config[:sdk] == "iphoneos" || Gym.config[:sdk] == "iphonesimulator")
+      Gym.project.multiplatform? && Gym.project.ios? && (Gym.config[:sdk] == "iphoneos" || Gym.config[:sdk] == "iphonesimulator" || Gym.config[:sdk] == "xros" || Gym.config[:sdk] == "xrsimulator")
     end
 
     def building_multiplatform_for_mac?
