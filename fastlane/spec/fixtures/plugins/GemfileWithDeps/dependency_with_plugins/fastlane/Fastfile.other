@@ -1,0 +1,3 @@
+lane :second do
+  UI.message("second fastfile")
+end

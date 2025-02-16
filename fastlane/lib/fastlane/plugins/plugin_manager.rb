@@ -23,6 +23,12 @@ module Fastlane
       nil
     end
 
+    def lockfile_path
+      Bundler::SharedHelpers.default_lockfile.to_s
+    rescue Bundler::GemfileNotFound
+      nil
+    end
+
     def pluginfile_path
       if FastlaneCore::FastlaneFolder.path
         return File.join(FastlaneCore::FastlaneFolder.path, PLUGINFILE_NAME)
@@ -54,8 +60,9 @@ module Fastlane
     # Returns an array of gems that are added to the Gemfile or Pluginfile
     def available_gems
       return [] unless gemfile_path
-      dsl = Bundler::Dsl.evaluate(gemfile_path, nil, true)
-      return dsl.dependencies.map(&:name)
+      dsl = Bundler::Dsl.evaluate(gemfile_path, lockfile_path, true)
+      dependencies = collect_bundler_runtime_dependencies([], dsl).uniq
+      return dependencies.map(&:name)
     end
 
     # Returns an array of fastlane plugins that are added to the Gemfile or Pluginfile
@@ -394,6 +401,22 @@ module Fastlane
         version_number: version_number,
         actions: references
       }
+    end
+
+    private
+
+    # recursively collect runtime dependencies
+    def collect_bundler_runtime_dependencies(collection, source)
+      runtime_deps = source.dependencies.select { |d| d.type == :runtime }
+      # prevent potential infinite recursion. Should never happen. Better safe than sorry.
+      runtime_deps -= collection
+      collection.concat(runtime_deps)
+      runtime_deps.each do |d|
+        collect_bundler_runtime_dependencies(collection, d.to_spec)
+      rescue Gem::MissingSpecError
+        # ignoring unresolvable dependencies
+      end
+      collection
     end
   end
 end

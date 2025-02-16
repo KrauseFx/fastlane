@@ -1,0 +1,4 @@
+lane :first do
+  UI.message("first fastfile")
+  example_action
+end

@@ -21,6 +21,7 @@ describe Fastlane do
           testfairy
           ipa
           import_from_git
+          import_from_gem
           hockey
           deploygate
           crashlytics

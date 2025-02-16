@@ -1,0 +1,1 @@
+import_from_gem(gem_name: "dependency_with_plugins")
