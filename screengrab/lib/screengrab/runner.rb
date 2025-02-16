@@ -254,6 +254,7 @@ module Screengrab
           uninstall_apks(device_serial, @config[:app_package_name], @config[:tests_package_name])
           install_apks(device_serial, app_apk_path, tests_apk_path)
           grant_permissions(device_serial)
+          enable_clean_status_bar(device_serial, sdk_version)
         else
           kill_app(device_serial, @config[:app_package_name])
         end
