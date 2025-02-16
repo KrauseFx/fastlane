@@ -1216,7 +1216,7 @@ module Spaceship
         #
 
         def get_territories(filter: {}, includes: nil, limit: nil, sort: nil)
-          params = tunes_request_client.build_params(filter: nil, includes: nil, limit: nil, sort: nil)
+          params = tunes_request_client.build_params(filter: filter, includes: includes, limit: limit, sort: sort)
           tunes_request_client.get("#{Version::V1}/territories", params)
         end
 

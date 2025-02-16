@@ -93,6 +93,19 @@ describe Spaceship::ConnectAPI::Tunes::Client do
       end
     end
 
+    describe "territories" do
+      context 'get_territories' do
+        let(:path) { "v1/territories" }
+
+        it 'succeeds' do
+          params = {}
+          req_mock = test_request_params(path, params)
+          expect(client).to receive(:request).with(:get).and_yield(req_mock).and_return(req_mock)
+          client.get_territories
+        end
+      end
+    end
+
     describe "reviewSubmissions" do
       context 'get_review_submissions' do
         let(:app_id) { "123456789-app" }
