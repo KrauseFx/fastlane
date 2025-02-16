@@ -16,10 +16,13 @@ public enum OptionalConfigValue<T> {
     case `nil`
 
     func asRubyArgument(name: String, type: RubyCommand.Argument.ArgType? = nil) -> RubyCommand.Argument? {
-        if case let .userDefined(value) = self {
-            return RubyCommand.Argument(name: name, value: value, type: type)
-        }
-        return nil
+      switch self {
+        case .userDefined(let value), .fastlaneDefault(let value):
+          return RubyCommand.Argument(name: name, value: value, type: type)
+          
+        default:
+          return nil
+      }
     }
 }
 
