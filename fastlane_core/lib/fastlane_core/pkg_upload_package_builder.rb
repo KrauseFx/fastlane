@@ -22,7 +22,7 @@ module FastlaneCore
         apple_id: app_id,
         file_size: File.size(pkg_path),
         ipa_path: File.basename(pkg_path), # this is only the base name as the ipa is inside the package
-        md5: Digest::MD5.hexdigest(File.read(pkg_path)),
+        md5: Digest::MD5.file(pkg_path).hexdigest,
         archive_type: 'product-archive',
         platform: platform
       }
