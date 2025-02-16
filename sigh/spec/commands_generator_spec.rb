@@ -93,6 +93,22 @@ describe Sigh::CommandsGenerator do
 
       expect(Sigh.config[:username]).to eq('me@it.com')
     end
+
+    it "custom keychain can be used" do
+      # Assuming on regular machine
+      test_file = "key.keychain-db"
+      File.write(test_file, "")
+
+      stub_commander_runner_args(['download_all', '-k', test_file])
+
+      # download_all takes no params, but we want to expect the call and prevent
+      # actual execution of the method
+      expect(Sigh::Manager).to receive(:download_all)
+      Sigh::CommandsGenerator.start
+
+      expect(Sigh.config[:keychain_path]).to eq(test_file)
+      File.unlink(test_file)
+    end
   end
 
   describe "repair option handling" do

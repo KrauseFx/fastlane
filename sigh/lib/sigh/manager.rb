@@ -35,13 +35,13 @@ module Sigh
       DownloadAll.new.download_all(download_xcode_profiles: download_xcode_profiles)
     end
 
-    def self.install_profile(profile)
-      uuid = FastlaneCore::ProvisioningProfile.uuid(profile)
-      name = FastlaneCore::ProvisioningProfile.name(profile)
+    def self.install_profile(profile, keychain_path = nil)
+      uuid = FastlaneCore::ProvisioningProfile.uuid(profile, keychain_path)
+      name = FastlaneCore::ProvisioningProfile.name(profile, keychain_path)
       ENV["SIGH_UDID"] = ENV["SIGH_UUID"] = uuid if uuid
       ENV["SIGH_NAME"] = name if name
 
-      FastlaneCore::ProvisioningProfile.install(profile)
+      FastlaneCore::ProvisioningProfile.install(profile, keychain_path)
     end
   end
 end
