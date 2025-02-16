@@ -43,12 +43,14 @@ module Scan
 
       prelaunch_simulators
 
-      if Scan.config[:reinstall_app]
-        app_identifier = Scan.config[:app_identifier]
-        app_identifier ||= UI.input("App Identifier: ")
+      if Scan.devices
+        if Scan.config[:reinstall_app]
+          app_identifier = Scan.config[:app_identifier]
+          app_identifier ||= UI.input("App Identifier: ")
 
-        Scan.devices.each do |device|
-          FastlaneCore::Simulator.uninstall_app(app_identifier, device.name, device.udid)
+          Scan.devices.each do |device|
+            FastlaneCore::Simulator.uninstall_app(app_identifier, device.name, device.udid)
+          end
         end
       end
 
