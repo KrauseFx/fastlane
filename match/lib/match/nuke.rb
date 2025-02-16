@@ -66,9 +66,15 @@ module Match
       if (self.certs + self.profiles + self.files).count > 0
         unless params[:skip_confirmation]
           UI.error("---")
-          remove_or_revoke_message = self.safe_remove_certs ? "remove" : "revoke"
-          UI.error("Are you sure you want to completely delete and #{remove_or_revoke_message} all the")
+
+          UI.error("Warning: This is a destructive action")
+          UI.error("This command deletes all specified certificates and provisioning profiles from match storage")
+          UI.error("and deletes them from the Apple Developer Portal.") unless self.safe_remove_certs
+
+          remove_or_revoke_message = self.safe_remove_certs ? "delete" : "delete and revoke"
+          UI.error("Are you sure you want to completely #{remove_or_revoke_message} all the")
           UI.error("certificates and delete provisioning profiles listed above? (y/n)")
+
           UI.error("Warning: By nuking distribution, both App Store and Ad Hoc profiles will be deleted") if type == "distribution"
           UI.error("Warning: The :app_identifier value will be ignored - this will delete all profiles for all your apps!") if had_app_identifier
           UI.error("---")
