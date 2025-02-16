@@ -100,6 +100,94 @@
         "teamMemberId": "YYYYYYYYYY"
       },
       "name": "SecondTeamProfiName"
+    },
+    {
+      "status": "active",
+      "teamId": "ValidTeamNameWithSpaces",
+      "type": "In-House",
+      "extendedTeamAttributes": {
+      },
+      "teamAgent": {
+        "personId": 499707511,
+        "firstName": "Felix",
+        "lastName": "Krause",
+        "email": "test2@spaceship.com",
+        "developerStatus": "active",
+        "teamMemberId": "YYYYYYYYYY"
+      },
+      "memberships": [
+        {
+          "membershipId": "MMMMMMMMBB",
+          "membershipProductId": "ds1",
+          "status": "active",
+          "inDeviceResetWindow": true,
+          "inRenewalWindow": true,
+          "dateStart": "02/23/15 03:38",
+          "dateExpire": "02/23/16 07:59",
+          "platform": "ios",
+          "availableDeviceSlots": 100,
+          "name": "iOS Developer Program"
+        }
+      ],
+      "currentTeamMember": {
+        "personId": null,
+        "firstName": null,
+        "lastName": null,
+        "email": null,
+        "developerStatus": null,
+        "privileges": {
+        },
+        "roles": [
+          "TEAM_ADMIN",
+          "SAFARI_PROGRAM_TEAM_ADMIN"
+        ],
+        "teamMemberId": "YYYYYYYYYY"
+      },
+      "name": "   ValidTeamNameWithSpaces   "
+    },
+    {
+      "status": "active",
+      "teamId": "InvalidTeamNameOnlySpaces",
+      "type": "In-House",
+      "extendedTeamAttributes": {
+      },
+      "teamAgent": {
+        "personId": 499707511,
+        "firstName": "Felix",
+        "lastName": "Krause",
+        "email": "test2@spaceship.com",
+        "developerStatus": "active",
+        "teamMemberId": "YYYYYYYYYY"
+      },
+      "memberships": [
+        {
+          "membershipId": "MMMMMMMMBB",
+          "membershipProductId": "ds1",
+          "status": "active",
+          "inDeviceResetWindow": true,
+          "inRenewalWindow": true,
+          "dateStart": "02/23/15 03:38",
+          "dateExpire": "02/23/16 07:59",
+          "platform": "ios",
+          "availableDeviceSlots": 100,
+          "name": "iOS Developer Program"
+        }
+      ],
+      "currentTeamMember": {
+        "personId": null,
+        "firstName": null,
+        "lastName": null,
+        "email": null,
+        "developerStatus": null,
+        "privileges": {
+        },
+        "roles": [
+          "TEAM_ADMIN",
+          "SAFARI_PROGRAM_TEAM_ADMIN"
+        ],
+        "teamMemberId": "YYYYYYYYYY"
+      },
+      "name": "  "
     }
   ]
 }

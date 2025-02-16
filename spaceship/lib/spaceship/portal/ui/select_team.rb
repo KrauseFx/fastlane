@@ -58,7 +58,10 @@ module Spaceship
         end
 
         team_id = (team_id || ENV['FASTLANE_TEAM_ID'] || '').strip
-        team_name = (team_name || ENV['FASTLANE_TEAM_NAME'] || '').strip
+
+        # A valid team name may contain leading or trailing spaces
+        # See: https://github.com/fastlane/fastlane/pull/21656
+        team_name = (team_name || ENV['FASTLANE_TEAM_NAME'] || '')
 
         if team_id.length > 0
           # User provided a value, let's see if it's valid
@@ -74,10 +77,10 @@ module Spaceship
           puts("Couldn't find team with ID '#{team_id}'. Make sure your are using the correct App Store Connect team ID and have the proper permissions for this team")
         end
 
-        if team_name.length > 0
+        if team_name.strip.length > 0
           # User provided a value, let's see if it's valid
           teams.each_with_index do |team, i|
-            return team['teamId'] if team['name'].strip == team_name
+            return team['teamId'] if team['name'].strip == team_name.strip
           end
           # Better message to inform user of misconfiguration as Apple now provides less friendly error as of 2019-02-12
           # "Access Unavailable - You currently don't have access to this membership resource. Contact your team's Account Holder, Josh Holtz, or an Admin."
