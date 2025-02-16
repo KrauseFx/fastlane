@@ -54,7 +54,7 @@ module Scan
         options << "-scmProvider system"
       end
       if config[:result_bundle_path]
-        options << "-resultBundlePath '#{config[:result_bundle_path].shellescape}'"
+        options << "-resultBundlePath '#{config[:result_bundle_path]}'"
         Scan.cache[:result_bundle_path] = config[:result_bundle_path]
       elsif config[:result_bundle]
         options << "-resultBundlePath '#{result_bundle_path(true)}'"
