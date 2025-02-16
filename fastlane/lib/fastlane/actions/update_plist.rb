@@ -103,6 +103,13 @@ module Fastlane
               urlScheme = plist["CFBundleURLTypes"].find{|scheme| scheme["CFBundleURLName"] == "com.acme.default-url-handler"}
               urlScheme[:CFBundleURLSchemes] = ["acme-production"]
             end
+          )',
+          'update_plist( # Sets an dictionary with multiple sub-types
+            plist_path: "path/to/Info.plist",
+            block: proc do |plist|
+              dic_name = plist["dic_name"]
+              dic_name[:sub_dic_key] = "1234" # string、bool or number
+            end
           )'
         ]
       end
