@@ -110,7 +110,7 @@ public protocol DeliverfileProtocol: AnyObject {
     /// The name of your Developer Portal team if you're in multiple teams
     var devPortalTeamName: String? { get }
 
-    /// The provider short name to be used with the iTMSTransporter to identify your team. This value will override the automatically detected provider short name. To get provider short name run `pathToXcode.app/Contents/Applications/Application\ Loader.app/Contents/itms/bin/iTMSTransporter -m provider -u 'USERNAME' -p 'PASSWORD' -account_type itunes_connect -v off`. The short names of providers should be listed in the second column
+    /// The provider short name to be used with the iTMSTransporter to identify your team. This value will override the automatically detected provider short name. To get provider short name run `xcrun iTMSTransporter -m provider -u 'USERNAME' -p 'PASSWORD' -account_type itunes_connect -v off`. The short names of providers should be listed in the second column
     var itcProvider: String? { get }
 
     /// Run precheck before submitting to app review
