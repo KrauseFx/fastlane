@@ -322,6 +322,8 @@ lane :release do
       custom_network_protocol: "on",            # Valid values: "on", "off"
       data_protection: "complete",              # Valid values: "complete", "unlessopen", "untilfirstauth", "off"
       extended_virtual_address_space: "on",     # Valid values: "on", "off"
+      increased_memory_limit: "on", 		# Valid values: "on", "off"
+      increased_memory_limit_debugging: "on",   # Valid values: "on", "off"
       file_provider_testing_mode: "on",         # Valid values: "on", "off"
       fonts: "on",                              # Valid values: "on", "off"
       game_center: "ios",                       # Valid values: "ios", "macos", off"

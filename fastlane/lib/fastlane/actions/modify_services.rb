@@ -53,6 +53,8 @@ module Fastlane
           custom_network_protocol: 'custom_network_protocol',
           data_protection: 'data_protection',
           extended_virtual_address_space: 'extended_virtual_address_space',
+    increased_memory_limit: 'increased_memory_limit',
+    increased_memory_limit_debugging: 'increased_memory_limit_debugging',
           family_controls: 'family_controls',
           file_provider_testing_mode: 'file_provider_testing_mode',
           fonts: 'fonts',
